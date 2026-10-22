@@ -1,0 +1,65 @@
+/* Pattern: session history list (history.html) with live technique thumbnails. */
+.history-summary {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--text-sm);
+  color: var(--color-dim);
+}
+
+.history-summary strong {
+  display: block;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-light);
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-list { list-style: none; display: flex; flex-direction: column; }
+
+.history-list li + li { border-top: var(--border-hair) solid var(--color-line); }
+
+.history-row {
+  display: grid;
+  grid-template-columns: var(--thumb-size) 1fr auto;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-xs);
+}
+
+.history-row__open {
+  display: contents;
+  color: inherit;
+  text-decoration: none;
+}
+
+.history-row__text { display: flex; flex-direction: column; gap: var(--space-3xs); min-width: 0; }
+.history-row__title { font-size: var(--text-lg); font-weight: var(--weight-medium); }
+.history-row__when { font-size: var(--text-sm); color: var(--color-dim); font-variant-numeric: tabular-nums; }
+.history-row__result { font-size: var(--text-sm); color: var(--color-accent); line-height: var(--leading-normal); }
+
+.history-empty {
+  color: var(--color-dim);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+}
+
+/* Thumbnail: a live mini field. Labels inside the shape are hidden at this size. */
+.thumb {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3xs);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-raised);
+  --field-size: calc(var(--thumb-size) * 0.82);
+}
+
+.thumb[data-layout="split"] { --field-size: calc(var(--thumb-size) * 0.44); }
+
+.thumb .shape-label { display: none; }
+.thumb .dot { --dot-size: var(--thumb-dot-size); }
+
+.thumb[data-layout="split"] .field:not([data-active]) { opacity: var(--split-inactive-opacity); }
+.thumb[data-layout="split"] .field:not([data-active]) .core { background: var(--color-accent-faint); }

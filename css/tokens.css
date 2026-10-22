@@ -207,6 +207,8 @@
   --pace-value-width: 9.5rem;
 
   --orb-size: 3.25rem;
+  --thumb-size: 4.25rem;
+  --thumb-dot-size: 6px;
 
   /* Notch / status bar / home indicator. env() covers iOS and browsers; the
      Android app's SystemBars plugin injects --safe-area-inset-* instead. */
