@@ -8,7 +8,7 @@ export function formatClock(ms) {
 export function metaText(snap) {
   const parts = [];
   if (Number.isFinite(snap.rounds) && snap.rounds > 1) parts.push(`Round ${snap.round} of ${snap.rounds}`);
-  if (snap.repeat > 1) parts.push(`${snap.counter ?? 'Breath'} ${snap.rep} / ${snap.repeat}`);
+  if (snap.repeat > 1) parts.push(snap.counter ?? 'Breath');
   if (snap.sessionMs != null) parts.push(`${formatClock(Math.max(0, snap.sessionMs - snap.sessionElapsed))} left`);
   return parts.join(' · ');
 }
@@ -32,6 +32,10 @@ export function createLabels() {
     if (snap.openEnded) {
       count.dataset.mode = 'stopwatch';
       set(count, 'count', formatClock(snap.elapsed));
+    } else if (snap.repeat > 1) {
+      // Counted breaths are short; the breath number is more useful than a countdown.
+      count.dataset.mode = 'counter';
+      set(count, 'count', `${snap.rep} / ${snap.repeat}`);
     } else {
       delete count.dataset.mode;
       set(count, 'count', String(Math.max(1, Math.ceil(snap.remaining / 1000))));

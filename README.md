@@ -16,6 +16,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `triangle-breathing.html` | in 4 · hold 4 · out 4 |
 | `pursed-lip-breathing.html` | nose in 2 · lips out 4 |
 | `bhramari.html` | in 4 · hum 8, optional hum sound |
+| `bhastrika.html` | 3 rounds of 20 bellows breaths (1s in · 1s out) + 30s rest; safety screen |
 
 ## Running locally
 
