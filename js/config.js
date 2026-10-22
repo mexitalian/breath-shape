@@ -17,6 +17,7 @@ function normalizePhase(p) {
     particles: p.particles ?? null,
     vibrate: p.vibrate ?? null,
     ripple: !!p.ripple,
+    hum: !!p.hum,
     record: p.record ?? null,
     action: p.action ?? 'Continue',
     prompt: p.prompt ?? null,
@@ -47,10 +48,13 @@ export function normalize(cfg) {
   const preset = SHAPES[shape];
   if (!preset) throw new Error(`Unknown shape "${shape}"`);
 
-  const hasRipple = steps.some(s => s.phases.some(p => p.ripple));
+  const anyPhase = (flag) => steps.some(s => s.phases.some(p => p[flag]));
+  const hasRipple = anyPhase('ripple');
+  const hasHum = anyPhase('hum');
   const components = (cfg.components ?? preset.components).filter(name =>
     (name !== 'particles' || cfg.particles) &&
-    (name !== 'ripple' || hasRipple)
+    (name !== 'ripple' || hasRipple) &&
+    (name !== 'hum' || hasHum)
   );
 
   return {
@@ -66,6 +70,7 @@ export function normalize(cfg) {
     particles: cfg.particles ?? null,
     opacity: cfg.opacity ?? DEFAULT_OPACITY,
     vibration: cfg.vibration ?? true,
+    sound: cfg.sound ?? null,
     startScreen: cfg.startScreen ?? false,
     safety: cfg.safety ?? false,
     pace: normalizePace(cfg.pace, steps),

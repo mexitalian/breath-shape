@@ -47,6 +47,6 @@
   border-radius: var(--core-radius);
   background: var(--color-accent-faint);
   border: var(--border-hair) solid var(--color-accent-edge);
-  transform: scale(var(--breath-scale, 1));
+  transform: scale(calc(var(--breath-scale, 1) * (1 + var(--hum-jitter, 0))));
   will-change: transform;
 }

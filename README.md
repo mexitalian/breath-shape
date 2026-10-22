@@ -15,6 +15,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `extended-exhale.html` | in 4 · out 8, adjustable pace (1:2 ratio kept) |
 | `triangle-breathing.html` | in 4 · hold 4 · out 4 |
 | `pursed-lip-breathing.html` | nose in 2 · lips out 4 |
+| `bhramari.html` | in 4 · hum 8, optional hum sound |
 
 ## Running locally
 
@@ -39,9 +40,9 @@ js/
   config.js           validates and normalises configs
   shapes.js           shape presets (default components, dot path)
   easing.js           CSS-equivalent easing curves
-  components/         field parts: ring, track, outline, glow, core, particles, dot, ripple
+  components/         field parts: ring, track, outline, glow, hum, core, particles, dot, ripple
   ui/                 stage layout, labels, screen pattern
-  controls/           hue drag (and tap), vibration
+  controls/           hue drag (and tap), vibration, hum sound
 configs/*.js          one config per technique
 *.html                thin wrappers: load a config, call start()
 ```
@@ -74,6 +75,7 @@ export default {
   startScreen: false,          // show a Start screen first
   sessionMinutes: null,        // end after this long (at the end of a breath)
   vibration: true,             // show the "Enable vibration" button
+  sound: { tone: 130 },        // optional "Hum sound" toggle (off by default) for hum phases
 
   // Either a simple loop…
   phases: [ PHASE, ... ],
@@ -98,6 +100,7 @@ export default {
   particles: { from: 'outer', to: 'inner' },  // radii names; omit to hide
                                // add cone: { angle: -90, spread: 40 } to stream one way (degrees, -90 = up)
   ripple: true,                // expanding ring during this phase
+  hum: true,                   // sound-wave rings + core tremor; plays the hum tone if sound is on
   record: 'Retention',         // record this phase's duration for the summary
   action: 'Breathe',           // button label on open-ended holds
   prompt: 'Tap when you need to breathe.',    // replaces the hint during this phase
