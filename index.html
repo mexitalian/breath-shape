@@ -18,15 +18,15 @@
         <p class="page__lede">Each one is a guided breathing pattern. Follow the shape as it grows and shrinks, and drag anywhere on the screen to change the colour.</p>
       </header>
 
-      <nav class="group-nav" aria-label="Jump to a group">
-        <a class="chip chip--link" href="history.html">Your history</a>
-        <a class="chip chip--link" href="#group-calm-and-sleep">Calm &amp; sleep</a>
-        <a class="chip chip--link" href="#group-focus-and-balance">Focus &amp; balance</a>
-        <a class="chip chip--link" href="#group-energise">Energise</a>
-        <a class="chip chip--link" href="#group-measure-and-train">Measure &amp; train</a>
+      <nav class="group-nav group-nav--sticky" aria-label="Filter techniques">
+        <button class="chip chip--link" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip chip--link" type="button" data-filter="calm-and-sleep" aria-pressed="false">Calm &amp; sleep</button>
+        <button class="chip chip--link" type="button" data-filter="focus-and-balance" aria-pressed="false">Focus &amp; balance</button>
+        <button class="chip chip--link" type="button" data-filter="energise" aria-pressed="false">Energise</button>
+        <button class="chip chip--link" type="button" data-filter="measure-and-train" aria-pressed="false">Measure &amp; train</button>
       </nav>
 
-      <section class="technique-group" aria-labelledby="group-calm-and-sleep">
+      <section class="technique-group" data-group="calm-and-sleep" aria-labelledby="group-calm-and-sleep">
         <div class="technique-group__header">
           <h2 class="technique-group__title" id="group-calm-and-sleep">Calm &amp; sleep</h2>
           <p class="technique-group__lede">Slow, long out-breaths to settle your nervous system.</p>
@@ -101,7 +101,7 @@
         </ul>
       </section>
 
-      <section class="technique-group" aria-labelledby="group-focus-and-balance">
+      <section class="technique-group" data-group="focus-and-balance" aria-labelledby="group-focus-and-balance">
         <div class="technique-group__header">
           <h2 class="technique-group__title" id="group-focus-and-balance">Focus &amp; balance</h2>
           <p class="technique-group__lede">Even, structured patterns for a clear, steady head.</p>
@@ -143,7 +143,7 @@
         </ul>
       </section>
 
-      <section class="technique-group" aria-labelledby="group-energise">
+      <section class="technique-group" data-group="energise" aria-labelledby="group-energise">
         <div class="technique-group__header">
           <h2 class="technique-group__title" id="group-energise">Energise</h2>
           <p class="technique-group__lede">Fast or held breathing that wakes you up. Do these sitting or lying down.</p>
@@ -212,7 +212,7 @@
         </ul>
       </section>
 
-      <section class="technique-group" aria-labelledby="group-measure-and-train">
+      <section class="technique-group" data-group="measure-and-train" aria-labelledby="group-measure-and-train">
         <div class="technique-group__header">
           <h2 class="technique-group__title" id="group-measure-and-train">Measure &amp; train</h2>
           <p class="technique-group__lede">Track how your breathing changes over time.</p>
@@ -232,6 +232,7 @@
         </ul>
       </section>
 
+      <a class="button button--ghost history-link" href="history.html">Your history <span aria-hidden="true">→</span></a>
 
       <footer class="page__footer">
         <span>© 2026 mexitalian. All rights reserved.</span>
@@ -241,7 +242,9 @@
   </div>
   <script type="module">
     import { initAppShell } from './js/app.js';
+    import { initHome } from './js/home.js';
     initAppShell({ home: true });
+    initHome();
   </script>
 </body>
 </html>

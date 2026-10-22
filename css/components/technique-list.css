@@ -60,6 +60,25 @@ html { scroll-behavior: smooth; }
   gap: var(--space-xs);
 }
 
+/* Home filter chips: one row that scrolls sideways, stuck to the top of the screen. */
+.group-nav--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: calc(-1 * var(--space-sm)) calc(-1 * var(--space-md));
+  padding: calc(var(--space-sm) + var(--safe-top)) var(--space-md) var(--space-sm);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.group-nav--sticky[data-stuck] { background: var(--color-bg); }
+.group-nav--sticky::-webkit-scrollbar { display: none; }
+.group-nav--sticky .chip { flex: none; }
+
+.history-link { justify-content: space-between; }
+
 .technique-group {
   display: flex;
   flex-direction: column;
