@@ -1,5 +1,6 @@
 import { createIconToggle } from '../ui/icon-toggle.js';
 import { nativePlugin, platform, pulses, impactStyleFor } from '../native.js';
+import { logHaptics } from '../haptics-log.js';
 
 // In the app, patterns play through native haptics (iPhones have no web vibration)
 // and start switched on. On the website, the Vibration API is used and the user
@@ -11,11 +12,34 @@ export function initVibration(container, notify) {
   let armed = !!haptics;
   let timers = [];
 
+  let reportedError = false;
+
+  // Every native call is logged (Diagnostics page) and the first failure is shown.
+  function call(method, options) {
+    let result;
+    try {
+      result = Promise.resolve(haptics[method](options));
+    } catch (err) {
+      result = Promise.reject(err);
+    }
+    return result.then(
+      () => logHaptics({ via: `Haptics.${method}`, options, ok: true }),
+      (err) => {
+        const message = err?.message ?? String(err);
+        logHaptics({ via: `Haptics.${method}`, options, ok: false, error: message });
+        if (!reportedError) {
+          reportedError = true;
+          notify(`Vibration failed: ${message}`);
+        }
+      },
+    );
+  }
+
   function playNative(pattern) {
     for (const t of timers) clearTimeout(t);
     timers = pulses(pattern).map(({ at, duration }) => setTimeout(() => {
-      if (platform === 'ios') haptics.impact({ style: impactStyleFor(duration) });
-      else haptics.vibrate({ duration });
+      if (platform === 'ios') call('impact', { style: impactStyleFor(duration) });
+      else call('vibrate', { duration });
     }, at));
   }
 
@@ -39,6 +63,7 @@ export function initVibration(container, notify) {
     },
   });
   toggle.set(armed);
+  logHaptics({ via: 'init', options: { platform, nativeHaptics: !!haptics, webVibrate: webSupported, armed }, ok: true });
 
   container.append(toggle.button);
 
@@ -49,7 +74,9 @@ export function initVibration(container, notify) {
         playNative(pattern);
         return;
       }
-      try { navigator.vibrate(pattern); } catch { /* vibration is best-effort */ }
+      let ok = false;
+      try { ok = navigator.vibrate(pattern); } catch { /* vibration is best-effort */ }
+      logHaptics({ via: 'navigator.vibrate', options: pattern, ok });
     },
     destroy() {
       for (const t of timers) clearTimeout(t);

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Diagnostics</title>
+  <link rel="icon" href="icons/icon-96.webp" type="image/webp">
+  <link rel="stylesheet" href="css/system.css">
+  <style>
+    .diag-actions { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .diag-actions .button { justify-content: flex-start; }
+    .diag-out {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      padding: var(--space-md);
+      border: var(--border-hair) solid var(--color-line);
+      border-radius: var(--radius-md);
+      user-select: text;
+      -webkit-user-select: text;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="page__main">
+      <header class="page__header">
+        <div class="eyebrow"><a href="./" style="color: inherit">← All techniques</a></div>
+        <h1 class="page__title">Diagnostics</h1>
+        <p class="page__lede">Tap each test and note which ones you can feel. The results and the log of recent vibrations below show what the app tried and whether the phone accepted it.</p>
+      </header>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">This device</h2>
+        <div class="diag-out" id="env"></div>
+      </section>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">Vibration tests</h2>
+        <div class="diag-actions">
+          <button class="button button--ghost" type="button" data-test="vibrate">1 · App vibration, 500 ms</button>
+          <button class="button button--ghost" type="button" data-test="impact">2 · App haptic tap (heavy)</button>
+          <button class="button button--ghost" type="button" data-test="pattern">3 · App pattern (box breathing hold)</button>
+          <button class="button button--ghost" type="button" data-test="web">4 · Browser vibration, 500 ms</button>
+        </div>
+        <div class="diag-out" id="results">No tests run yet.</div>
+      </section>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">Recent vibrations from sessions</h2>
+        <div class="diag-actions">
+          <button class="button button--ghost" type="button" id="clear">Clear log</button>
+        </div>
+        <div class="diag-out" id="log"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initAppShell } from './js/app.js';
+    import { isNativeApp, platform, nativePlugin } from './js/native.js';
+    import { readHapticsLog, clearHapticsLog } from './js/haptics-log.js';
+
+    initAppShell({ home: false });
+    const cap = window.Capacitor;
+    const haptics = nativePlugin('Haptics');
+
+    document.getElementById('env').textContent = [
+      `App: ${isNativeApp ? 'yes' : 'no (website)'}`,
+      `Platform: ${platform}`,
+      `Haptics plugin: ${haptics ? 'found' : 'NOT found'}`,
+      `Native plugins: ${(cap?.PluginHeaders ?? []).map(h => h.name).join(', ') || 'none'}`,
+      `navigator.vibrate: ${'vibrate' in navigator ? 'present' : 'missing'}`,
+      `Browser: ${navigator.userAgent}`,
+    ].join('\n');
+
+    const results = document.getElementById('results');
+    const lines = [];
+    const report = (text) => { lines.unshift(`${new Date().toLocaleTimeString()}  ${text}`); results.textContent = lines.join('\n'); };
+
+    async function run(label, fn) {
+      try {
+        const value = await fn();
+        report(`${label}: sent${value === false ? ' (returned false)' : ''}`);
+      } catch (err) {
+        report(`${label}: FAILED: ${err?.message ?? err}`);
+      }
+    }
+
+    const tests = {
+      vibrate: () => run('App vibration', () => {
+        if (!haptics) throw new Error('Haptics plugin not available');
+        return haptics.vibrate({ duration: 500 });
+      }),
+      impact: () => run('App haptic tap', () => {
+        if (!haptics) throw new Error('Haptics plugin not available');
+        return haptics.impact({ style: 'HEAVY' });
+      }),
+      pattern: () => run('App pattern', async () => {
+        if (!haptics) throw new Error('Haptics plugin not available');
+        for (const d of [30, 30]) {
+          await haptics.vibrate({ duration: d });
+          await new Promise(r => setTimeout(r, 90));
+        }
+      }),
+      web: () => run('Browser vibration', () => {
+        if (!('vibrate' in navigator)) throw new Error('navigator.vibrate missing');
+        return navigator.vibrate(500);
+      }),
+    };
+    for (const btn of document.querySelectorAll('[data-test]')) {
+      btn.addEventListener('click', () => tests[btn.dataset.test]());
+    }
+
+    const logEl = document.getElementById('log');
+    const renderLog = () => {
+      const log = readHapticsLog();
+      logEl.textContent = log.length
+        ? log.slice().reverse().map(e => `${e.t.slice(11, 19)} ${e.page} ${e.via} ${JSON.stringify(e.options)} ${e.ok ? 'ok' : 'FAILED: ' + e.error}`).join('\n')
+        : 'Nothing logged yet. Run a technique for a few breaths, then come back.';
+    };
+    renderLog();
+    document.getElementById('clear').addEventListener('click', () => { clearHapticsLog(); renderLog(); });
+  </script>
+</body>
+</html>
