@@ -25,21 +25,12 @@
 }
 
 .topbar__title {
+  margin: 0;
   font-size: var(--text-xs);
-  letter-spacing: var(--tracking-eyebrow);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--color-dim);
   font-weight: var(--weight-medium);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.topbar__rate {
-  font-size: var(--text-xs);
-  color: var(--color-accent);
-  font-variant-numeric: tabular-nums;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
