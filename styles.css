@@ -1,0 +1,150 @@
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; }
+}
+
+:root {
+  --hue: 14;
+  --cycle-s: 19s;
+  --core-size: 32%;
+  --core-radius: 50%;
+  --field-radius: 50%;
+  --ink:       hsl(var(--hue), 18%, 90%);
+  --dim:       hsl(var(--hue), 12%, 58%);
+  --bg-1:      hsl(var(--hue), 35%, 7%);
+  --bg-2:      hsl(var(--hue), 30%, 12%);
+  --glow:      hsl(var(--hue), 55%, 68%);
+  --glow-soft: hsla(var(--hue), 55%, 68%, 0.20);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: radial-gradient(120% 120% at 50% 20%, var(--bg-2) 0%, var(--bg-1) 65%);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.stage {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.2rem;
+  padding: 1.5rem;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-weight: 500;
+}
+
+.eyebrow .rate { color: var(--glow); }
+
+.field {
+  position: relative;
+  width: min(72vw, 300px);
+  height: min(72vw, 300px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Static outer boundary — circle for orbital patterns, box for box breathing */
+.ring, .track {
+  position: absolute;
+  inset: 0;
+  border: 1px solid hsla(var(--hue), 14%, 58%, 0.18);
+  border-radius: var(--field-radius);
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--field-radius);
+  background: radial-gradient(closest-side, var(--glow-soft), transparent 70%);
+  animation: pulse var(--cycle-s) ease-in-out infinite;
+  will-change: opacity;
+}
+
+/* Resonance only: ripple ring that expands on inhale then snaps back */
+.ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--glow-soft);
+  animation: ripple var(--cycle-s) ease-in-out infinite;
+}
+
+.particle-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--glow);
+  box-shadow: 0 0 6px 1px var(--glow-soft);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.core {
+  width: var(--core-size);
+  height: var(--core-size);
+  border-radius: var(--core-radius);
+  background: hsla(var(--hue), 55%, 68%, 0.10);
+  border: 1px solid hsla(var(--hue), 55%, 68%, 0.35);
+  animation: breathe var(--cycle-s) ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Box breathing only: dot that traces the square perimeter */
+.dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--glow);
+  box-shadow: 0 0 18px 4px var(--glow-soft);
+  top: -7px;
+  left: -7px;
+  animation: trace var(--cycle-s) linear infinite;
+}
+
+.phase {
+  font-size: 1.4rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  min-width: 9ch;
+  text-align: center;
+}
+
+.count {
+  font-size: 0.85rem;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--dim);
+  text-align: center;
+  max-width: 30ch;
+  line-height: 1.5;
+}
+
+/* @keyframes breathe, pulse, trace, ripple are injected by engine.js
+   so percentages can be derived from each pattern's PHASES config */
