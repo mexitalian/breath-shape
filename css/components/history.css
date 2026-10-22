@@ -58,7 +58,8 @@
 .thumb[data-layout="split"] { --field-size: calc(var(--thumb-size) * 0.44); }
 
 .thumb .shape-label { display: none; }
-.thumb .dot { --dot-size: var(--thumb-dot-size); }
+/* On the thumb itself: the marker and the hole it cuts in the fill both read it. */
+.thumb { --dot-size: var(--thumb-dot-size); }
 
 .thumb[data-layout="split"] .field:not([data-active]) { opacity: var(--split-inactive-opacity); }
 .thumb[data-layout="split"] .field:not([data-active]) .core { background: var(--color-accent-faint); }
