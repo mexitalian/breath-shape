@@ -6,6 +6,7 @@ import { showScreen } from './ui/screen.js';
 import { formatClock } from './ui/labels.js';
 import { safetyPoints, hasAcknowledged, rememberAcknowledged } from './ui/safety.js';
 import { createPaceControl } from './ui/pace-control.js';
+import { createCycleCounter } from './ui/cycle-counter.js';
 import { durationScaleFor, loadPace, savePace } from './pace.js';
 import { initHueControl } from './controls/hue.js';
 import { initVibration } from './controls/vibration.js';
@@ -38,6 +39,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
       return create({ field, cfg });
     }),
   }));
+
+  const cycles = createCycleCounter(ui.cycles, cfg);
 
   const holdButton = el('button', 'button button--primary', { type: 'button', hidden: true });
   ui.labels.root.append(holdButton);
@@ -153,6 +156,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       for (const part of f.parts) part.update?.(view);
     }
     sound?.update(snap);
+    cycles.update(snap);
     ui.labels.update(snap);
     ui.setHint((windingDown && cfg.windDown.prompt) || snap.phase.prompt || cfg.hint);
     holdButton.hidden = !snap.openEnded || snap.finished;
@@ -191,6 +195,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       applyPace(currentBpm, true);
     }
     timeline.start(performance.now());
+    cycles.reset();
     lastSerial = -1;
     running = true;
     awake.acquire();

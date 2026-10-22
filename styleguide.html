@@ -52,6 +52,12 @@
       </section>
 
       <section class="sg-section">
+        <h2>Cycle counter</h2>
+        <p class="sg-note">Sits between the shape and the text. One mini shape per cycle: outlined until it starts, breathing with the main shape while it runs, filled once done. Open-ended patterns count up (newest top left, older ones wrap into rows that scroll on their own, with a numeric count); round-based ones fill a fixed row. Tokens: <code>--cycle-size</code>, <code>--cycle-gap</code>, <code>--cycles-rows</code>.</p>
+        <div class="sg-demo" id="cycles"></div>
+      </section>
+
+      <section class="sg-section">
         <h2>Labels</h2>
         <p class="sg-note">The phase and count sit inside the shape: light behind the fill, dark on it. Rounds and time left sit under the shape in the <code>meta</code> line; open-ended holds add a primary button.</p>
         <div class="sg-demo">
@@ -148,6 +154,7 @@
     import { el } from './js/dom.js';
     import { createIconToggle } from './js/ui/icon-toggle.js';
     import { icon } from './js/ui/icons.js';
+    import { createCycleCounter } from './js/ui/cycle-counter.js';
     import box from './configs/box.js';
     import resonance from './configs/resonance.js';
     import sigh from './configs/sigh.js';
@@ -247,7 +254,24 @@
         return { cfg, field, parts, timeline, span };
       });
 
+    // Cycle counters driven by the box demo: counting up, and a 4-round target.
+    const cyclesEl = document.getElementById('cycles');
+    const counters = [['counting up', null], ['4 rounds', 4]].map(([caption, rounds]) => {
+      const figure = el('figure', 'sg-figure');
+      figure.dataset.hue = '';
+      figure.style.setProperty('--hue', demos[0].cfg.hue);
+      figure.style.setProperty('--field-size', 'var(--sg-field-size)');
+      cyclesEl.append(figure);
+      const counter = createCycleCounter(figure, demos[0].cfg);
+      figure.append(el('figcaption', '', { textContent: caption }));
+      return { counter, rounds };
+    });
+
     function frame(now) {
+      const boxSnap = demos[0].timeline.tick(now);
+      for (const { counter, rounds } of counters) {
+        counter.update(rounds ? { ...boxSnap, rounds, round: ((boxSnap.round - 1) % rounds) + 1 } : boxSnap);
+      }
       for (const d of demos) {
         const snap = d.timeline.tick(now);
         const t = d.span ? (snap.scale - d.cfg.minScale) / d.span : 1;

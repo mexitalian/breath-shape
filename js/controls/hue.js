@@ -6,7 +6,7 @@ export function initHueControl({ target = document, root = document.documentElem
   let start = null;
   let dragging = false;
 
-  const ignored = (e) => e.target.closest?.('button, a, .screen');
+  const ignored = (e) => e.target.closest?.('button, a, .screen, .cycles');
 
   const apply = (x, y) => {
     const angle = Math.atan2(y - window.innerHeight / 2, x - window.innerWidth / 2);

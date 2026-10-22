@@ -27,7 +27,7 @@ function buildSplit(cfg) {
 }
 
 // Pattern: practice layout.
-// top bar → field (or split halves) → labels → hint → controls
+// top bar → field (or split halves) → cycle counter → labels → hint → controls
 export function buildStage(cfg, mount) {
   const stage = el('div', 'stage');
 
@@ -58,16 +58,18 @@ export function buildStage(cfg, mount) {
     sides = [{ side: null, half: null, field: visual }];
   }
 
+  const cycles = el('div', 'stage__cycles');
   const labels = createLabels();
   const hint = el('div', 'hint', { textContent: cfg.hint });
   const controls = el('div', 'stage__controls');
 
-  stage.append(topbar, toast, visual, labels.root, hint, controls);
+  stage.append(topbar, toast, visual, cycles, labels.root, hint, controls);
   mount.append(stage);
 
   return {
     stage,
     sides,
+    cycles,
     labels,
     controls,
     actions,
