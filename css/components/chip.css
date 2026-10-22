@@ -1,0 +1,26 @@
+/* Small pill label; chip--link is a tappable variant. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-pill);
+  border: var(--border-hair) solid var(--color-accent-edge);
+  color: var(--color-accent);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.chip--link {
+  min-height: var(--icon-button-size);
+  padding: 0 var(--space-sm);
+  border-color: var(--color-line);
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.chip--link:hover { background: var(--color-accent-hover); }
