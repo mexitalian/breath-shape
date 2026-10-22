@@ -20,6 +20,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `kapalabhati.html` | 3 rounds of 30 pumps (sharp 0.3s out · passive 0.7s in) + 30s rest; safety screen |
 | `wim-hof.html` | 3 rounds: 30 power breaths, empty-lung hold (tap to end, timed), 15s recovery hold; safety screen |
 | `tummo.html` | 5 rounds: 20 deep breaths, full-breath hold with squeeze (tap to release, timed), 12s rest; safety screen |
+| `connected-breathing.html` | holotropic-style connected breathing: 10/20/30 min, adjustable pace, 2 min wind-down; safety screen |
 
 ## Running locally
 
@@ -78,6 +79,8 @@ export default {
                                // scales every timed phase, changes apply from the next breath
   startScreen: false,          // show a Start screen first
   sessionMinutes: null,        // end after this long (at the end of a breath)
+  sessionChoices: [10, 20, 30],// start screen offers these lengths (minutes); sessionMinutes is the default
+  windDown: { minutes: 2, bpm: 8, prompt: '…' },  // with pace + session: slow down over the last minutes
   vibration: true,             // show the "Enable vibration" button
   sound: { tone: 130 },        // optional "Hum sound" toggle (off by default) for hum phases
 
@@ -103,6 +106,7 @@ export default {
   vibrate: [120],              // vibration pattern when the phase starts
   particles: { from: 'outer', to: 'inner' },  // radii names; omit to hide
                                // add cone: { angle: -90, spread: 40 } to stream one way (degrees, -90 = up)
+                               // add orbit: 24 (deg/s) to circle continuously with no fade between phases
   ripple: true,                // expanding ring during this phase
   hum: true,                   // sound-wave rings + core tremor; plays the hum tone if sound is on
   heat: true,                  // warmth builds from the core's centre while the phase lasts

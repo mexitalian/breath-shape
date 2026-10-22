@@ -41,17 +41,37 @@ export function start(rawConfig, { mount = document.body } = {}) {
   });
 
   let paceControl = null;
+  let currentBpm = null;
+  const applyPace = (bpm, immediate) => {
+    timeline.setDurationScale(durationScaleFor(cfg.pace, bpm), { immediate });
+    ui.setRate(`${formatBpm(bpm)} breaths/min`);
+  };
   if (cfg.pace) {
-    const applyPace = (bpm, immediate) => {
-      timeline.setDurationScale(durationScaleFor(cfg.pace, bpm), { immediate });
-      ui.setRate(`${formatBpm(bpm)} breaths/min`);
-    };
-    const initial = loadPace(storage, cfg.id, cfg.pace);
-    applyPace(initial, true);
-    paceControl = createPaceControl(ui.controls, cfg.pace, initial, (bpm) => {
+    currentBpm = loadPace(storage, cfg.id, cfg.pace);
+    applyPace(currentBpm, true);
+    paceControl = createPaceControl(ui.controls, cfg.pace, currentBpm, (bpm) => {
+      currentBpm = bpm;
       applyPace(bpm, false);
       savePace(storage, cfg.id, bpm);
     });
+  }
+
+  // Final minutes of a timed session: ease the pace down towards a resting rhythm.
+  let windingDown = false;
+  function windDown(snap) {
+    const wd = cfg.windDown;
+    if (!wd || !cfg.pace || snap.sessionMs == null || snap.finished) return;
+    const span = wd.minutes * 60_000;
+    const remaining = snap.sessionMs - snap.sessionElapsed;
+    if (remaining > span) return;
+    if (!windingDown) {
+      windingDown = true;
+      paceControl.setHidden(true);
+    }
+    const k = Math.min(1, 1 - remaining / span);
+    const bpm = currentBpm + (wd.bpm - currentBpm) * k;
+    timeline.setDurationScale(durationScaleFor(cfg.pace, bpm));
+    ui.setRate(`${Math.round(bpm)} breaths/min`);
   }
 
   const sound = cfg.sound ? initSound(ui.controls, cfg.sound) : null;
@@ -74,7 +94,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     for (const part of parts) part.update?.(snap);
     sound?.update(snap);
     ui.labels.update(snap);
-    ui.setHint(snap.phase.prompt ?? cfg.hint);
+    ui.setHint((windingDown && cfg.windDown.prompt) || snap.phase.prompt || cfg.hint);
     holdButton.hidden = !snap.openEnded || snap.finished;
     if (!holdButton.hidden && holdButton.textContent !== snap.phase.action) {
       holdButton.textContent = snap.phase.action;
@@ -83,6 +103,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   function frame(now) {
     const snap = timeline.tick(now);
+    windDown(snap);
     if (snap.serial !== lastSerial) {
       lastSerial = snap.serial;
       vibration?.buzz(snap.phase.vibrate);
@@ -100,6 +121,11 @@ export function start(rawConfig, { mount = document.body } = {}) {
     screen?.close();
     screen = null;
     cancelAnimationFrame(raf);
+    if (cfg.pace) {
+      windingDown = false;
+      paceControl.setHidden(false);
+      applyPace(currentBpm, true);
+    }
     timeline.start(performance.now());
     lastSerial = -1;
     running = true;
@@ -148,12 +174,25 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   function showStart() {
     preview();
-    const session = cfg.sessionMinutes ? `${cfg.sessionMinutes} minute session.` : '';
+    const choices = cfg.sessionChoices;
+    const session = choices
+      ? 'Choose how long to breathe.'
+      : cfg.sessionMinutes ? `${cfg.sessionMinutes} minute session.` : '';
+    const actions = choices
+      ? choices.map(minutes => ({
+          label: `${minutes} min`,
+          primary: minutes === cfg.sessionMinutes,
+          onClick: () => {
+            timeline.setSessionMs(minutes * 60_000);
+            begin();
+          },
+        }))
+      : [{ label: 'Start', primary: true, onClick: begin }];
     screen = showScreen(mount, {
       eyebrow: cfg.rate || cfg.eyebrow,
       title: cfg.title,
       body: [cfg.hint, session].filter(Boolean).join(' '),
-      actions: [{ label: 'Start', primary: true, onClick: begin }],
+      actions,
     });
   }
 

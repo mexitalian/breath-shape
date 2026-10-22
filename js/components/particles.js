@@ -5,6 +5,8 @@ import { noise1D } from '../noise.js';
 // Each phase sets { from, to }; a phase without `particles` hides them.
 // Optional cone: { angle, spread } in degrees (0 = right, -90 = up) keeps them in
 // one direction instead of all around, e.g. a stream of breath leaving the lips.
+// Optional orbit: degrees per second makes particles circle continuously across
+// phases (no fade or re-seed at boundaries), for connected breathing.
 // Open-ended holds loop the drift every HOLD_LOOP_MS.
 const HOLD_LOOP_MS = 4000;
 
@@ -36,6 +38,8 @@ export function particles({ field, cfg }) {
 
     let frac = snap.progress;
     let phaseSeed = snap.serial;
+    const orbit = motion.orbit ? ((snap.sessionElapsed / 1000) * motion.orbit * Math.PI) / 180 : 0;
+    if (motion.orbit) phaseSeed = 0;
     if (snap.openEnded) {
       const loop = Math.floor(snap.elapsed / HOLD_LOOP_MS);
       frac = (snap.elapsed % HOLD_LOOP_MS) / HOLD_LOOP_MS;
@@ -46,13 +50,13 @@ export function particles({ field, cfg }) {
     const fromR = R * (radii[motion.from] ?? 0);
     const toR = R * (radii[motion.to] ?? 0);
     // Full fade at each phase boundary hides the re-seeded placement.
-    const envelope = Math.sin(frac * Math.PI);
+    const envelope = motion.orbit ? 1 : Math.sin(frac * Math.PI);
 
     for (const p of items) {
       const n = noise1D(p.seed + phaseSeed * 9.13);
-      const angle = motion.cone
+      const angle = orbit + (motion.cone
         ? ((motion.cone.angle + (n - 0.5) * motion.cone.spread) * Math.PI) / 180
-        : n * Math.PI * 2;
+        : n * Math.PI * 2);
       const spread = 0.65 + noise1D(p.radiusSeed + phaseSeed * 13.7) * 0.55;
       const r = (fromR + (toR - fromR) * frac ** p.speedExp) * spread;
       p.node.style.transform = `translate(${Math.cos(angle) * r}px,${Math.sin(angle) * r}px) scale(${p.sizeJitter})`;

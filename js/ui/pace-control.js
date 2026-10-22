@@ -36,5 +36,8 @@ export function createPaceControl(container, pace, initial, onChange) {
   container.append(root);
   render();
 
-  return { destroy: () => root.remove() };
+  return {
+    setHidden(hidden) { root.hidden = hidden; },
+    destroy: () => root.remove(),
+  };
 }
