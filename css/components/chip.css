@@ -24,3 +24,9 @@
 }
 
 .chip--link:hover { background: var(--color-accent-hover); }
+
+.chip--link[aria-pressed="true"] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}

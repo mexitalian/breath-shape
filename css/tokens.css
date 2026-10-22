@@ -93,31 +93,97 @@
   --width-page:     34rem;
 }
 
+/* ---------- 1b. Theme tones ----------
+   Lightness per role. A theme only redefines these; every hue scope follows. */
+:root {
+  color-scheme: dark;
+  --tone-ink:    var(--light-9);
+  --tone-dim:    var(--light-5);
+  --tone-bg:     var(--light-1);
+  --tone-raised: var(--light-2);
+  --tone-line:   var(--light-5);
+  --tone-accent: var(--light-7);
+  --tone-fill:   var(--light-6);
+  --tone-on:     var(--light-0);
+  --tone-on-fill: var(--light-0);
+  --fill-shift:  7%;
+  --tone-heat:   var(--light-9);
+  --tone-shift:  7%;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --tone-ink:    14%;
+    --tone-dim:    36%;
+    --tone-bg:     96%;
+    --tone-raised: 99%;
+    --tone-line:   35%;
+    --tone-accent: 34%;
+    --tone-fill:   70%;
+    --tone-on:     98%;
+    --tone-on-fill: 12%;
+    --fill-shift:  -8%;
+    --tone-heat:   86%;
+    --tone-shift:  11%;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --tone-ink:    14%;
+  --tone-dim:    36%;
+  --tone-bg:     96%;
+  --tone-raised: 99%;
+  --tone-line:   35%;
+  --tone-accent: 34%;
+  --tone-fill:   70%;
+  --tone-on:     98%;
+  --tone-on-fill: 12%;
+  --fill-shift:  -8%;
+  --tone-heat:   86%;
+  --tone-shift:  11%;
+}
+
 /* ---------- 2. Semantic roles ----------
    Re-declared on [data-hue] so any element can carry its own colour scope
    (index rows, split-screen halves) just by setting --hue. */
 :root,
 [data-hue] {
-  --color-ink:          hsl(var(--hue) var(--sat-soft)   var(--light-9));
-  --color-dim:          hsl(var(--hue) var(--sat-muted)  var(--light-5));
-  --color-bg:           hsl(var(--hue) var(--sat-deeper) var(--light-1));
-  --color-bg-raised:    hsl(var(--hue) var(--sat-deep)   var(--light-2));
-  --color-glass:        hsl(var(--hue) var(--sat-deeper) var(--light-1) / var(--alpha-glass));
-  --color-line:         hsl(var(--hue) var(--sat-line)   var(--light-5) / var(--alpha-soft));
-  --color-accent:       hsl(var(--hue) var(--sat-vivid)  var(--light-7));
-  --color-accent-hover: hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-hover));
-  --color-accent-faint: hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-faint));
-  --color-accent-soft:  hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-glow));
-  --color-accent-edge:  hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-edge));
-  --color-accent-strong:hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-strong));
-  --color-on-accent:    hsl(var(--hue) var(--sat-on)     var(--light-0));
-  --color-accent-fill:  hsl(var(--hue) var(--sat-vivid)  var(--light-6));
-  --color-heat:         hsl(calc(var(--hue) + 20) 90% var(--light-9));
+  --color-ink:          hsl(var(--hue) var(--sat-soft)   var(--tone-ink));
+  --color-dim:          hsl(var(--hue) var(--sat-muted)  var(--tone-dim));
+  --color-bg:           hsl(var(--hue) var(--sat-deeper) var(--tone-bg));
+  --color-bg-raised:    hsl(var(--hue) var(--sat-deep)   var(--tone-raised));
+  --color-glass:        hsl(var(--hue) var(--sat-deeper) var(--tone-bg) / var(--alpha-glass));
+  --color-line:         hsl(var(--hue) var(--sat-line)   var(--tone-line) / var(--alpha-soft));
+  --accent-l:           var(--tone-accent);
+  --fill-l:             var(--tone-fill);
+  --color-accent:       hsl(var(--hue) var(--sat-vivid)  var(--accent-l));
+  --color-accent-hover: hsl(var(--hue) var(--sat-vivid)  var(--accent-l) / var(--alpha-hover));
+  --color-accent-faint: hsl(var(--hue) var(--sat-vivid)  var(--accent-l) / var(--alpha-faint));
+  --color-accent-soft:  hsl(var(--hue) var(--sat-vivid)  var(--accent-l) / var(--alpha-glow));
+  --color-accent-edge:  hsl(var(--hue) var(--sat-vivid)  var(--accent-l) / var(--alpha-edge));
+  --color-accent-strong:hsl(var(--hue) var(--sat-vivid)  var(--accent-l) / var(--alpha-strong));
+  --color-on-accent:    hsl(var(--hue) var(--sat-on)     var(--tone-on));
+  --color-on-fill:      hsl(var(--hue) var(--sat-on)     var(--tone-on-fill));
+  --color-accent-fill:  hsl(var(--hue) var(--sat-vivid)  var(--fill-l));
+  --color-heat:         hsl(calc(var(--hue) + 20) 90% var(--tone-heat));
 
   --gradient-backdrop: radial-gradient(120% 120% at 50% 20%, var(--color-bg-raised) 0%, var(--color-bg) 65%);
 
   --shadow-glow-sm: 0 0 6px 1px var(--color-accent-soft);
   --shadow-glow-lg: 0 0 18px 4px var(--color-accent-soft);
+}
+
+/* HSL lightness isn't perceptual: yellows look much brighter than blues at the
+   same value. Where trig functions are supported, darken accents around
+   yellow-green-cyan (hue ~115) and lighten them around blue-violet so contrast holds at every hue. */
+@supports (width: calc(1px * cos(0deg))) {
+  :root,
+  [data-hue] {
+    --accent-l: calc(var(--tone-accent) - cos((var(--hue) - 115) * 1deg) * var(--tone-shift));
+    --fill-l:   calc(var(--tone-fill) - cos((var(--hue) - 115) * 1deg) * var(--fill-shift));
+  }
 }
 
 /* ---------- 3. Component tokens ---------- */
@@ -137,7 +203,7 @@
 
   --check-size: 1.1rem;
 
-  --step-button-size: 2.5rem;
+  --step-button-size: 2.75rem;
   --pace-value-width: 9.5rem;
 
   --orb-size: 3.25rem;
