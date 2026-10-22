@@ -59,3 +59,6 @@ body.immersive {
 }
 
 [hidden] { display: none !important; }
+
+/* Features the device can't offer are hidden (e.g. the heart rate check on a Mac). */
+.desktop-app [data-needs~="camera-flash"] { display: none; }

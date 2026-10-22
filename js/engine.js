@@ -13,6 +13,7 @@ import { initVibration } from './controls/vibration.js';
 import { initSound } from './controls/sound.js';
 import { createKeepAwake } from './controls/keep-awake.js';
 import { initAppShell } from './app.js';
+import { isDesktopApp } from './native.js';
 import { saveSession, MIN_SESSION_MS } from './history.js';
 import { el } from './dom.js';
 
@@ -83,7 +84,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
   }
 
   const sound = cfg.sound ? initSound(ui.actions, ui.notify, cfg.sound) : null;
-  const vibration = cfg.vibration ? initVibration(ui.actions, ui.notify) : null;
+  const vibration = cfg.vibration && !isDesktopApp ? initVibration(ui.actions, ui.notify) : null;
   const awake = createKeepAwake();
 
   // Session history: saved while running and again when the session ends.
@@ -293,7 +294,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       list,
       actions: [
         { label: 'Go again', primary: true, onClick: begin },
-        { label: 'Check heart rate', href: 'heart-rate.html' },
+        ...(isDesktopApp ? [] : [{ label: 'Check heart rate', href: 'heart-rate.html' }]),
         { label: 'All techniques', href: './' },
       ],
     });
