@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="Guided breathing animations: box, resonance, 4-7-8 and the physiological sigh.">
   <title>Breathing Animations</title>
+  <link rel="icon" href="icons/icon-96.webp" type="image/webp">
+  <link rel="apple-touch-icon" href="icons/icon-192.webp">
   <link rel="stylesheet" href="css/system.css">
 </head>
 <body>
@@ -236,5 +238,9 @@
       </footer>
     </main>
   </div>
+  <script type="module">
+    import { initAppShell } from './js/app.js';
+    initAppShell({ home: true });
+  </script>
 </body>
 </html>

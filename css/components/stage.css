@@ -7,14 +7,14 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-xl);
-  padding: var(--topbar-height) var(--space-md) var(--space-lg);
+  padding: calc(var(--topbar-height) + var(--safe-top)) calc(var(--space-md) + var(--safe-right)) calc(var(--space-lg) + var(--safe-bottom)) calc(var(--space-md) + var(--safe-left));
 }
 
 /* Short screens (phones in landscape): tighter rhythm so everything fits. */
 @media (max-height: 520px) {
   .stage {
     gap: var(--space-sm);
-    padding: var(--topbar-height) var(--space-lg) var(--space-sm);
+    padding: calc(var(--topbar-height) + var(--safe-top)) calc(var(--space-lg) + var(--safe-right)) calc(var(--space-sm) + var(--safe-bottom)) calc(var(--space-lg) + var(--safe-left));
   }
   .stage .hint { display: none; }
 }

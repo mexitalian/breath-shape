@@ -11,7 +11,7 @@ mkdirSync(out);
 for (const file of readdirSync(root)) {
   if (file.endsWith('.html') && !file.startsWith('_tmp-')) cpSync(join(root, file), join(out, file));
 }
-for (const dir of ['css', 'js', 'configs']) {
+for (const dir of ['css', 'js', 'configs', 'icons']) {
   cpSync(join(root, dir), join(out, dir), { recursive: true });
 }
 
