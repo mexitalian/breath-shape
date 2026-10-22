@@ -1,0 +1,29 @@
+/* Pattern: full-bleed list. Rows keep their text inside the page column, but their
+   highlight and the dividers between them run edge to edge across the screen.
+   The highlight is drawn on a ::before layer stretched by --bleed-inset, so the
+   row's own box (and its padding) never changes. */
+.bleed-list > li {
+  position: relative;
+  isolation: isolate;
+}
+
+.bleed-list > li + li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--bleed-inset);
+  right: var(--bleed-inset);
+  border-top: var(--border-hair) solid var(--color-line);
+  pointer-events: none;
+}
+
+.bleed-row { position: relative; }
+
+.bleed-row::before {
+  content: "";
+  position: absolute;
+  inset: 0 var(--bleed-inset);
+  z-index: -1;
+  background: var(--bleed-bg, transparent);
+  transition: background var(--duration-fast) var(--ease-standard);
+}

@@ -85,7 +85,7 @@
         const section = el('section', 'technique-group');
         const header = el('div', 'technique-group__header');
         header.append(el('h2', 'technique-group__title', { textContent: group.label }));
-        const ul = el('ul', 'history-list');
+        const ul = el('ul', 'history-list bleed-list');
         for (const entry of group.entries) {
           const li = el('li');
           const row = el('div', 'history-row');

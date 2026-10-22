@@ -207,6 +207,9 @@
   --step-button-size: 2.75rem;
   --pace-value-width: 9.5rem;
 
+  /* Full-bleed rows: from a centred page column out to the screen edges. */
+  --bleed-inset: calc(50% - 50vw);
+
   --orb-size: 3.25rem;
   --thumb-size: 4.25rem;
   --thumb-dot-size: 6px;
