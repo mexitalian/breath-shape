@@ -1,0 +1,46 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: var(--color-bg); }
+
+body {
+  min-height: 100vh;
+  background: var(--gradient-backdrop);
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Full-screen practice pages: no scrolling, drag gestures belong to the page. */
+body.immersive {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.eyebrow {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-dim);
+  font-weight: var(--weight-medium);
+}
+
+.eyebrow .rate { color: var(--color-accent); }
+
+.hint {
+  font-size: var(--text-xs);
+  color: var(--color-dim);
+  text-align: center;
+  max-width: var(--measure-narrow);
+  line-height: var(--leading-normal);
+}
+
+[hidden] { display: none !important; }

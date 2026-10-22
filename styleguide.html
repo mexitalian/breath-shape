@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style Guide</title>
+  <link rel="stylesheet" href="css/system.css">
+  <link rel="stylesheet" href="css/styleguide.css">
+</head>
+<body>
+  <div class="page">
+    <main class="page__main">
+      <header class="page__header">
+        <div class="eyebrow">Breathing Animations · Style guide</div>
+        <h1 class="page__title">Tokens, components and patterns.</h1>
+        <p class="page__lede">Everything here is drawn from <code class="sg-code">css/tokens.css</code>. Move the hue to see every colour role follow it; that's the only value a technique overrides.</p>
+        <label class="sg-hue">Hue <input id="hue" type="range" min="0" max="359" value="220"> <span id="hue-value">220</span></label>
+      </header>
+
+      <section class="sg-section">
+        <h2>Colour roles</h2>
+        <p class="sg-note">Semantic tokens built from the primitives. Components only use these. Any element with <code>data-hue</code> gets its own scope.</p>
+        <div class="sg-grid" id="colors"></div>
+      </section>
+
+      <section class="sg-section">
+        <h2>Type</h2>
+        <div class="sg-rows" id="type"></div>
+      </section>
+
+      <section class="sg-section">
+        <h2>Spacing</h2>
+        <div class="sg-rows" id="space"></div>
+      </section>
+
+      <section class="sg-section">
+        <h2>Radii</h2>
+        <div class="sg-grid" id="radii"></div>
+      </section>
+
+      <section class="sg-section">
+        <h2>Field components</h2>
+        <p class="sg-note">Ring, track, glow, core, particles, dot and ripple. Shapes are presets: <code>data-shape="box"</code> swaps the component tokens. These demos use the same timeline and component modules as the practice pages.</p>
+        <div class="sg-demo" id="fields"></div>
+      </section>
+
+      <section class="sg-section">
+        <h2>Labels</h2>
+        <div class="sg-demo">
+          <div class="labels">
+            <div class="meta">Round 2 of 3 · Breath 12 / 30</div>
+            <div class="phase">Inhale</div>
+            <div class="count">4</div>
+          </div>
+          <div class="labels">
+            <div class="meta">Round 1 of 3</div>
+            <div class="phase">Hold</div>
+            <div class="count" data-mode="stopwatch">1:12</div>
+            <button class="button button--primary" type="button">Breathe</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="sg-section">
+        <h2>Buttons</h2>
+        <div class="sg-demo">
+          <button class="button button--primary" type="button">Start</button>
+          <button class="button button--ghost" type="button">All techniques</button>
+          <button class="button button--primary" type="button" disabled>Vibration on</button>
+        </div>
+      </section>
+
+      <section class="sg-section">
+        <h2>Screen pattern</h2>
+        <p class="sg-note">Start, summary and (next) safety screens. Shown in place here; on practice pages it covers the stage.</p>
+        <div class="sg-screen">
+          <div class="screen__panel">
+            <div class="eyebrow">Wim Hof Method</div>
+            <h2 class="screen__title">Session complete</h2>
+            <ul class="screen__list">
+              <li><span>Round 1 · Retention</span><span>1:12</span></li>
+              <li><span>Round 2 · Retention</span><span>1:45</span></li>
+              <li><span>Round 3 · Retention</span><span>2:03</span></li>
+            </ul>
+            <div class="screen__actions">
+              <button class="button button--primary" type="button">Go again</button>
+              <a class="button button--ghost" href="./">All techniques</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sg-section">
+        <h2>Technique row</h2>
+        <ul class="technique-list">
+          <li>
+            <a class="technique" href="resonance-breathing.html" data-hue style="--hue: 262">
+              <div class="orb" style="--orb-anim: orb-resonance; --orb-cycle: 12s"><span></span></div>
+              <div class="technique__text">
+                <strong class="technique__name">Resonance Breathing</strong>
+                <span class="technique__pattern">in 6 · out 6 · 5 breaths/min</span>
+                <span class="technique__use">Rows carry their own hue scope with data-hue.</span>
+              </div>
+              <span class="technique__arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <footer class="page__footer">
+        <span>© 2026 mexitalian. All rights reserved.</span>
+        <a href="./">All techniques</a>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module">
+    import { normalize } from './js/config.js';
+    import { createTimeline } from './js/timeline.js';
+    import { COMPONENTS } from './js/components/index.js';
+    import { el } from './js/dom.js';
+    import box from './configs/box.js';
+    import resonance from './configs/resonance.js';
+    import sigh from './configs/sigh.js';
+
+    const root = document.documentElement;
+    const hueInput = document.getElementById('hue');
+    const hueValue = document.getElementById('hue-value');
+    hueInput.addEventListener('input', () => {
+      root.style.setProperty('--hue', hueInput.value);
+      hueValue.textContent = hueInput.value;
+      renderSwatches();
+    });
+
+    const COLORS = ['ink', 'dim', 'bg', 'bg-raised', 'glass', 'line', 'accent', 'accent-hover',
+      'accent-faint', 'accent-soft', 'accent-edge', 'accent-strong', 'on-accent'];
+    const colorsEl = document.getElementById('colors');
+    const swatchValues = COLORS.map((name) => {
+      const token = `--color-${name}`;
+      const item = el('div', 'sg-swatch');
+      const chip = el('div', 'sg-swatch__chip');
+      chip.style.setProperty('--chip', `var(${token})`);
+      const value = el('span', 'sg-swatch__value');
+      item.append(chip, el('span', 'sg-swatch__name', { textContent: token }), value);
+      colorsEl.append(item);
+      return { chip, value };
+    });
+    function renderSwatches() {
+      for (const { chip, value } of swatchValues) {
+        value.textContent = getComputedStyle(chip).backgroundColor;
+      }
+    }
+    renderSwatches();
+
+    const TYPE = [['display', 'Pick a pace'], ['2xl', '1:12'], ['xl', 'Inhale'], ['lg', 'Box Breathing'],
+      ['base', 'Body text for screens'], ['md', 'Buttons and counts'], ['sm', 'Notes and patterns'],
+      ['xs', 'Eyebrow · meta'], ['2xs', 'Status messages']];
+    const typeEl = document.getElementById('type');
+    for (const [step, sample] of TYPE) {
+      const row = el('div', 'sg-row');
+      const text = el('span', '', { textContent: sample });
+      text.style.fontSize = `var(--text-${step})`;
+      row.append(el('span', 'sg-note', { textContent: `--text-${step}` }), text);
+      typeEl.append(row);
+    }
+
+    const spaceEl = document.getElementById('space');
+    for (const step of ['3xs', '2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl']) {
+      const row = el('div', 'sg-row');
+      const bar = el('div', 'sg-bar');
+      bar.style.setProperty('--bar', `var(--space-${step})`);
+      row.append(el('span', 'sg-note', { textContent: `--space-${step}` }), bar);
+      spaceEl.append(row);
+    }
+
+    const radiiEl = document.getElementById('radii');
+    for (const step of ['sm', 'md', 'lg', 'xl', 'pill', 'round']) {
+      const item = el('div', 'sg-swatch');
+      const shape = el('div', 'sg-radius');
+      shape.style.setProperty('--r', `var(--radius-${step})`);
+      item.append(shape, el('span', 'sg-swatch__name', { textContent: `--radius-${step}` }));
+      radiiEl.append(item);
+    }
+
+    // Live fields built straight from the modules, without the engine.
+    const fieldsEl = document.getElementById('fields');
+    const demos = [[box, 'box · track, glow, core, dot'], [resonance, 'circle · ring, ripple, glow, particles, core'], [sigh, 'circle · eased phases']]
+      .map(([raw, caption]) => {
+        const cfg = normalize(raw);
+        const figure = el('figure', 'sg-figure');
+        figure.dataset.hue = '';
+        figure.style.setProperty('--hue', cfg.hue);
+        const field = el('div', 'field');
+        field.dataset.shape = cfg.shape;
+        figure.append(field, el('figcaption', '', { textContent: caption }));
+        fieldsEl.append(figure);
+        const parts = cfg.components.map(name => COMPONENTS[name]({ field, cfg }));
+        const timeline = createTimeline(cfg.sequence);
+        timeline.start(performance.now());
+        const span = cfg.maxScale - cfg.minScale;
+        return { cfg, field, parts, timeline, span };
+      });
+
+    function frame(now) {
+      for (const d of demos) {
+        const snap = d.timeline.tick(now);
+        const t = d.span ? (snap.scale - d.cfg.minScale) / d.span : 1;
+        d.field.style.setProperty('--breath-scale', snap.scale);
+        d.field.style.setProperty('--breath-glow', d.cfg.opacity.min + t * (d.cfg.opacity.max - d.cfg.opacity.min));
+        for (const p of d.parts) p.update?.(snap);
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
