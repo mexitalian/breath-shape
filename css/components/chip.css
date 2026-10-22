@@ -23,6 +23,9 @@
   transition: background var(--duration-fast) var(--ease-standard);
 }
 
+button.chip--link { font: inherit; font-size: var(--text-2xs); font-weight: var(--weight-medium); letter-spacing: var(--tracking-label); text-transform: uppercase; cursor: pointer; }
+button.chip--link:not([aria-pressed="true"]) { background: transparent; }
+
 .chip--link:hover { background: var(--color-accent-hover); }
 
 .chip--link[aria-pressed="true"] {

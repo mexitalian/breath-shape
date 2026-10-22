@@ -16,8 +16,8 @@
 }
 
 .field[data-shape="box"] {
-  --field-radius: var(--radius-xl);
-  --core-radius:  var(--radius-xl);
+  --field-radius: 0;
+  --core-radius:  0;
 }
 
 /* Triangle: the outline is an SVG and the fill is clipped to the same path. */
