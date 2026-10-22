@@ -51,6 +51,12 @@ In Xcode: plug in the iPhone, pick it as the run target, select the **App** targ
 
 After pulling new changes, run `npm run sync` (or `npm run ios`) before building again.
 
+**Icon and splash:** the sources are in `assets/` (`icon-only.png`, `icon-foreground.png` + `icon-background.png` for Android's adaptive icon, `splash.png`, `splash-dark.png`). After changing them, regenerate every size with:
+
+```sh
+npx @capacitor/assets generate --iconBackgroundColor '#120f22' --iconBackgroundColorDark '#0b0918' --splashBackgroundColor '#120f22' --splashBackgroundColorDark '#0b0918'
+```
+
 ## Structure
 
 ```

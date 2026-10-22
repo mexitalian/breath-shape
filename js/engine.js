@@ -11,6 +11,7 @@ import { initHueControl } from './controls/hue.js';
 import { initVibration } from './controls/vibration.js';
 import { initSound } from './controls/sound.js';
 import { createKeepAwake } from './controls/keep-awake.js';
+import { initAppShell } from './app.js';
 import { el } from './dom.js';
 
 const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
@@ -18,6 +19,7 @@ const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
 // Runs one technique. Returns { stop, advance, restart }.
 export function start(rawConfig, { mount = document.body } = {}) {
   const cfg = normalize(rawConfig);
+  initAppShell({ home: false });
   document.title = cfg.title;
   document.documentElement.style.setProperty('--hue', cfg.hue);
 

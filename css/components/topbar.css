@@ -9,7 +9,7 @@
   grid-template-columns: var(--topbar-actions-width) 1fr var(--topbar-actions-width);
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
+  padding: calc(var(--space-xs) + var(--safe-top)) calc(var(--space-sm) + var(--safe-right)) var(--space-xs) calc(var(--space-sm) + var(--safe-left));
   z-index: 2;
 }
 
@@ -83,7 +83,7 @@
 /* Short confirmation under the top bar ("Vibration on"). */
 .toast {
   position: absolute;
-  top: var(--topbar-height);
+  top: calc(var(--topbar-height) + var(--safe-top));
   left: 50%;
   transform: translateX(-50%);
   padding: var(--space-2xs) var(--space-sm);

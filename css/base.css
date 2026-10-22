@@ -11,11 +11,24 @@ body {
 }
 
 /* Full-screen practice pages: no scrolling, drag gestures belong to the page. */
+/* No grey flash on tap, no long-press callouts, no rubber-band bounce. */
+html {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+.native-app body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 body.immersive {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
   touch-action: none;
+  overscroll-behavior: none;
   user-select: none;
   -webkit-user-select: none;
 }

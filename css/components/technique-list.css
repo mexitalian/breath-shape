@@ -2,7 +2,7 @@
 .page {
   display: flex;
   justify-content: center;
-  padding: var(--space-3xl) var(--space-md) var(--space-2xl);
+  padding: calc(var(--space-3xl) + var(--safe-top)) calc(var(--space-md) + var(--safe-right)) calc(var(--space-2xl) + var(--safe-bottom)) calc(var(--space-md) + var(--safe-left));
 }
 
 .page__main {

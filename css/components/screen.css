@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-lg);
+  padding: calc(var(--space-lg) + var(--safe-top)) calc(var(--space-lg) + var(--safe-right)) calc(var(--space-lg) + var(--safe-bottom)) calc(var(--space-lg) + var(--safe-left));
   background: var(--color-glass);
   backdrop-filter: blur(var(--blur-glass));
   -webkit-backdrop-filter: blur(var(--blur-glass));
