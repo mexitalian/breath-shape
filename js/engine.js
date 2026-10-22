@@ -97,6 +97,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
   // other dims and shows no particles or effects. Both stay on the shared breath scale.
   const quiet = (snap) => ({
     ...snap,
+    quiet: true,
     phase: { ...snap.phase, particles: null, ripple: false, hum: false, heat: false },
   });
 

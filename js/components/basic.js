@@ -10,4 +10,3 @@ const part = (className) => ({ field }) => {
 export const ring = part('ring');
 export const track = part('track');
 export const glow = part('glow');
-export const core = part('core');

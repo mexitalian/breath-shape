@@ -2,7 +2,9 @@
    The engine writes per-frame state onto it:
      --breath-scale  core scale (0–1)
      --breath-glow   glow opacity (0–1)
-   Shapes are token presets selected with data-shape. */
+     --heat          warmth of the fill (0–1)
+   Shapes are token presets selected with data-shape. It is a size container so
+   the text inside the shape scales with it. */
 .field {
   position: relative;
   width: var(--field-size);
@@ -10,17 +12,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  container-type: size;
 }
 
 .field[data-shape="box"] {
   --field-radius: var(--radius-xl);
-  --core-size:    40%;
-  --core-radius:  var(--radius-lg);
+  --core-radius:  var(--radius-xl);
 }
 
-/* Triangle: the outline is an SVG; the glow and core sit on the centroid. */
+/* Triangle: the outline is an SVG and the fill is clipped to the same path. */
 .field[data-shape="triangle"] {
-  --core-size: 30%;
+  --core-radius: 0;
 }
 
 /* Static outer boundary: ring for circular patterns, track for traced shapes. */
@@ -41,12 +43,60 @@
   will-change: opacity;
 }
 
+/* The breathing shape: solid, and exactly fills the outline at scale 1. */
 .core {
+  --core-transform: calc(var(--breath-scale, 1) * (1 + var(--hum-jitter, 0)));
+  position: relative;
   width: var(--core-size);
   height: var(--core-size);
   border-radius: var(--core-radius);
-  background: var(--color-accent-faint);
-  border: var(--border-hair) solid var(--color-accent-edge);
-  transform: scale(calc(var(--breath-scale, 1) * (1 + var(--hum-jitter, 0))));
+  clip-path: var(--core-clip, none);
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%,
+    color-mix(in srgb, var(--color-accent-fill), var(--color-heat) calc(var(--heat, 0) * 80%)) 0%,
+    var(--color-accent-fill) 72%);
+  transform: scale(var(--core-transform));
   will-change: transform;
+}
+
+/* Phase name + count at the centre of the shape. Two copies: light behind the
+   fill, dark inside it (counter-scaled so both stay the same size). */
+.shape-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3xs);
+  white-space: nowrap;
+  color: var(--color-ink);
+  pointer-events: none;
+  text-align: center;
+}
+
+.shape-label--on-fill {
+  color: var(--color-on-accent);
+  transform: translate(-50%, -50%) scale(calc(1 / var(--core-transform)));
+}
+
+.shape-label__phase {
+  font-size: var(--shape-phase-size);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-phase);
+  line-height: var(--leading-tight);
+}
+
+.shape-label__count {
+  font-size: var(--shape-count-size);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.shape-label[data-mode="stopwatch"] .shape-label__count,
+.shape-label[data-mode="counter"] .shape-label__count {
+  font-size: var(--shape-phase-size);
+  font-weight: var(--weight-light);
+  opacity: 1;
 }

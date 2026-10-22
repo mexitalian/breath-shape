@@ -101,17 +101,14 @@
   width: 60%;
   height: 60%;
   border-radius: var(--radius-round);
-  background: var(--color-accent-faint);
-  border: var(--border-hair) solid var(--color-accent-strong);
+  background: var(--color-accent-fill);
   animation: var(--orb-anim) var(--orb-cycle) ease-in-out infinite;
 }
 
 .orb[data-shape="box"] { border-radius: var(--radius-md); }
 .orb[data-shape="box"] > span { border-radius: var(--radius-sm); }
 .orb[data-shape="triangle"] > span {
-  border: none;
   border-radius: 0;
-  background: var(--color-accent-edge);
   clip-path: polygon(50% 93%, 4% 13%, 96% 13%);
 }
 

@@ -27,7 +27,7 @@ export function hum({ field }) {
     field.style.setProperty('--hum-jitter', (Math.sin((t / 1000) * JITTER_HZ * 2 * Math.PI) * JITTER * edge).toFixed(4));
     rings.forEach((node, i) => {
       const k = ((t / WAVE_MS) + i / RINGS) % 1;
-      node.style.setProperty('--hum-scale', (1 + k * 1.6).toFixed(4));
+      node.style.setProperty('--hum-scale', (1 + k * 0.3).toFixed(4));
       node.style.setProperty('--hum-opacity', ((1 - k) * edge).toFixed(4));
     });
   }
