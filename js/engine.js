@@ -79,8 +79,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
     ui.setRate(`${Math.round(bpm)} breaths/min`);
   }
 
-  const sound = cfg.sound ? initSound(ui.controls, cfg.sound) : null;
-  const vibration = cfg.vibration ? initVibration(ui.controls) : null;
+  const sound = cfg.sound ? initSound(ui.actions, ui.notify, cfg.sound) : null;
+  const vibration = cfg.vibration ? initVibration(ui.actions, ui.notify) : null;
 
   let raf = 0;
   let running = false;

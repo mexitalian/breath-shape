@@ -142,6 +142,11 @@
 
   --orb-size: 3.25rem;
 
+  --icon-button-size: 2.75rem;
+  --icon-size: 1.35rem;
+  --topbar-height: 3.5rem;
+  --topbar-actions-width: 6rem;
+
   --split-max-width:       34rem;
   --split-field-size:      min(calc(50vw - 2 * var(--space-md)), 15rem, 40vh);
   --split-inactive-opacity: 0.3;

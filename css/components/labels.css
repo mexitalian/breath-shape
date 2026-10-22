@@ -13,12 +13,3 @@
   color: var(--color-accent);
   font-variant-numeric: tabular-nums;
 }
-
-.status {
-  font-size: var(--text-2xs);
-  color: var(--color-dim);
-  min-height: 1em;
-  transition: opacity var(--duration-slow) var(--ease-standard);
-}
-
-.status[data-faded] { opacity: 0; }

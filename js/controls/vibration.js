@@ -1,32 +1,27 @@
-import { el } from '../dom.js';
+import { createIconToggle } from '../ui/icon-toggle.js';
 
-const STATUS_FADE_MS = 2500;
-
-// Browsers only allow vibration after a user gesture, so the user arms it with a button.
-export function initVibration(container) {
+// Browsers only allow vibration after a user gesture, so the user turns it on with a tap.
+export function initVibration(container, notify) {
   const supported = 'vibrate' in navigator;
   let armed = false;
 
-  const status = el('div', 'status');
-  status.setAttribute('aria-live', 'polite');
-
-  const button = el('button', 'button button--primary', {
-    type: 'button',
-    textContent: supported ? 'Enable vibration' : 'Vibration unsupported',
+  const toggle = createIconToggle({
+    name: 'vibrate',
+    label: supported ? 'Vibration' : 'Vibration not supported on this device',
     disabled: !supported,
+    onClick: () => {
+      if (armed) {
+        armed = false;
+        notify('Vibration off');
+      } else {
+        armed = !!navigator.vibrate(200);
+        notify(armed ? 'Vibration on: you’ll feel each phase change' : 'This browser blocked vibration');
+      }
+      toggle.set(armed);
+    },
   });
 
-  button.addEventListener('click', () => {
-    armed = !!navigator.vibrate(200);
-    status.textContent = armed
-      ? "Vibration on — you'll feel the next phase change."
-      : 'Tap registered, but the browser blocked vibration.';
-    setTimeout(() => { status.dataset.faded = ''; }, STATUS_FADE_MS);
-    button.textContent = armed ? 'Vibration on' : 'Vibration blocked';
-    button.disabled = true;
-  });
-
-  container.append(status, button);
+  container.append(toggle.button);
 
   return {
     buzz(pattern) {
@@ -34,8 +29,7 @@ export function initVibration(container) {
       try { navigator.vibrate(pattern); } catch { /* vibration is best-effort */ }
     },
     destroy() {
-      status.remove();
-      button.remove();
+      toggle.button.remove();
     },
   };
 }

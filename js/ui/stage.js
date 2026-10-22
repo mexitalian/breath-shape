@@ -1,5 +1,6 @@
 import { el } from '../dom.js';
 import { createLabels } from './labels.js';
+import { icon } from './icons.js';
 
 function createField(cfg) {
   const field = el('div', 'field');
@@ -26,13 +27,27 @@ function buildSplit(cfg) {
 }
 
 // Pattern: practice layout.
-// eyebrow → field (or split halves) → labels → hint → controls
+// top bar → field (or split halves) → labels → hint → controls
 export function buildStage(cfg, mount) {
   const stage = el('div', 'stage');
 
-  const eyebrow = el('div', 'eyebrow', { textContent: cfg.eyebrow });
-  const rate = el('span', 'rate', { textContent: cfg.rate });
-  if (cfg.rate || cfg.pace) eyebrow.append(' · ', rate);
+  // Top bar: back to the list · technique name · icon toggles
+  const topbar = el('header', 'topbar');
+  const back = el('a', 'icon-button topbar__back', { href: './' });
+  back.setAttribute('aria-label', 'All techniques');
+  back.title = 'All techniques';
+  back.append(icon('back'));
+  const heading = el('div', 'topbar__heading');
+  const title = el('div', 'topbar__title', { textContent: cfg.eyebrow });
+  const rate = el('div', 'topbar__rate', { textContent: cfg.rate });
+  rate.hidden = !(cfg.rate || cfg.pace);
+  heading.append(title, rate);
+  const actions = el('div', 'topbar__actions');
+  topbar.append(back, heading, actions);
+
+  const toast = el('div', 'toast');
+  toast.setAttribute('role', 'status');
+  let toastTimer = 0;
 
   let visual;
   let sides;
@@ -49,7 +64,7 @@ export function buildStage(cfg, mount) {
   const hint = el('div', 'hint', { textContent: cfg.hint });
   const controls = el('div', 'stage__controls');
 
-  stage.append(eyebrow, visual, labels.root, hint, controls);
+  stage.append(topbar, toast, visual, labels.root, hint, controls);
   mount.append(stage);
 
   return {
@@ -57,6 +72,13 @@ export function buildStage(cfg, mount) {
     sides,
     labels,
     controls,
+    actions,
+    notify(text) {
+      toast.textContent = text;
+      toast.dataset.visible = '';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { delete toast.dataset.visible; }, 2500);
+    },
     setHint(text) {
       if (hint.textContent !== text) hint.textContent = text;
     },
