@@ -1,0 +1,14 @@
+/* Sound-wave rings that leave the core during humming phases. */
+.hum-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--core-size);
+  height: var(--core-size);
+  border-radius: var(--core-radius);
+  border: var(--border-hair) solid var(--color-accent-edge);
+  transform: translate(-50%, -50%) scale(calc(var(--breath-scale, 1) * var(--hum-scale, 1)));
+  opacity: var(--hum-opacity, 0);
+  pointer-events: none;
+  will-change: transform, opacity;
+}

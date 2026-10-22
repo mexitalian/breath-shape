@@ -2,7 +2,7 @@
 // Sizes and radii for each shape live in css/components/field.css under [data-shape].
 export const SHAPES = {
   circle: {
-    components: ['ring', 'ripple', 'glow', 'particles', 'core'],
+    components: ['ring', 'ripple', 'glow', 'hum', 'particles', 'core'],
   },
   box: {
     components: ['track', 'glow', 'particles', 'core', 'dot'],

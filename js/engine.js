@@ -9,9 +9,10 @@ import { createPaceControl } from './ui/pace-control.js';
 import { durationScaleFor, formatBpm, loadPace, savePace } from './pace.js';
 import { initHueControl } from './controls/hue.js';
 import { initVibration } from './controls/vibration.js';
+import { initSound } from './controls/sound.js';
 import { el } from './dom.js';
 
-const MOTION_ONLY = new Set(['particles', 'ripple']);
+const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
 
 // Runs one technique. Returns { stop, advance, restart }.
 export function start(rawConfig, { mount = document.body } = {}) {
@@ -53,6 +54,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     });
   }
 
+  const sound = cfg.sound ? initSound(ui.controls, cfg.sound) : null;
   const vibration = cfg.vibration ? initVibration(ui.controls) : null;
 
   let raf = 0;
@@ -70,6 +72,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     ui.field.style.setProperty('--breath-scale', snap.scale.toFixed(4));
     ui.field.style.setProperty('--breath-glow', glowFor(snap.scale).toFixed(4));
     for (const part of parts) part.update?.(snap);
+    sound?.update(snap);
     ui.labels.update(snap);
     ui.setHint(snap.phase.prompt ?? cfg.hint);
     holdButton.hidden = !snap.openEnded || snap.finished;
@@ -198,6 +201,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       document.removeEventListener('keydown', onKey);
       vibration?.destroy();
       paceControl?.destroy();
+      sound?.destroy();
       screen?.close();
       ui.stage.remove();
     },
