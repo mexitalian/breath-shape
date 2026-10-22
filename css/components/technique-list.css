@@ -146,8 +146,8 @@ html { scroll-behavior: smooth; }
   animation: var(--orb-anim) var(--orb-cycle) ease-in-out infinite;
 }
 
-.orb[data-shape="box"] { border-radius: var(--radius-md); }
-.orb[data-shape="box"] > span { border-radius: var(--radius-sm); }
+.orb[data-shape="box"] { border-radius: 0; }
+.orb[data-shape="box"] > span { border-radius: 0; }
 .orb[data-shape="triangle"] > span {
   border-radius: 0;
   clip-path: polygon(50% 93%, 4% 13%, 96% 13%);
