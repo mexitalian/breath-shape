@@ -64,6 +64,8 @@ export default {
   opacity: { min, max },       // glow opacity at smallest / largest breath
   particles: { count: 26, radii: { inner: 0.2, outer: 0.92 } },  // optional
 
+  id: 'box-breathing',         // optional; defaults to a slug of the title
+  safety: false,               // true, or { extra: ['…'] }: warning screen before anything starts
   startScreen: false,          // show a Start screen first
   sessionMinutes: null,        // end after this long (at the end of a breath)
   vibration: true,             // show the "Enable vibration" button
