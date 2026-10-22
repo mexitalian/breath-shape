@@ -188,15 +188,15 @@
 
 /* ---------- 3. Component tokens ---------- */
 :root {
-  /* As wide as the screen, less room for the tracing dot at the edges. */
-  --field-size:   min(calc(100vw - var(--safe-left) - var(--safe-right) - var(--dot-size) - var(--space-xs)), 30rem, 56vh);
+  /* As wide as the screen: the tracing marker rides inside the outline. */
+  --field-size:   min(calc(100vw - var(--safe-left) - var(--safe-right)), 30rem, 56vh);
   --field-radius: var(--radius-round);
 
   --core-size:   100%;
   --core-radius: var(--radius-round);
 
   --particle-size: 4px;
-  --dot-size:      14px;
+  --dot-size:      18px;
 
   /* Text inside the shape scales with the field (container query units). */
   --shape-phase-size: clamp(1rem, 9cqi, 2.6rem);
