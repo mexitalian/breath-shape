@@ -5,6 +5,8 @@ import { buildStage } from './ui/stage.js';
 import { showScreen } from './ui/screen.js';
 import { formatClock } from './ui/labels.js';
 import { safetyPoints, hasAcknowledged, rememberAcknowledged } from './ui/safety.js';
+import { createPaceControl } from './ui/pace-control.js';
+import { durationScaleFor, formatBpm, loadPace, savePace } from './pace.js';
 import { initHueControl } from './controls/hue.js';
 import { initVibration } from './controls/vibration.js';
 import { el } from './dom.js';
@@ -29,10 +31,29 @@ export function start(rawConfig, { mount = document.body } = {}) {
   const holdButton = el('button', 'button button--primary', { type: 'button', hidden: true });
   ui.labels.root.append(holdButton);
 
-  const vibration = cfg.vibration ? initVibration(ui.controls) : null;
+  const storage = (() => {
+    try { return window.localStorage; } catch { return null; }
+  })();
+
   const timeline = createTimeline(cfg.sequence, {
     sessionMs: cfg.sessionMinutes ? cfg.sessionMinutes * 60_000 : null,
   });
+
+  let paceControl = null;
+  if (cfg.pace) {
+    const applyPace = (bpm, immediate) => {
+      timeline.setDurationScale(durationScaleFor(cfg.pace, bpm), { immediate });
+      ui.setRate(`${formatBpm(bpm)} breaths/min`);
+    };
+    const initial = loadPace(storage, cfg.id, cfg.pace);
+    applyPace(initial, true);
+    paceControl = createPaceControl(ui.controls, cfg.pace, initial, (bpm) => {
+      applyPace(bpm, false);
+      savePace(storage, cfg.id, bpm);
+    });
+  }
+
+  const vibration = cfg.vibration ? initVibration(ui.controls) : null;
 
   let raf = 0;
   let running = false;
@@ -92,10 +113,6 @@ export function start(rawConfig, { mount = document.body } = {}) {
     timeline.start(now);
     render(timeline.tick(now));
   }
-
-  const storage = (() => {
-    try { return window.localStorage; } catch { return null; }
-  })();
 
   function showSafety() {
     preview();
@@ -180,6 +197,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       hue.destroy();
       document.removeEventListener('keydown', onKey);
       vibration?.destroy();
+      paceControl?.destroy();
       screen?.close();
       ui.stage.remove();
     },

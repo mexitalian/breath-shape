@@ -1,4 +1,5 @@
 import { SHAPES } from './shapes.js';
+import { normalizePace } from './pace.js';
 
 const slug = (text) => String(text).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -67,6 +68,7 @@ export function normalize(cfg) {
     vibration: cfg.vibration ?? true,
     startScreen: cfg.startScreen ?? false,
     safety: cfg.safety ?? false,
+    pace: normalizePace(cfg.pace, steps),
     sessionMinutes: cfg.sessionMinutes ?? null,
     sequence: {
       rounds: source.rounds ?? Infinity,

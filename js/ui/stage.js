@@ -7,7 +7,8 @@ export function buildStage(cfg, mount) {
   const stage = el('div', 'stage');
 
   const eyebrow = el('div', 'eyebrow', { textContent: cfg.eyebrow });
-  if (cfg.rate) eyebrow.append(' · ', el('span', 'rate', { textContent: cfg.rate }));
+  const rate = el('span', 'rate', { textContent: cfg.rate });
+  if (cfg.rate || cfg.pace) eyebrow.append(' · ', rate);
 
   const field = el('div', 'field');
   field.dataset.shape = cfg.shape;
@@ -26,6 +27,9 @@ export function buildStage(cfg, mount) {
     controls,
     setHint(text) {
       if (hint.textContent !== text) hint.textContent = text;
+    },
+    setRate(text) {
+      rate.textContent = text;
     },
   };
 }

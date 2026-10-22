@@ -8,12 +8,34 @@ const SETTLE_MS = 1500;
 export function createTimeline(sequence, { sessionMs = null } = {}) {
   const { steps, rounds } = sequence;
   let s = null;
+  // Multiplier on every timed phase (adjustable pace). Changes wait for the next breath.
+  let durScale = 1;
+  let pendingScale = null;
 
   function phaseOf(state) {
     return steps[state.step].phases[state.phase];
   }
 
+  const durMsOf = (ph) => (ph.dur == null ? null : ph.dur * 1000 * durScale);
+
+  function applyPendingScale() {
+    if (pendingScale == null) return;
+    durScale = pendingScale;
+    pendingScale = null;
+  }
+
+  function setDurationScale(k, { immediate = false } = {}) {
+    if (!(k > 0)) throw new Error('Duration scale must be > 0');
+    if (immediate || !s) {
+      durScale = k;
+      pendingScale = null;
+    } else {
+      pendingScale = k;
+    }
+  }
+
   function start(now) {
+    applyPendingScale();
     s = {
       round: 0, step: 0, rep: 0, phase: 0,
       phaseStart: now,
@@ -37,6 +59,7 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
     phase++;
     if (phase >= steps[step].phases.length) {
       phase = 0;
+      applyPendingScale();
       if (sessionMs != null && t - s.startedAt >= sessionMs) return finish(t, ph);
       rep++;
       if (rep >= steps[step].repeat) {
@@ -65,9 +88,9 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
   function tick(now) {
     if (!s) throw new Error('Timeline not started');
     while (!s.finished) {
-      const dur = phaseOf(s).dur;
-      if (dur == null) break;
-      const end = s.phaseStart + dur * 1000;
+      const durMs = durMsOf(phaseOf(s));
+      if (durMs == null) break;
+      const end = s.phaseStart + durMs;
       if (now < end) break;
       advanceAt(end);
     }
@@ -86,7 +109,7 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
     const step = steps[s.step];
     const t = s.finished ? s.finishedAt : now;
     const elapsed = Math.max(0, t - s.phaseStart);
-    const durMs = ph.dur == null ? null : ph.dur * 1000;
+    const durMs = durMsOf(ph);
     const progress = s.finished ? 1 : durMs == null ? null : Math.min(1, elapsed / durMs);
     const scaleProgress = progress ?? Math.min(1, elapsed / SETTLE_MS);
     const toScale = ph.scale;
@@ -118,5 +141,5 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
     };
   }
 
-  return { start, tick, advance };
+  return { start, tick, advance, setDurationScale };
 }
