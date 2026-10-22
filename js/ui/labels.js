@@ -18,7 +18,6 @@ export function readout(snap) {
 export function metaText(snap) {
   const parts = [];
   if (Number.isFinite(snap.rounds) && snap.rounds > 1) parts.push(`Round ${snap.round} of ${snap.rounds}`);
-  if (snap.repeat > 1) parts.push(snap.counter ?? 'Breath');
   if (snap.sessionMs != null) parts.push(`${formatClock(Math.max(0, snap.sessionMs - snap.sessionElapsed))} left`);
   return parts.join(' · ');
 }

@@ -15,10 +15,11 @@ export function createPaceControl(container, pace, initial, onChange) {
   const value = el('div', 'pace__value');
   value.setAttribute('aria-live', 'polite');
 
-  function render() {
-    value.textContent = `${formatBpm(bpm)} breaths/min`;
-    slower.disabled = bpm <= pace.min;
-    faster.disabled = bpm >= pace.max;
+  let locked = false;
+  function render(shown = bpm) {
+    value.textContent = `${formatBpm(shown)} breaths/min`;
+    slower.disabled = locked || bpm <= pace.min;
+    faster.disabled = locked || bpm >= pace.max;
   }
 
   function set(next) {
@@ -37,7 +38,15 @@ export function createPaceControl(container, pace, initial, onChange) {
   render();
 
   return {
-    setHidden(hidden) { root.hidden = hidden; },
+    // Shows a pace the user can't change (e.g. while a session winds down).
+    lock(shownBpm) {
+      locked = true;
+      render(Math.round(shownBpm));
+    },
+    unlock() {
+      locked = false;
+      render();
+    },
     destroy: () => root.remove(),
   };
 }

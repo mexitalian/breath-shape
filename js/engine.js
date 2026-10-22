@@ -6,7 +6,7 @@ import { showScreen } from './ui/screen.js';
 import { formatClock } from './ui/labels.js';
 import { safetyPoints, hasAcknowledged, rememberAcknowledged } from './ui/safety.js';
 import { createPaceControl } from './ui/pace-control.js';
-import { durationScaleFor, formatBpm, loadPace, savePace } from './pace.js';
+import { durationScaleFor, loadPace, savePace } from './pace.js';
 import { initHueControl } from './controls/hue.js';
 import { initVibration } from './controls/vibration.js';
 import { initSound } from './controls/sound.js';
@@ -49,7 +49,6 @@ export function start(rawConfig, { mount = document.body } = {}) {
   let currentBpm = null;
   const applyPace = (bpm, immediate) => {
     timeline.setDurationScale(durationScaleFor(cfg.pace, bpm), { immediate });
-    ui.setRate(`${formatBpm(bpm)} breaths/min`);
   };
   if (cfg.pace) {
     currentBpm = loadPace(storage, cfg.id, cfg.pace);
@@ -69,14 +68,11 @@ export function start(rawConfig, { mount = document.body } = {}) {
     const span = wd.minutes * 60_000;
     const remaining = snap.sessionMs - snap.sessionElapsed;
     if (remaining > span) return;
-    if (!windingDown) {
-      windingDown = true;
-      paceControl.setHidden(true);
-    }
+    windingDown = true;
     const k = Math.min(1, 1 - remaining / span);
     const bpm = currentBpm + (wd.bpm - currentBpm) * k;
     timeline.setDurationScale(durationScaleFor(cfg.pace, bpm));
-    ui.setRate(`${Math.round(bpm)} breaths/min`);
+    paceControl.lock(bpm);
   }
 
   const sound = cfg.sound ? initSound(ui.actions, ui.notify, cfg.sound) : null;
@@ -141,7 +137,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     cancelAnimationFrame(raf);
     if (cfg.pace) {
       windingDown = false;
-      paceControl.setHidden(false);
+      paceControl.unlock();
       applyPace(currentBpm, true);
     }
     timeline.start(performance.now());

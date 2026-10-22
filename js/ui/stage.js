@@ -38,10 +38,8 @@ export function buildStage(cfg, mount) {
   back.title = 'All techniques';
   back.append(icon('back'));
   const heading = el('div', 'topbar__heading');
-  const title = el('div', 'topbar__title', { textContent: cfg.eyebrow });
-  const rate = el('div', 'topbar__rate', { textContent: cfg.rate });
-  rate.hidden = !(cfg.rate || cfg.pace);
-  heading.append(title, rate);
+  const title = el('h1', 'topbar__title', { textContent: cfg.title });
+  heading.append(title);
   const actions = el('div', 'topbar__actions');
   topbar.append(back, heading, actions);
 
@@ -81,9 +79,6 @@ export function buildStage(cfg, mount) {
     },
     setHint(text) {
       if (hint.textContent !== text) hint.textContent = text;
-    },
-    setRate(text) {
-      rate.textContent = text;
     },
   };
 }
