@@ -1,7 +1,7 @@
 export default {
   title: 'Triangle Breathing',
   rate: 'in 4 · hold 4 · out 4',
-  hint: 'Follow the dot: up the side as you breathe in, across the top as you hold, down to the point as you breathe out.',
+  hint: 'Follow the dot: up to the peak as you breathe in, down the far side as you hold, back along the base as you breathe out.',
 
   hue: 140,
   shape: 'triangle',
