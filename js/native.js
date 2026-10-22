@@ -1,13 +1,24 @@
 // Native bridge when running inside the Capacitor app; null/false on the website.
-// Capacitor exposes registered native plugins on window.Capacitor.Plugins, so no
-// bundler or plugin JS import is needed.
 const cap = typeof window !== 'undefined' ? window.Capacitor : undefined;
 
 export const isNativeApp = !!cap?.isNativePlatform?.();
 export const platform = isNativeApp ? cap.getPlatform() : 'web';
 
+// Capacitor's injected bridge only fills Capacitor.Plugins when a plugin's JS calls
+// registerPlugin(), which needs a bundler. Instead, read the plugin list the native
+// side announces (PluginHeaders) and call methods through nativePromise directly.
+export function pluginFromBridge(bridge, name) {
+  if (!bridge?.isNativePlatform?.()) return null;
+  if (bridge.Plugins?.[name]) return bridge.Plugins[name];
+  const header = bridge.PluginHeaders?.find((h) => h.name === name);
+  if (!header || typeof bridge.nativePromise !== 'function') return null;
+  return Object.fromEntries(
+    header.methods.map((m) => [m.name, (options = {}) => bridge.nativePromise(name, m.name, options)]),
+  );
+}
+
 export function nativePlugin(name) {
-  return isNativeApp ? cap.Plugins?.[name] ?? null : null;
+  return pluginFromBridge(cap, name);
 }
 
 // Vibration patterns are [on, off, on, off, ...] in ms (the web Vibration API format).
