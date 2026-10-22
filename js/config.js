@@ -68,6 +68,7 @@ export function normalize(cfg) {
   const minScale = Math.min(...scales);
   const maxScale = Math.max(...scales);
   const initialScale = cfg.initialScale ?? minScale;
+  const variantSequences = variantSources.map((v, i) => buildSequence(v.source, variantSteps[i], initialScale));
 
   const layout = cfg.layout ?? 'single';
   if (!LAYOUTS.includes(layout)) throw new Error(`Unknown layout "${layout}"`);
@@ -107,9 +108,9 @@ export function normalize(cfg) {
     summaryNote: cfg.summaryNote ?? null,
     layout,
     split: layout === 'split' ? { hueOffset: cfg.split?.hueOffset ?? 20, labels: cfg.split?.labels ?? ['Left', 'Right'] } : null,
-    sequence: buildSequence(variantSources[0].source, steps, initialScale),
+    sequence: variantSequences[0],
     variants: cfg.variants
-      ? variantSources.map((v, i) => ({ label: v.label, sequence: buildSequence(v.source, variantSteps[i], initialScale) }))
+      ? variantSources.map((v, i) => ({ label: v.label, sequence: variantSequences[i] }))
       : null,
     minScale,
     maxScale,
