@@ -1,0 +1,10 @@
+/* Ring that expands outward on phases marked ripple: true. */
+.ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-round);
+  border: var(--border-hair) solid var(--color-accent-soft);
+  transform: scale(var(--ripple-scale, 1));
+  opacity: var(--ripple-opacity, 0);
+  will-change: transform, opacity;
+}

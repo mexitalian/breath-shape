@@ -1,0 +1,45 @@
+.labels {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.phase {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-phase);
+  min-width: var(--phase-min-width);
+  text-align: center;
+}
+
+.count {
+  font-size: var(--text-md);
+  color: var(--color-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stopwatch shown during open-ended holds */
+.count[data-mode="stopwatch"] {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-light);
+  color: var(--color-ink);
+}
+
+/* Round / breath counters, session time */
+.meta {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.status {
+  font-size: var(--text-2xs);
+  color: var(--color-dim);
+  min-height: 1em;
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+.status[data-faded] { opacity: 0; }

@@ -1,0 +1,133 @@
+/* Pattern: list of techniques with a live preview orb (index page). */
+.page {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3xl) var(--space-md) var(--space-2xl);
+}
+
+.page__main {
+  width: 100%;
+  max-width: var(--width-page);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.page__header { display: flex; flex-direction: column; gap: var(--space-md); }
+
+.page__title {
+  font-size: var(--text-display);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+.page__lede {
+  color: var(--color-dim);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  max-width: var(--measure-text);
+}
+
+.page__note {
+  font-size: var(--text-sm);
+  color: var(--color-dim);
+  line-height: var(--leading-relaxed);
+}
+
+.page__footer {
+  font-size: var(--text-xs);
+  color: var(--color-dim);
+  border-top: var(--border-hair) solid var(--color-line);
+  padding-top: var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.page__footer a { color: inherit; }
+
+.technique-list { list-style: none; display: flex; flex-direction: column; }
+
+.technique-list li + li { border-top: var(--border-hair) solid var(--color-line); }
+
+.technique {
+  display: grid;
+  grid-template-columns: var(--orb-size) 1fr auto;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-xs);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.technique:hover { background: var(--color-accent-hover); }
+
+.technique__text { display: flex; flex-direction: column; gap: var(--space-2xs); min-width: 0; }
+
+.technique__name { font-size: var(--text-lg); font-weight: var(--weight-medium); }
+
+.technique__pattern {
+  font-size: var(--text-sm);
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-normal);
+}
+
+.technique__use { font-size: var(--text-sm); color: var(--color-dim); line-height: var(--leading-normal); }
+
+.technique__arrow {
+  color: var(--color-dim);
+  font-size: var(--text-lg);
+  transition: transform var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
+}
+
+.technique:hover .technique__arrow { transform: translateX(var(--nudge)); color: var(--color-accent); }
+
+/* Small preview orb, animated by css keyframes at the technique's real pace. */
+.orb {
+  width: var(--orb-size);
+  height: var(--orb-size);
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-round);
+  background: radial-gradient(closest-side, var(--color-accent-soft), transparent 75%);
+}
+
+.orb > span {
+  width: 60%;
+  height: 60%;
+  border-radius: var(--radius-round);
+  background: var(--color-accent-faint);
+  border: var(--border-hair) solid var(--color-accent-strong);
+  animation: var(--orb-anim) var(--orb-cycle) ease-in-out infinite;
+}
+
+.orb[data-shape="box"] { border-radius: var(--radius-md); }
+.orb[data-shape="box"] > span { border-radius: var(--radius-sm); }
+
+@media (prefers-reduced-motion: reduce) {
+  .orb > span { animation: none; }
+}
+
+@keyframes orb-box {
+  0%, 100% { transform: scale(0.72); }
+  25%, 50% { transform: scale(1); }
+  75%      { transform: scale(0.72); }
+}
+@keyframes orb-resonance {
+  0%, 100% { transform: scale(0.55); }
+  50%      { transform: scale(1); }
+}
+@keyframes orb-478 {
+  0%, 100%       { transform: scale(0.55); }
+  21.05%, 57.89% { transform: scale(1); }
+}
+@keyframes orb-sigh {
+  0%, 100% { transform: scale(0.55); animation-timing-function: ease-out; }
+  25%      { transform: scale(0.82); animation-timing-function: ease-out; }
+  37.5%    { transform: scale(1);    animation-timing-function: ease-in; }
+}

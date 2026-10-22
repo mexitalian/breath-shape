@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Box Breathing</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/system.css">
 </head>
-<body>
-  <script src="configs/box.js"></script>
-  <script src="engine.js"></script>
-  <script>BreathingEngine.init(window.BREATHING_CONFIG);</script>
+<body class="immersive">
+  <script type="module">
+    import config from './configs/box.js';
+    import { start } from './js/engine.js';
+    start(config);
+  </script>
 </body>
 </html>

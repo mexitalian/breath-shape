@@ -1,0 +1,141 @@
+/* Design tokens, in three layers:
+   1. Primitives  — raw scales. Change these to retune the whole system.
+   2. Semantic    — roles built from primitives. Components use these.
+   3. Component   — knobs for a single component; shapes and layouts override them.
+   Nothing outside this file should contain a raw colour, size or duration. */
+
+/* ---------- 1. Primitives ---------- */
+:root {
+  --hue: 220;
+
+  --sat-muted:  12%;
+  --sat-line:   14%;
+  --sat-soft:   18%;
+  --sat-deep:   30%;
+  --sat-deeper: 35%;
+  --sat-on:     40%;
+  --sat-vivid:  55%;
+
+  --light-0:  4%;
+  --light-1:  7%;
+  --light-2: 12%;
+  --light-5: 58%;
+  --light-7: 68%;
+  --light-9: 90%;
+
+  --alpha-hover:  0.07;
+  --alpha-faint:  0.10;
+  --alpha-soft:   0.18;
+  --alpha-glow:   0.20;
+  --alpha-edge:   0.35;
+  --alpha-strong: 0.60;
+  --alpha-glass:  0.82;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --text-2xs:     0.7rem;
+  --text-xs:      0.72rem;
+  --text-sm:      0.8rem;
+  --text-md:      0.85rem;
+  --text-base:    0.95rem;
+  --text-lg:      1.05rem;
+  --text-xl:      1.4rem;
+  --text-2xl:     2.2rem;
+  --text-display: clamp(2rem, 7vw, 2.6rem);
+
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+
+  --tracking-tight:   -0.01em;
+  --tracking-normal:   0.02em;
+  --tracking-phase:    0.04em;
+  --tracking-label:    0.07em;
+  --tracking-eyebrow:  0.28em;
+
+  --leading-tight:   1.1;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.6;
+
+  --space-3xs: 0.2rem;
+  --space-2xs: 0.3rem;
+  --space-xs:  0.4rem;
+  --space-sm:  0.7rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2.2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4.5rem;
+
+  --radius-sm:    5px;
+  --radius-md:   14px;
+  --radius-lg:   18px;
+  --radius-xl:   22px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+
+  --border-hair: 1px;
+
+  --duration-fast: 0.25s;
+  --duration-slow: 0.6s;
+  --ease-standard: ease;
+  --nudge: 3px;
+
+  --opacity-disabled: 0.7;
+  --blur-glass: 16px;
+
+  --measure-narrow: 30ch;
+  --measure-text:   52ch;
+  --width-panel:    24rem;
+  --width-page:     34rem;
+}
+
+/* ---------- 2. Semantic roles ----------
+   Re-declared on [data-hue] so any element can carry its own colour scope
+   (index rows, split-screen halves) just by setting --hue. */
+:root,
+[data-hue] {
+  --color-ink:          hsl(var(--hue) var(--sat-soft)   var(--light-9));
+  --color-dim:          hsl(var(--hue) var(--sat-muted)  var(--light-5));
+  --color-bg:           hsl(var(--hue) var(--sat-deeper) var(--light-1));
+  --color-bg-raised:    hsl(var(--hue) var(--sat-deep)   var(--light-2));
+  --color-glass:        hsl(var(--hue) var(--sat-deeper) var(--light-1) / var(--alpha-glass));
+  --color-line:         hsl(var(--hue) var(--sat-line)   var(--light-5) / var(--alpha-soft));
+  --color-accent:       hsl(var(--hue) var(--sat-vivid)  var(--light-7));
+  --color-accent-hover: hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-hover));
+  --color-accent-faint: hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-faint));
+  --color-accent-soft:  hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-glow));
+  --color-accent-edge:  hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-edge));
+  --color-accent-strong:hsl(var(--hue) var(--sat-vivid)  var(--light-7) / var(--alpha-strong));
+  --color-on-accent:    hsl(var(--hue) var(--sat-on)     var(--light-0));
+
+  --gradient-backdrop: radial-gradient(120% 120% at 50% 20%, var(--color-bg-raised) 0%, var(--color-bg) 65%);
+
+  --shadow-glow-sm: 0 0 6px 1px var(--color-accent-soft);
+  --shadow-glow-lg: 0 0 18px 4px var(--color-accent-soft);
+}
+
+/* ---------- 3. Component tokens ---------- */
+:root {
+  --field-size:   min(72vw, 300px);
+  --field-radius: var(--radius-round);
+
+  --core-size:   32%;
+  --core-radius: var(--radius-round);
+
+  --particle-size: 4px;
+  --dot-size:      14px;
+
+  --phase-min-width: 9ch;
+
+  --orb-size: 3.25rem;
+
+  --sg-label-width: 9rem;
+  --sg-chip-height: 3rem;
+  --sg-swatch-min:  9rem;
+  --sg-field-size:  9rem;
+
+  --focus-ring: 2px solid var(--color-accent);
+}

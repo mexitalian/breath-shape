@@ -1,0 +1,47 @@
+/* Field: the square area every breathing visual is drawn inside.
+   The engine writes per-frame state onto it:
+     --breath-scale  core scale (0–1)
+     --breath-glow   glow opacity (0–1)
+   Shapes are token presets selected with data-shape. */
+.field {
+  position: relative;
+  width: var(--field-size);
+  height: var(--field-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.field[data-shape="box"] {
+  --field-radius: var(--radius-xl);
+  --core-size:    40%;
+  --core-radius:  var(--radius-lg);
+}
+
+/* Static outer boundary: ring for circular patterns, track for traced shapes. */
+.ring,
+.track {
+  position: absolute;
+  inset: 0;
+  border: var(--border-hair) solid var(--color-line);
+  border-radius: var(--field-radius);
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--field-radius);
+  background: radial-gradient(closest-side, var(--color-accent-soft), transparent 70%);
+  opacity: var(--breath-glow, 1);
+  will-change: opacity;
+}
+
+.core {
+  width: var(--core-size);
+  height: var(--core-size);
+  border-radius: var(--core-radius);
+  background: var(--color-accent-faint);
+  border: var(--border-hair) solid var(--color-accent-edge);
+  transform: scale(var(--breath-scale, 1));
+  will-change: transform;
+}

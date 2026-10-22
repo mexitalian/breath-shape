@@ -1,0 +1,19 @@
+.particle-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  margin: calc(var(--particle-size) / -2) 0 0 calc(var(--particle-size) / -2);
+  border-radius: var(--radius-round);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-glow-sm);
+  opacity: 0;
+  will-change: transform, opacity;
+}
