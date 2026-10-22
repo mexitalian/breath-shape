@@ -30,8 +30,26 @@ The pages use JavaScript modules, so they need to be served over http (opening t
 
 ```sh
 npm run serve      # then open the printed URL
-npm test           # timeline and config tests (Node 20+, no dependencies)
+npm test           # timeline and config tests (Node 20+)
 ```
+
+## Apps (iOS + Android)
+
+The same pages run inside native apps built with [Capacitor](https://capacitorjs.com). `npm run build` copies the site into `www/`, and `npx cap sync` puts it into the `android/` and `ios/` projects.
+
+**Android, from your phone:** every merge to `main` builds a test APK on GitHub Actions. Open the [Latest app build](https://github.com/mexitalian/breathing-animations/releases/tag/app-latest) release on your Android phone, tap `breathing.apk`, and allow your browser to install apps when asked. Later builds install over the earlier one.
+
+**iPhone, from the Mac** (one-time setup: Xcode from the App Store, Node 22+):
+
+```sh
+git clone https://github.com/mexitalian/breathing-animations && cd breathing-animations
+npm ci
+npm run ios          # builds the web bundle, syncs, opens Xcode
+```
+
+In Xcode: plug in the iPhone, pick it as the run target, select the **App** target → *Signing & Capabilities* → choose your Apple ID as the team, then press ▶. The first time, approve the developer profile on the phone under *Settings → General → VPN & Device Management*. A free Apple ID works for your own phone (apps expire after 7 days); TestFlight needs the paid developer account.
+
+After pulling new changes, run `npm run sync` (or `npm run ios`) before building again.
 
 ## Structure
 

@@ -1,0 +1,56 @@
+name: Android app
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: breathing-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Publish "Latest app build" release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk breathing.apk
+          gh release delete app-latest --yes --cleanup-tag || true
+          gh release create app-latest breathing.apk \
+            --title "Latest app build" \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --notes "Debug build of main at ${GITHUB_SHA::7} (build ${{ github.run_number }}).
+
+          Install on Android: open this page on your phone, tap **breathing.apk**, then allow your browser to install apps when asked. New builds install over the old one."

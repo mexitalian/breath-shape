@@ -4,6 +4,18 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "serve": "npx --yes serve ."
+    "serve": "npx --yes serve .",
+    "build": "node scripts/build-web.mjs",
+    "sync": "npm run build && npx cap sync",
+    "android": "npm run sync && npx cap open android",
+    "ios": "npm run sync && npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3"
   }
 }
