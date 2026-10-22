@@ -205,7 +205,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     screen = showScreen(mount, {
       eyebrow: cfg.eyebrow,
       title: 'Session complete',
-      body: list.length ? '' : 'Take a moment before you get up.',
+      body: cfg.summaryNote ?? (list.length ? '' : 'Take a moment before you get up.'),
       list,
       actions: [
         { label: 'Go again', primary: true, onClick: begin },

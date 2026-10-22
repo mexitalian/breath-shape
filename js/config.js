@@ -78,6 +78,7 @@ export function normalize(cfg) {
     sessionMinutes: cfg.sessionMinutes ?? null,
     sessionChoices: cfg.sessionChoices ?? null,
     windDown: cfg.windDown ?? null,
+    summaryNote: cfg.summaryNote ?? null,
     sequence: {
       rounds: source.rounds ?? Infinity,
       steps,
