@@ -8,6 +8,7 @@
   border: var(--border-hair) solid transparent;
   cursor: pointer;
   text-decoration: none;
+  min-height: var(--icon-button-size);
   display: inline-flex;
   align-items: center;
   justify-content: center;

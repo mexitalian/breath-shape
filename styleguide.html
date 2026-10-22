@@ -13,8 +13,13 @@
       <header class="page__header">
         <div class="eyebrow">Breathing Animations · Style guide</div>
         <h1 class="page__title">Tokens, components and patterns.</h1>
-        <p class="page__lede">Everything here is drawn from <code class="sg-code">css/tokens.css</code>. Move the hue to see every colour role follow it; that's the only value a technique overrides.</p>
+        <p class="page__lede">Everything here is drawn from <code class="sg-code">css/tokens.css</code>. Move the hue to see every colour role follow it; that's the only value a technique overrides. Pages follow the phone's light or dark setting; the theme switch previews both.</p>
         <label class="sg-hue">Hue <input id="hue" type="range" min="0" max="359" value="220"> <span id="hue-value">220</span></label>
+        <div class="group-nav" role="group" aria-label="Theme">
+          <button class="chip chip--link" type="button" data-theme-choice="" aria-pressed="true">Auto</button>
+          <button class="chip chip--link" type="button" data-theme-choice="light" aria-pressed="false">Light</button>
+          <button class="chip chip--link" type="button" data-theme-choice="dark" aria-pressed="false">Dark</button>
+        </div>
       </header>
 
       <section class="sg-section">
@@ -154,6 +159,14 @@
     iconRow.append(back, vib.button, snd.button);
 
     const root = document.documentElement;
+    for (const btn of document.querySelectorAll('[data-theme-choice]')) {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.themeChoice) root.dataset.theme = btn.dataset.themeChoice;
+        else delete root.dataset.theme;
+        for (const b of document.querySelectorAll('[data-theme-choice]')) b.setAttribute('aria-pressed', String(b === btn));
+        renderSwatches();
+      });
+    }
     const hueInput = document.getElementById('hue');
     const hueValue = document.getElementById('hue-value');
     hueInput.addEventListener('input', () => {

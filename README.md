@@ -57,6 +57,7 @@ configs/*.js          one config per technique
 ### How the pieces fit
 
 - **Tokens** live only in `css/tokens.css`. Components use semantic roles (`--color-accent`, `--color-line`, …), never raw values. `--hue` is the one value a technique sets; any element with `data-hue` gets its own colour scope.
+- **Themes:** pages follow the phone's light/dark setting (or `data-theme="light|dark"` on `<html>`). A theme only redefines the `--tone-*` lightness values in `tokens.css`; a small `cos()` correction keeps text contrast at WCAG AA for every hue.
 - **Shapes** are token presets: `.field[data-shape="box"]` overrides `--core-size`, `--core-radius`, `--field-radius`.
 - **State is CSS variables.** Each frame the engine writes `--breath-scale` and `--breath-glow` onto the field (plus `--dot-x`/`--dot-y`, `--ripple-scale`/`--ripple-opacity`); CSS does the drawing.
 - **Components** are functions `({ field, cfg }) => ({ update(snapshot) })`, mounted in the order listed. Add one by writing it in `js/components/`, registering it in `components/index.js`, and adding its CSS file.

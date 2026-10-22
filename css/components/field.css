@@ -77,7 +77,7 @@
 }
 
 .shape-label--on-fill {
-  color: var(--color-on-accent);
+  color: var(--color-on-fill);
   transform: translate(-50%, -50%) scale(calc(1 / var(--core-transform)));
 }
 
