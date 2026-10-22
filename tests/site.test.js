@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { normalize } from '../js/config.js';
+import { TECHNIQUES } from '../js/techniques.js';
 
 const root = new URL('..', import.meta.url).pathname;
-const pages = readdirSync(root).filter(f => f.endsWith('.html') && !['index.html', 'styleguide.html'].includes(f) && !f.startsWith('_tmp-'));
+const pages = readdirSync(root).filter(f => f.endsWith('.html') && !['index.html', 'styleguide.html', 'diagnostics.html', 'history.html'].includes(f) && !f.startsWith('_tmp-'));
 const index = readFileSync(join(root, 'index.html'), 'utf8');
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
@@ -32,5 +33,13 @@ test('index rows only use orb animations that exist', () => {
   const css = readFileSync(join(root, 'css/components/technique-list.css'), 'utf8');
   for (const [, name] of index.matchAll(/--orb-anim: ([\w-]+)/g)) {
     assert.ok(css.includes(`@keyframes ${name} `), `${name} defined`);
+  }
+});
+
+test('technique registry covers every practice page with its real config', () => {
+  assert.deepEqual(Object.keys(TECHNIQUES).sort(), [...pages].sort());
+  for (const page of pages) {
+    const html = readFileSync(join(root, page), 'utf8');
+    assert.ok(html.includes(`./configs/${TECHNIQUES[page]}'`), `${page} uses ${TECHNIQUES[page]}`);
   }
 });
