@@ -13,8 +13,8 @@ export const SHAPES = {
     components: ['outline', 'glow', 'particles', 'core', 'dot'],
     // The filled shape is clipped to the outline instead of being a rounded box.
     clipCore: true,
-    // Point-up equilateral triangle, as wide as the field: rise up the left
-    // side to the peak, come down the right side, return along the base.
-    path: [[0, 93.3], [50, 6.7], [100, 93.3]],
+    // Point-down equilateral triangle, as wide as the field: rise up the left
+    // side, run flat across the top, fall back to the point.
+    path: [[50, 93.3], [0, 6.7], [100, 6.7]],
   },
 };

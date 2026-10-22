@@ -169,7 +169,7 @@ html { scroll-behavior: smooth; }
 .orb[data-shape="box"] > span { border-radius: 0; }
 .orb[data-shape="triangle"] > span {
   border-radius: 0;
-  clip-path: polygon(0% 93.3%, 50% 6.7%, 100% 93.3%);
+  clip-path: polygon(50% 93.3%, 0% 6.7%, 100% 6.7%);
 }
 
 @media (prefers-reduced-motion: reduce) {
