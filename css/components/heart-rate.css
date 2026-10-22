@@ -1,0 +1,87 @@
+/* Pattern: heart rate check (heart-rate.html). */
+.hr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  text-align: center;
+}
+
+.hr__dial {
+  position: relative;
+  width: var(--hr-dial-size);
+  height: var(--hr-dial-size);
+  border-radius: var(--radius-round);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(closest-side, var(--color-accent-soft), transparent 80%);
+  border: var(--border-hair) solid var(--color-line);
+}
+
+/* The camera view sits faintly behind the number so you can see the lens is covered. */
+.hr__preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+.hr__value {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.hr__value strong {
+  font-size: var(--text-display);
+  font-weight: var(--weight-light);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-tight);
+  text-transform: none;
+}
+
+.hr__trace {
+  width: 100%;
+  height: var(--hr-trace-height);
+  color: var(--color-accent);
+}
+
+.hr__progress {
+  width: 100%;
+  height: var(--hr-progress-height);
+  border-radius: var(--radius-pill);
+  background: var(--color-line);
+  overflow: hidden;
+}
+
+.hr__progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--color-accent);
+  transition: width var(--duration-fast) linear;
+}
+
+.hr__status {
+  min-height: calc(2 * var(--leading-normal) * 1em);
+  color: var(--color-dim);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  max-width: var(--measure-text);
+}
+
+.hr__actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; justify-content: center; }
+
+/* History thumbnail for a heart rate check. */
+.thumb--heart {
+  color: var(--color-accent);
+  font-size: var(--text-xl);
+}

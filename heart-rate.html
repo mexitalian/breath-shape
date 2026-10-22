@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Heart Rate</title>
+  <link rel="icon" href="icons/icon-96.webp" type="image/webp">
+  <link rel="stylesheet" href="css/system.css">
+</head>
+<body data-hue style="--hue: 352">
+  <div class="page">
+    <main class="page__main">
+      <header class="page__header">
+        <div class="eyebrow"><a href="./" style="color: inherit">← All techniques</a></div>
+        <h1 class="page__title">Heart rate</h1>
+        <p class="page__lede">Cover the back camera and the flash with one fingertip. Rest your hand and press lightly, without squashing. It takes about 30 seconds.</p>
+      </header>
+
+      <section class="hr" aria-live="polite">
+        <div class="hr__dial">
+          <video class="hr__preview" playsinline muted aria-hidden="true"></video>
+          <div class="hr__value"><strong id="bpm">--</strong><span>bpm</span></div>
+        </div>
+        <canvas class="hr__trace" id="trace" aria-hidden="true"></canvas>
+        <div class="hr__progress" aria-hidden="true"><span id="progress"></span></div>
+        <p class="hr__status" id="status">Tap Start, then allow the camera when asked.</p>
+        <div class="hr__actions">
+          <button class="button button--primary" type="button" id="start">Start</button>
+          <a class="button button--ghost" href="./" id="done" hidden>All techniques</a>
+        </div>
+        <p class="page__note">For relaxation and curiosity, not a medical device. The camera image never leaves your phone; only the result is saved to Your history.</p>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initAppShell } from './js/app.js';
+    import { initHeartRate } from './js/heart-rate-page.js';
+    initAppShell({ home: false });
+    initHeartRate();
+  </script>
+</body>
+</html>

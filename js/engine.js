@@ -288,6 +288,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       list,
       actions: [
         { label: 'Go again', primary: true, onClick: begin },
+        { label: 'Check heart rate', href: 'heart-rate.html' },
         { label: 'All techniques', href: './' },
       ],
     });
