@@ -62,9 +62,12 @@ export function groupByDay(list, now = Date.now()) {
   return groups;
 }
 
+export const HEART_RATE = 'heart-rate';
+
+// Heart rate checks are listed alongside sessions but don't count as practice.
 export function weekTotals(list, now = Date.now()) {
   const since = now - 7 * 86_400_000;
-  const recent = list.filter(e => e.startedAt >= since);
+  const recent = list.filter(e => e.startedAt >= since && e.kind !== HEART_RATE);
   return { sessions: recent.length, minutes: Math.round(recent.reduce((sum, e) => sum + e.durationMs, 0) / 60_000) };
 }
 
@@ -77,6 +80,7 @@ export function formatDuration(ms) {
 
 // One line describing how the session went.
 export function sessionResult(e) {
+  if (e.kind === HEART_RATE) return `${e.heartRate} bpm`;
   const parts = [];
   if (e.records?.length) {
     if (e.records.every(r => r.label.startsWith('Control pause'))) {

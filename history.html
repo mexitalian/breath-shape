@@ -28,7 +28,7 @@
 
   <script type="module">
     import { initAppShell } from './js/app.js';
-    import { readHistory, removeSession, clearHistory, groupByDay, weekTotals, formatDuration, sessionResult } from './js/history.js';
+    import { readHistory, removeSession, clearHistory, groupByDay, weekTotals, formatDuration, sessionResult, HEART_RATE } from './js/history.js';
     import { loadConfig } from './js/techniques.js';
     import { createThumbnail } from './js/ui/thumbnail.js';
     import { el } from './js/dom.js';
@@ -49,6 +49,12 @@
     });
 
     async function thumbFor(entry) {
+      if (entry.kind === HEART_RATE) {
+        const heart = el('div', 'thumb thumb--heart', { textContent: '♥' });
+        heart.dataset.hue = '';
+        heart.style.setProperty('--hue', 352);
+        return heart;
+      }
       const cfg = await loadConfig(entry.page);
       if (!cfg) return el('div', 'thumb');
       const thumb = createThumbnail(cfg);

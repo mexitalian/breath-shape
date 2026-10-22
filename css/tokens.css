@@ -211,6 +211,10 @@
   --thumb-size: 4.25rem;
   --thumb-dot-size: 6px;
 
+  --hr-dial-size:       min(60vw, 14rem);
+  --hr-trace-height:    4.5rem;
+  --hr-progress-height: 4px;
+
   /* Notch / status bar / home indicator. env() covers iOS and browsers; the
      Android app's SystemBars plugin injects --safe-area-inset-* instead. */
   --safe-top:    max(env(safe-area-inset-top, 0px),    var(--safe-area-inset-top, 0px));
