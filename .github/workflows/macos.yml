@@ -1,0 +1,64 @@
+name: macOS app
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+# One build per branch at a time: a newer push cancels any build still running.
+concurrency:
+  group: macos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dmg:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+      - run: npm test
+
+      # Universal app (Apple Silicon + Intel), ad-hoc signed (signingIdentity "-").
+      - name: Build menu-bar app
+        run: npx tauri build --target universal-apple-darwin --bundles app,dmg
+
+      - name: Collect the disk image
+        run: cp src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg Breathing.dmg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: breathing-macos-dmg
+          path: Breathing.dmg
+
+      - name: Publish "Latest Mac build" release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete mac-latest --yes --cleanup-tag || true
+          gh release create mac-latest Breathing.dmg \
+            --title "Latest Mac build" \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --notes "Menu-bar app built from main at ${GITHUB_SHA::7} (build ${{ github.run_number }}). Apple Silicon and Intel.
+
+          Install: open **Breathing.dmg** and drag Breathing to Applications. The first time you open it, macOS blocks it because it isn't signed by an Apple developer yet: open System Settings → Privacy & Security, scroll down and click **Open Anyway**. After that it opens normally.
+
+          Use: click the ring icon in the menu bar (or press ⌥⌘B). Right-click it for Float window, Launch at login and Quit."

@@ -5,7 +5,7 @@
 - Every change reaches `main` through a pull request, never a direct push, so the work is trackable on GitHub. Work on a branch, open a PR that links its issues (`Closes #n`), then merge the PR.
 - Merge with a merge commit (not squash) so the individual commits stay visible.
 - Stacked PRs: merge top-down into the bottom PR's branch, then merge the bottom PR into `main` once, so a stack triggers a single `main` build. Close the upper PRs' issues by hand ("Closes #n" only fires on merges into `main`).
-- Every push to `main` builds the Android APK and replaces the "Latest app build" release; avoid needless merges to `main`.
+- Every push to `main` builds the Android APK ("Latest app build" release) and the Mac `.dmg` ("Latest Mac build" release); avoid needless merges to `main`. The repo is public, so GitHub Actions minutes are free, macOS runners included.
 - `main` is served live by GitHub Pages; merging a PR deploys it.
 
 ## Commands

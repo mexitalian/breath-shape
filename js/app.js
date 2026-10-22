@@ -1,8 +1,9 @@
-import { isNativeApp, platform } from './native.js';
+import { isNativeApp, isDesktopApp, platform } from './native.js';
 
 // Native-app behaviour shared by every page. No-op on the website.
 //   home: true on the technique list, false on practice pages.
 export function initAppShell({ home }) {
+  if (isDesktopApp) document.documentElement.classList.add('desktop-app');
   if (!isNativeApp) return;
   const root = document.documentElement;
   root.classList.add('native-app');

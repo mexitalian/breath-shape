@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "The web pages only need the core defaults; the menu-bar behaviour lives in Rust.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

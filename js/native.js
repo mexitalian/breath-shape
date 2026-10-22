@@ -4,6 +4,9 @@ const cap = typeof window !== 'undefined' ? window.Capacitor : undefined;
 export const isNativeApp = !!cap?.isNativePlatform?.();
 export const platform = isNativeApp ? cap.getPlatform() : 'web';
 
+// The macOS menu-bar app (Tauri). No vibration motor and no flash by the camera.
+export const isDesktopApp = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
+
 // Capacitor's injected bridge only fills Capacitor.Plugins when a plugin's JS calls
 // registerPlugin(), which needs a bundler. Instead, read the plugin list the native
 // side announces (PluginHeaders) and call methods through nativePromise directly.
