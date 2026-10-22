@@ -208,6 +208,13 @@
 
   --orb-size: 3.25rem;
 
+  /* Notch / status bar / home indicator. env() covers iOS and browsers; the
+     Android app's SystemBars plugin injects --safe-area-inset-* instead. */
+  --safe-top:    max(env(safe-area-inset-top, 0px),    var(--safe-area-inset-top, 0px));
+  --safe-right:  max(env(safe-area-inset-right, 0px),  var(--safe-area-inset-right, 0px));
+  --safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
+  --safe-left:   max(env(safe-area-inset-left, 0px),   var(--safe-area-inset-left, 0px));
+
   --icon-button-size: 2.75rem;
   --icon-size: 1.35rem;
   --topbar-height: 3.5rem;
