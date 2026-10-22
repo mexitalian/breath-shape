@@ -22,6 +22,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `tummo.html` | 5 rounds: 20 deep breaths, full-breath hold with squeeze (tap to release, timed), 12s rest; safety screen |
 | `connected-breathing.html` | holotropic-style connected breathing: 10/20/30 min, adjustable pace, 2 min wind-down; safety screen |
 | `buteyko.html` | control pause (timed), 30 light breaths, control pause again; summary compares them |
+| `alternate-nostril.html` | split screen, one half per nostril: in left · out right · in right · out left, holds optional |
 
 ## Running locally
 
@@ -70,6 +71,8 @@ export default {
 
   hue: 185,                    // 0–359
   shape: 'circle',             // 'circle' | 'box' | 'triangle'
+  layout: 'single',            // or 'split': two halves, one per side (phases set side)
+  split: { hueOffset: 20, labels: ['Left', 'Right'] },  // split layout options
   components: [...],           // optional; defaults come from the shape
   opacity: { min, max },       // glow opacity at smallest / largest breath
   particles: { count: 26, radii: { inner: 0.2, outer: 0.92 } },  // optional
@@ -88,6 +91,9 @@ export default {
 
   // Either a simple loop…
   phases: [ PHASE, ... ],
+
+  // …or variants the start screen offers (first is the default)…
+  variants: [{ label: 'Without holds', phases: [...] }, { label: 'With holds', phases: [...] }],
 
   // …or a sequence with counted breaths, holds and rounds.
   sequence: {
@@ -115,6 +121,7 @@ export default {
   record: 'Retention',         // record this phase's duration for the summary
   action: 'Breathe',           // button label on open-ended holds
   prompt: 'Tap when you need to breathe.',    // replaces the hint during this phase
+  side: 'left',                // split layout: 'left' | 'right' | 'both' lights that half
 }
 ```
 

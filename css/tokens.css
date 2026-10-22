@@ -119,7 +119,7 @@
 
 /* ---------- 3. Component tokens ---------- */
 :root {
-  --field-size:   min(72vw, 300px);
+  --field-size:   min(72vw, 300px, 40vh);
   --field-radius: var(--radius-round);
 
   --core-size:   32%;
@@ -136,6 +136,10 @@
   --pace-value-width: 9.5rem;
 
   --orb-size: 3.25rem;
+
+  --split-max-width:       34rem;
+  --split-field-size:      min(40vw, 15rem, 40vh);
+  --split-inactive-opacity: 0.3;
 
   --sg-label-width: 9rem;
   --sg-chip-height: 3rem;

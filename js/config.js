@@ -4,6 +4,8 @@ import { normalizePace } from './pace.js';
 const slug = (text) => String(text).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const DEFAULT_OPACITY = { min: 0.35, max: 0.9 };
+const SIDES = ['left', 'right', 'both'];
+const LAYOUTS = ['single', 'split'];
 const PHASE_FLAG_COMPONENTS = ['ripple', 'hum', 'heat'];
 
 function normalizePhase(p) {
@@ -23,7 +25,22 @@ function normalizePhase(p) {
     record: p.record ?? null,
     action: p.action ?? 'Continue',
     prompt: p.prompt ?? null,
+    side: checkSide(p),
   };
+}
+
+function checkSide(p) {
+  if (p.side == null) return null;
+  if (!SIDES.includes(p.side)) throw new Error(`Phase "${p.name}" has unknown side "${p.side}"`);
+  return p.side;
+}
+
+function sourceOf(cfg) {
+  return cfg.sequence ?? { rounds: Infinity, steps: [{ phases: cfg.phases }] };
+}
+
+function buildSequence(source, steps, initialScale) {
+  return { rounds: source.rounds ?? Infinity, steps, initialScale };
 }
 
 function normalizeStep(step) {
@@ -39,19 +56,29 @@ function normalizeStep(step) {
 
 // Accepts either `phases` (one cycle that loops forever) or
 // `sequence: { rounds, steps }` (counted groups, rounds, open-ended holds).
+// `variants: [{ label, phases | sequence }]` offers alternatives on the start screen;
+// the first is the default.
 export function normalize(cfg) {
-  const source = cfg.sequence ?? { rounds: Infinity, steps: [{ phases: cfg.phases }] };
-  const steps = source.steps.map(normalizeStep);
-  const scales = steps.flatMap(s => s.phases.map(p => p.scale));
+  const variantSources = cfg.variants?.map(v => ({ label: v.label, source: sourceOf(v) }))
+    ?? [{ label: null, source: sourceOf(cfg) }];
+  const variantSteps = variantSources.map(v => v.source.steps.map(normalizeStep));
+  const steps = variantSteps[0];
+  const allSteps = variantSteps.flat();
+  const scales = allSteps.flatMap(s => s.phases.map(p => p.scale));
   const minScale = Math.min(...scales);
   const maxScale = Math.max(...scales);
+  const initialScale = cfg.initialScale ?? minScale;
+  const variantSequences = variantSources.map((v, i) => buildSequence(v.source, variantSteps[i], initialScale));
+
+  const layout = cfg.layout ?? 'single';
+  if (!LAYOUTS.includes(layout)) throw new Error(`Unknown layout "${layout}"`);
 
   const shape = cfg.shape ?? 'circle';
   const preset = SHAPES[shape];
   if (!preset) throw new Error(`Unknown shape "${shape}"`);
 
   // Components driven by a phase flag are only mounted when some phase uses that flag.
-  const anyPhase = (flag) => steps.some(s => s.phases.some(p => p[flag]));
+  const anyPhase = (flag) => allSteps.some(s => s.phases.some(p => p[flag]));
   const components = (cfg.components ?? preset.components).filter((name) => {
     if (name === 'particles') return !!cfg.particles;
     if (PHASE_FLAG_COMPONENTS.includes(name)) return anyPhase(name);
@@ -79,11 +106,12 @@ export function normalize(cfg) {
     sessionChoices: cfg.sessionChoices ?? null,
     windDown: cfg.windDown ?? null,
     summaryNote: cfg.summaryNote ?? null,
-    sequence: {
-      rounds: source.rounds ?? Infinity,
-      steps,
-      initialScale: cfg.initialScale ?? minScale,
-    },
+    layout,
+    split: layout === 'split' ? { hueOffset: cfg.split?.hueOffset ?? 20, labels: cfg.split?.labels ?? ['Left', 'Right'] } : null,
+    sequence: variantSequences[0],
+    variants: cfg.variants
+      ? variantSources.map((v, i) => ({ label: v.label, sequence: variantSequences[i] }))
+      : null,
     minScale,
     maxScale,
   };
