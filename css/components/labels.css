@@ -5,34 +5,6 @@
   gap: var(--space-xs);
 }
 
-.phase {
-  font-size: var(--text-xl);
-  font-weight: var(--weight-light);
-  letter-spacing: var(--tracking-phase);
-  min-width: var(--phase-min-width);
-  text-align: center;
-}
-
-.count {
-  font-size: var(--text-md);
-  color: var(--color-dim);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Stopwatch shown during open-ended holds */
-.count[data-mode="stopwatch"] {
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-light);
-  color: var(--color-ink);
-}
-
-/* Breath number during counted breaths */
-.count[data-mode="counter"] {
-  font-size: var(--text-xl);
-  font-weight: var(--weight-light);
-  color: var(--color-ink);
-}
-
 /* Round / breath counters, session time */
 .meta {
   font-size: var(--text-xs);

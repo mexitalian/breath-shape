@@ -3,7 +3,7 @@ import { easing } from '../easing.js';
 
 // On phases marked ripple: true, a ring expands past the field edge and fades;
 // otherwise it rests at the smallest breath size.
-const PEAK_SCALE = 1.05;
+const PEAK_SCALE = 1.12;
 const REST_OPACITY = 0.6;
 
 export function ripple({ field, cfg }) {

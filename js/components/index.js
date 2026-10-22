@@ -1,4 +1,5 @@
-import { ring, track, glow, core } from './basic.js';
+import { ring, track, glow } from './basic.js';
+import { core } from './core.js';
 import { particles } from './particles.js';
 import { dot } from './dot.js';
 import { ripple } from './ripple.js';

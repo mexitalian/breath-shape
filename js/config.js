@@ -94,6 +94,7 @@ export function normalize(cfg) {
     hue: cfg.hue ?? 220,
     shape,
     path: preset.path ?? null,
+    coreClip: preset.clipCore ? `polygon(${preset.path.map(([x, y]) => `${x}% ${y}%`).join(', ')})` : null,
     components,
     particles: cfg.particles ?? null,
     opacity: cfg.opacity ?? DEFAULT_OPACITY,

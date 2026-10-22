@@ -5,6 +5,16 @@ export function formatClock(ms) {
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
 }
 
+// What the shape shows at its centre: the phase name and a count.
+//   mode 'stopwatch' — open-ended hold, counts up
+//   mode 'counter'   — counted breaths, "6 / 20"
+//   mode null        — seconds left in the phase
+export function readout(snap) {
+  if (snap.openEnded) return { phase: snap.phase.name, count: formatClock(snap.elapsed), mode: 'stopwatch' };
+  if (snap.repeat > 1) return { phase: snap.phase.name, count: `${snap.rep} / ${snap.repeat}`, mode: 'counter' };
+  return { phase: snap.phase.name, count: String(Math.max(1, Math.ceil(snap.remaining / 1000))), mode: null };
+}
+
 export function metaText(snap) {
   const parts = [];
   if (Number.isFinite(snap.rounds) && snap.rounds > 1) parts.push(`Round ${snap.round} of ${snap.rounds}`);
@@ -13,35 +23,18 @@ export function metaText(snap) {
   return parts.join(' · ');
 }
 
+// Status under the shape: rounds / time left, plus room for the hold button.
 export function createLabels() {
   const root = el('div', 'labels');
   const meta = el('div', 'meta', { hidden: true });
-  const phase = el('div', 'phase');
-  const count = el('div', 'count');
-  root.append(meta, phase, count);
+  root.append(meta);
 
-  const last = {};
-  const set = (node, key, text) => {
-    if (last[key] === text) return;
-    node.textContent = text;
-    last[key] = text;
-  };
-
+  let last = null;
   function update(snap) {
-    set(phase, 'phase', snap.phase.name);
-    if (snap.openEnded) {
-      count.dataset.mode = 'stopwatch';
-      set(count, 'count', formatClock(snap.elapsed));
-    } else if (snap.repeat > 1) {
-      // Counted breaths are short; the breath number is more useful than a countdown.
-      count.dataset.mode = 'counter';
-      set(count, 'count', `${snap.rep} / ${snap.repeat}`);
-    } else {
-      delete count.dataset.mode;
-      set(count, 'count', String(Math.max(1, Math.ceil(snap.remaining / 1000))));
-    }
     const text = metaText(snap);
-    set(meta, 'meta', text);
+    if (text === last) return;
+    last = text;
+    meta.textContent = text;
     meta.hidden = !text;
   }
 

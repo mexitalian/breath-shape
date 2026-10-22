@@ -44,3 +44,9 @@
   content: " · closed";
   color: var(--color-dim);
 }
+
+/* The closed side keeps its shape but drops the solid fill. */
+.split__half:not([data-active]) .core {
+  background: var(--color-accent-faint);
+  box-shadow: inset 0 0 0 var(--border-hair) var(--color-accent-edge);
+}

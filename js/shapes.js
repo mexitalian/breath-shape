@@ -11,6 +11,8 @@ export const SHAPES = {
   },
   triangle: {
     components: ['outline', 'glow', 'particles', 'core', 'dot'],
+    // The filled shape is clipped to the outline instead of being a rounded box.
+    clipCore: true,
     // Point-down triangle centred on its centroid: rise up the left side,
     // run flat across the top, fall back to the point.
     path: [[50, 96.2], [10, 26.9], [90, 26.9]],
