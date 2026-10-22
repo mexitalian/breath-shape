@@ -58,7 +58,7 @@ export function showScreen(mount, { eyebrow, title, body, points, list, checkbox
 
   screen.append(panel);
   mount.append(screen);
-  panel.querySelector('.button')?.focus();
+  (panel.querySelector('.button--primary') ?? panel.querySelector('.button'))?.focus();
 
   return { close: () => screen.remove() };
 }

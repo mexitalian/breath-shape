@@ -141,5 +141,10 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
     };
   }
 
-  return { start, tick, advance, setDurationScale };
+  // Session length can be chosen after the timeline is built (e.g. on the start screen).
+  function setSessionMs(ms) {
+    sessionMs = ms;
+  }
+
+  return { start, tick, advance, setDurationScale, setSessionMs };
 }
