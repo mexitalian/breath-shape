@@ -4,8 +4,10 @@
   inset: 0;
   z-index: 10;
   display: flex;
-  align-items: center;
   justify-content: center;
+  /* Scrolls when the panel is taller than the screen (phones in landscape). */
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: calc(var(--space-lg) + var(--safe-top)) calc(var(--space-lg) + var(--safe-right)) calc(var(--space-lg) + var(--safe-bottom)) calc(var(--space-lg) + var(--safe-left));
   background: var(--color-glass);
   backdrop-filter: blur(var(--blur-glass));
@@ -14,6 +16,8 @@
 }
 
 .screen__panel {
+  /* Centred when it fits; starts at the top and scrolls when it doesn't. */
+  margin-block: auto;
   width: 100%;
   max-width: var(--width-panel);
   display: flex;

@@ -1,22 +1,44 @@
 /* Marker that traces the field's path: a small copy of the shape (square on the box,
    triangle on the triangle) that rides along the inside of the outline.
-   --dot-x / --dot-y are the path point as a 0–1 fraction of the field. Because the
-   marker has the same proportions as the outline, placing its box at that fraction of
-   (field − marker) keeps it flush with the inner edge on every side and corner. */
+
+   --dot-x / --dot-y (set on the field) are the path point as a 0–1 fraction. Because
+   the marker has the same proportions as the outline, placing its box at that fraction
+   of (field − marker) keeps it flush with the inner edge on every side and corner.
+
+   It is drawn in the fill colour, and where it overlaps the fill it becomes a hole:
+   the marker is masked to the part outside the fill, and the fill is masked to cut
+   the marker's shape out. Both masks use the shape image (--shape-mask) and the
+   field's width (100cqw; the field is a size container). */
 .dot {
+  --marker-x: calc(var(--dot-x, 0) * (100cqw - var(--dot-size)));
+  --marker-y: calc(var(--dot-y, 0) * (100cqh - var(--dot-size)));
+  --fill-size-x: calc(100cqw * var(--breath-scale, 1));
+  --fill-size-y: calc(100cqh * var(--breath-scale, 1));
   position: absolute;
-  left: calc(var(--dot-x, 0) * (100% - var(--dot-size)));
-  top: calc(var(--dot-y, 0) * (100% - var(--dot-size)));
+  left: var(--marker-x);
+  top: var(--marker-y);
   width: var(--dot-size);
   height: var(--dot-size);
-  filter: drop-shadow(0 0 4px var(--color-accent));
+  background: var(--color-accent-fill);
+  /* The marker's own shape, minus the fill (the fill's box, in the marker's coordinates). */
+  mask-image: var(--shape-mask), var(--shape-mask);
+  mask-size: 100% 100%, var(--fill-size-x) var(--fill-size-y);
+  mask-position: 0 0,
+    calc((100cqw - var(--fill-size-x)) / 2 - var(--marker-x))
+    calc((100cqh - var(--fill-size-y)) / 2 - var(--marker-y));
+  mask-repeat: no-repeat;
+  mask-composite: subtract;
   will-change: left, top;
 }
 
-.dot::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--color-ink);
-  clip-path: var(--core-clip, none);
+/* The fill, minus the marker (the marker's box, in the fill's own unscaled coordinates). */
+.field[data-marker] .core {
+  --hole-size: calc(var(--dot-size) / var(--core-transform));
+  mask-image: linear-gradient(#000 0 0), var(--shape-mask);
+  mask-size: 100% 100%, var(--hole-size) var(--hole-size);
+  mask-position: 0 0,
+    calc(50cqw + (var(--dot-x, 0) * (100cqw - var(--dot-size)) - 50cqw) / var(--core-transform))
+    calc(50cqh + (var(--dot-y, 0) * (100cqh - var(--dot-size)) - 50cqh) / var(--core-transform));
+  mask-repeat: no-repeat;
+  mask-composite: subtract;
 }
