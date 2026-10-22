@@ -188,7 +188,8 @@
 
 /* ---------- 3. Component tokens ---------- */
 :root {
-  --field-size:   min(calc(100vw - 2 * var(--space-md)), 30rem, 48vh);
+  /* As wide as the screen, less room for the tracing dot at the edges. */
+  --field-size:   min(calc(100vw - var(--safe-left) - var(--safe-right) - var(--dot-size) - var(--space-xs)), 30rem, 56vh);
   --field-radius: var(--radius-round);
 
   --core-size:   100%;
