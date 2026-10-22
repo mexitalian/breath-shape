@@ -7,14 +7,14 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-xl);
-  padding: var(--space-lg);
+  padding: var(--topbar-height) var(--space-md) var(--space-lg);
 }
 
 /* Short screens (phones in landscape): tighter rhythm so everything fits. */
 @media (max-height: 520px) {
   .stage {
     gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-lg);
+    padding: var(--topbar-height) var(--space-lg) var(--space-sm);
   }
   .stage .hint { display: none; }
 }

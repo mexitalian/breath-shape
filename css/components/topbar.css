@@ -1,0 +1,111 @@
+/* Pattern: practice page top bar — back · title · icon toggles. */
+.topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  /* Equal side columns keep the title centred on the screen. */
+  grid-template-columns: var(--topbar-actions-width) 1fr var(--topbar-actions-width);
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  z-index: 2;
+}
+
+.topbar__back { justify-self: start; }
+
+.topbar__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3xs);
+  min-width: 0;
+  text-align: center;
+}
+
+.topbar__title {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-dim);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.topbar__rate {
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.topbar__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3xs);
+}
+
+/* Round, icon-only control: 44px tap target. */
+.icon-button {
+  width: var(--icon-button-size);
+  height: var(--icon-button-size);
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius-round);
+  border: var(--border-hair) solid transparent;
+  background: transparent;
+  color: var(--color-dim);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.icon-button:hover { background: var(--color-accent-hover); color: var(--color-ink); }
+
+.icon-button[aria-pressed="true"] {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.icon-button:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: default;
+}
+
+.icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Short confirmation under the top bar ("Vibration on"). */
+.toast {
+  position: absolute;
+  top: var(--topbar-height);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: var(--color-glass);
+  border: var(--border-hair) solid var(--color-line);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-slow) var(--ease-standard);
+  z-index: 2;
+}
+
+.toast[data-visible] { opacity: 1; }

@@ -60,8 +60,10 @@
         <div class="sg-demo">
           <button class="button button--primary" type="button">Start</button>
           <button class="button button--ghost" type="button">All techniques</button>
-          <button class="button button--primary" type="button" disabled>Vibration on</button>
+          <button class="button button--primary" type="button" disabled>Disabled</button>
         </div>
+        <p class="sg-note">Icon toggles live in the practice top bar; <code>aria-pressed="true"</code> fills them.</p>
+        <div class="sg-demo" id="icon-buttons"></div>
         <div class="sg-demo">
           <div class="pace" role="group" aria-label="Breathing pace">
             <button class="button button--ghost pace__step" type="button" aria-label="Slower">−</button>
@@ -136,9 +138,20 @@
     import { createTimeline } from './js/timeline.js';
     import { COMPONENTS } from './js/components/index.js';
     import { el } from './js/dom.js';
+    import { createIconToggle } from './js/ui/icon-toggle.js';
+    import { icon } from './js/ui/icons.js';
     import box from './configs/box.js';
     import resonance from './configs/resonance.js';
     import sigh from './configs/sigh.js';
+
+    const iconRow = document.getElementById('icon-buttons');
+    const back = el('a', 'icon-button', { href: './' });
+    back.setAttribute('aria-label', 'All techniques');
+    back.append(icon('back'));
+    const vib = createIconToggle({ name: 'vibrate', label: 'Vibration', onClick: () => vib.set(vib.button.getAttribute('aria-pressed') !== 'true') });
+    const snd = createIconToggle({ name: 'sound', label: 'Hum sound', onClick: () => snd.set(snd.button.getAttribute('aria-pressed') !== 'true') });
+    snd.set(true);
+    iconRow.append(back, vib.button, snd.button);
 
     const root = document.documentElement;
     const hueInput = document.getElementById('hue');
