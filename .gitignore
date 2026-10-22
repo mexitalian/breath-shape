@@ -1,3 +1,5 @@
 node_modules/
 _tmp-*
 www/
+src-tauri/target/
+src-tauri/gen/
