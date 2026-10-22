@@ -12,6 +12,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `resonance-breathing.html` | equal in and out, adjustable 4.5–6.5 breaths/min (default 5) |
 | `478-breathing.html` | in 4 · hold 7 · out 8 |
 | `physiological-sigh.html` | in 2 · sip 1 · out 5 |
+| `extended-exhale.html` | in 4 · out 8, adjustable pace (1:2 ratio kept) |
 
 ## Running locally
 
