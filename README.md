@@ -13,6 +13,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `478-breathing.html` | in 4 · hold 7 · out 8 |
 | `physiological-sigh.html` | in 2 · sip 1 · out 5 |
 | `extended-exhale.html` | in 4 · out 8, adjustable pace (1:2 ratio kept) |
+| `triangle-breathing.html` | in 4 · hold 4 · out 4 |
 
 ## Running locally
 
@@ -37,7 +38,7 @@ js/
   config.js           validates and normalises configs
   shapes.js           shape presets (default components, dot path)
   easing.js           CSS-equivalent easing curves
-  components/         field parts: ring, track, glow, core, particles, dot, ripple
+  components/         field parts: ring, track, outline, glow, core, particles, dot, ripple
   ui/                 stage layout, labels, screen pattern
   controls/           hue drag (and tap), vibration
 configs/*.js          one config per technique
@@ -60,7 +61,7 @@ export default {
   hint: 'Follow the dot around the square.',
 
   hue: 185,                    // 0–359
-  shape: 'circle',             // 'circle' | 'box'
+  shape: 'circle',             // 'circle' | 'box' | 'triangle'
   components: [...],           // optional; defaults come from the shape
   opacity: { min, max },       // glow opacity at smallest / largest breath
   particles: { count: 26, radii: { inner: 0.2, outer: 0.92 } },  // optional

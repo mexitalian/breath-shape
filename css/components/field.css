@@ -18,6 +18,11 @@
   --core-radius:  var(--radius-lg);
 }
 
+/* Triangle: the outline is an SVG; the glow and core sit on the centroid. */
+.field[data-shape="triangle"] {
+  --core-size: 30%;
+}
+
 /* Static outer boundary: ring for circular patterns, track for traced shapes. */
 .ring,
 .track {

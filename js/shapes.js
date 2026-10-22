@@ -9,4 +9,10 @@ export const SHAPES = {
     // Corners in percent of the field, one side per phase: TL → BL → BR → TR.
     path: [[0, 0], [0, 100], [100, 100], [100, 0]],
   },
+  triangle: {
+    components: ['outline', 'glow', 'particles', 'core', 'dot'],
+    // Point-down triangle centred on its centroid: rise up the left side,
+    // run flat across the top, fall back to the point.
+    path: [[50, 96.2], [10, 26.9], [90, 26.9]],
+  },
 };
