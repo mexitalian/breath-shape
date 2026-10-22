@@ -23,11 +23,17 @@ export function start(rawConfig, { mount = document.body } = {}) {
   const ui = buildStage(cfg, mount);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const names = reduceMotion ? cfg.components.filter(n => !MOTION_ONLY.has(n)) : cfg.components;
-  const parts = names.map((name) => {
-    const create = COMPONENTS[name];
-    if (!create) throw new Error(`Unknown component "${name}"`);
-    return create({ field: ui.field, cfg });
-  });
+  // One set of components per field (two in the split layout).
+  const fields = ui.sides.map(({ side, half, field }) => ({
+    side,
+    half,
+    field,
+    parts: names.map((name) => {
+      const create = COMPONENTS[name];
+      if (!create) throw new Error(`Unknown component "${name}"`);
+      return create({ field, cfg });
+    }),
+  }));
 
   const holdButton = el('button', 'button button--primary', { type: 'button', hidden: true });
   ui.labels.root.append(holdButton);
@@ -36,9 +42,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
     try { return window.localStorage; } catch { return null; }
   })();
 
-  const timeline = createTimeline(cfg.sequence, {
-    sessionMs: cfg.sessionMinutes ? cfg.sessionMinutes * 60_000 : null,
-  });
+  const sessionMs = cfg.sessionMinutes ? cfg.sessionMinutes * 60_000 : null;
+  let timeline = createTimeline(cfg.sequence, { sessionMs });
 
   let paceControl = null;
   let currentBpm = null;
@@ -88,10 +93,22 @@ export function start(rawConfig, { mount = document.body } = {}) {
     return cfg.opacity.min + t * (cfg.opacity.max - cfg.opacity.min);
   };
 
+  // In the split layout only the half named by the phase's side is active; the
+  // other dims and shows no particles or effects. Both stay on the shared breath scale.
+  const quiet = (snap) => ({
+    ...snap,
+    phase: { ...snap.phase, particles: null, ripple: false, hum: false, heat: false },
+  });
+
   function render(snap) {
-    ui.field.style.setProperty('--breath-scale', snap.scale.toFixed(4));
-    ui.field.style.setProperty('--breath-glow', glowFor(snap.scale).toFixed(4));
-    for (const part of parts) part.update?.(snap);
+    for (const f of fields) {
+      const active = f.side == null || snap.phase.side == null || snap.phase.side === 'both' || snap.phase.side === f.side;
+      if (f.half) f.half.toggleAttribute('data-active', active);
+      const view = active ? snap : quiet(snap);
+      f.field.style.setProperty('--breath-scale', snap.scale.toFixed(4));
+      f.field.style.setProperty('--breath-glow', glowFor(snap.scale).toFixed(4));
+      for (const part of f.parts) part.update?.(view);
+    }
     sound?.update(snap);
     ui.labels.update(snap);
     ui.setHint((windingDown && cfg.windDown.prompt) || snap.phase.prompt || cfg.hint);
@@ -178,7 +195,17 @@ export function start(rawConfig, { mount = document.body } = {}) {
     const session = choices
       ? 'Choose how long to breathe.'
       : cfg.sessionMinutes ? `${cfg.sessionMinutes} minute session.` : '';
-    const actions = choices
+    const variants = cfg.variants;
+    const actions = variants
+      ? variants.map((variant, i) => ({
+          label: variant.label,
+          primary: i === 0,
+          onClick: () => {
+            timeline = createTimeline(variant.sequence, { sessionMs });
+            begin();
+          },
+        }))
+      : choices
       ? choices.map(minutes => ({
           label: `${minutes} min`,
           primary: minutes === cfg.sessionMinutes,

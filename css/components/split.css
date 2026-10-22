@@ -1,0 +1,46 @@
+/* Pattern: two halves side by side, each with its own field and colour scope.
+   The engine marks the half in use with data-active; the other dims. */
+.split {
+  --split-base-hue: var(--hue);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: var(--split-max-width);
+}
+
+.split__half {
+  --hue: calc(var(--split-base-hue) + var(--hue-offset, 0));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0;
+  border-radius: var(--radius-md);
+  opacity: var(--split-inactive-opacity);
+  transition: opacity var(--duration-slow) var(--ease-standard),
+              background var(--duration-slow) var(--ease-standard);
+}
+
+.split__half[data-active] {
+  opacity: 1;
+  background: var(--color-accent-hover);
+}
+
+.split__half .field { --field-size: var(--split-field-size); }
+
+@media (max-height: 520px) {
+  .split__half { padding: var(--space-xs) 0; gap: var(--space-xs); }
+}
+
+.split__caption {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.split__half:not([data-active]) .split__caption::after {
+  content: " · closed";
+  color: var(--color-dim);
+}

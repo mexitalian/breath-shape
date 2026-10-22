@@ -10,6 +10,15 @@
   padding: var(--space-lg);
 }
 
+/* Short screens (phones in landscape): tighter rhythm so everything fits. */
+@media (max-height: 520px) {
+  .stage {
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+  }
+  .stage .hint { display: none; }
+}
+
 .stage__controls {
   display: flex;
   flex-direction: column;
