@@ -87,10 +87,20 @@ html { scroll-behavior: smooth; }
 }
 
 .technique-group__header {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-3xs);
   padding-bottom: var(--space-xs);
+}
+
+/* Full-bleed rule under each group title, matching the row dividers. */
+.technique-group__header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: var(--bleed-inset);
+  right: var(--bleed-inset);
   border-bottom: var(--border-hair) solid var(--color-line);
 }
 
@@ -110,7 +120,6 @@ html { scroll-behavior: smooth; }
 
 .technique-list { list-style: none; display: flex; flex-direction: column; }
 
-.technique-list li + li { border-top: var(--border-hair) solid var(--color-line); }
 
 .technique {
   display: grid;
@@ -120,11 +129,10 @@ html { scroll-behavior: smooth; }
   padding: var(--space-md) var(--space-xs);
   color: inherit;
   text-decoration: none;
-  border-radius: var(--radius-md);
-  transition: background var(--duration-fast) var(--ease-standard);
 }
 
-.technique:hover { background: var(--color-accent-hover); }
+.technique:hover,
+.technique:active { --bleed-bg: var(--color-accent-hover); }
 
 .technique__text { display: flex; flex-direction: column; gap: var(--space-2xs); min-width: 0; }
 

@@ -1,0 +1,73 @@
+/* Pattern: cycle counter (js/ui/cycle-counter.js), between the shape and the text.
+   One mini shape per cycle: outlined until it starts, breathing while it runs,
+   filled once it's done. The area keeps a fixed height and scrolls on its own, so
+   the main shape never moves as cycles are added. */
+.stage__cycles {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.cycles {
+  width: min(100%, var(--field-size));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xs);
+  touch-action: pan-y;
+}
+
+.cycles__count {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.cycles__grid {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cycle-gap);
+}
+
+/* Set number of rounds: one centred row. */
+.cycles[data-mode="target"] .cycles__grid { justify-content: center; }
+
+/* Counting up: newest top left, older ones wrap into rows you can scroll. */
+.cycles[data-mode="up"] { align-items: flex-start; }
+
+.cycles[data-mode="up"] .cycles__grid {
+  height: calc(var(--cycles-rows) * var(--cycle-size) + (var(--cycles-rows) - 1) * var(--cycle-gap));
+  overflow-y: auto;
+  scrollbar-width: none;
+  align-content: flex-start;
+}
+
+.cycles[data-mode="up"] .cycles__grid::-webkit-scrollbar { display: none; }
+
+.cycle {
+  flex: none;
+  width: var(--cycle-size);
+  height: var(--cycle-size);
+  overflow: visible;
+}
+
+.cycle__outline {
+  fill: none;
+  stroke: var(--color-accent-edge);
+  stroke-width: var(--border-hair);
+  vector-effect: non-scaling-stroke;
+}
+
+.cycle__fill {
+  fill: var(--color-accent-fill);
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  transform: scale(0);
+}
+
+.cycle[data-state="active"] .cycle__fill { transform: scale(var(--cycle-scale, 1)); }
+.cycle[data-state="done"] .cycle__fill { transform: scale(1); }
+.cycle[data-state="done"] .cycle__outline { stroke: var(--color-accent-fill); }

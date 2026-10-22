@@ -11,11 +11,13 @@
 @import url("components/ripple.css");
 @import url("components/hum.css");
 @import url("components/labels.css");
+@import url("components/cycles.css");
 @import url("components/button.css");
 @import url("components/screen.css");
 @import url("components/check.css");
 @import url("components/pace.css");
 @import url("components/chip.css");
+@import url("components/bleed.css");
 @import url("components/technique-list.css");
 @import url("components/history.css");
 @import url("components/heart-rate.css");

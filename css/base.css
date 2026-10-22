@@ -8,6 +8,8 @@ body {
   font-family: var(--font-sans);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
+  /* Full-bleed rows reach exactly the screen edge; never let them add a sideways scroll. */
+  overflow-x: clip;
 }
 
 /* Full-screen practice pages: no scrolling, drag gestures belong to the page. */

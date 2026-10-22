@@ -195,6 +195,11 @@
   --core-size:   100%;
   --core-radius: var(--radius-round);
 
+  /* Cycle counter: mini shapes, and how many rows show before it scrolls. */
+  --cycle-size:  1.05rem;
+  --cycle-gap:   var(--space-2xs);
+  --cycles-rows: 2;
+
   --particle-size: 4px;
   --dot-size:      18px;
 
@@ -206,6 +211,9 @@
 
   --step-button-size: 2.75rem;
   --pace-value-width: 9.5rem;
+
+  /* Full-bleed rows: from a centred page column out to the screen edges. */
+  --bleed-inset: calc(50% - 50vw);
 
   --orb-size: 3.25rem;
   --thumb-size: 4.25rem;

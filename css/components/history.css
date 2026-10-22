@@ -16,7 +16,6 @@
 
 .history-list { list-style: none; display: flex; flex-direction: column; }
 
-.history-list li + li { border-top: var(--border-hair) solid var(--color-line); }
 
 .history-row {
   display: grid;
