@@ -4,6 +4,7 @@ import { normalizePace } from './pace.js';
 const slug = (text) => String(text).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const DEFAULT_OPACITY = { min: 0.35, max: 0.9 };
+const PHASE_FLAG_COMPONENTS = ['ripple', 'hum', 'heat'];
 
 function normalizePhase(p) {
   if (typeof p.name !== 'string') throw new Error('Every phase needs a name');
@@ -18,6 +19,7 @@ function normalizePhase(p) {
     vibrate: p.vibrate ?? null,
     ripple: !!p.ripple,
     hum: !!p.hum,
+    heat: !!p.heat,
     record: p.record ?? null,
     action: p.action ?? 'Continue',
     prompt: p.prompt ?? null,
@@ -48,14 +50,13 @@ export function normalize(cfg) {
   const preset = SHAPES[shape];
   if (!preset) throw new Error(`Unknown shape "${shape}"`);
 
+  // Components driven by a phase flag are only mounted when some phase uses that flag.
   const anyPhase = (flag) => steps.some(s => s.phases.some(p => p[flag]));
-  const hasRipple = anyPhase('ripple');
-  const hasHum = anyPhase('hum');
-  const components = (cfg.components ?? preset.components).filter(name =>
-    (name !== 'particles' || cfg.particles) &&
-    (name !== 'ripple' || hasRipple) &&
-    (name !== 'hum' || hasHum)
-  );
+  const components = (cfg.components ?? preset.components).filter((name) => {
+    if (name === 'particles') return !!cfg.particles;
+    if (PHASE_FLAG_COMPONENTS.includes(name)) return anyPhase(name);
+    return true;
+  });
 
   return {
     id: cfg.id ?? slug(cfg.title),

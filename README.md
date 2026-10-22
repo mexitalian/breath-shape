@@ -19,6 +19,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `bhastrika.html` | 3 rounds of 20 bellows breaths (1s in · 1s out) + 30s rest; safety screen |
 | `kapalabhati.html` | 3 rounds of 30 pumps (sharp 0.3s out · passive 0.7s in) + 30s rest; safety screen |
 | `wim-hof.html` | 3 rounds: 30 power breaths, empty-lung hold (tap to end, timed), 15s recovery hold; safety screen |
+| `tummo.html` | 5 rounds: 20 deep breaths, full-breath hold with squeeze (tap to release, timed), 12s rest; safety screen |
 
 ## Running locally
 
@@ -43,7 +44,7 @@ js/
   config.js           validates and normalises configs
   shapes.js           shape presets (default components, dot path)
   easing.js           CSS-equivalent easing curves
-  components/         field parts: ring, track, outline, glow, hum, core, particles, dot, ripple
+  components/         field parts: ring, track, outline, glow, hum, heat, core, particles, dot, ripple
   ui/                 stage layout, labels, screen pattern
   controls/           hue drag (and tap), vibration, hum sound
 configs/*.js          one config per technique
@@ -104,6 +105,7 @@ export default {
                                // add cone: { angle: -90, spread: 40 } to stream one way (degrees, -90 = up)
   ripple: true,                // expanding ring during this phase
   hum: true,                   // sound-wave rings + core tremor; plays the hum tone if sound is on
+  heat: true,                  // warmth builds from the core's centre while the phase lasts
   record: 'Retention',         // record this phase's duration for the summary
   action: 'Breathe',           // button label on open-ended holds
   prompt: 'Tap when you need to breathe.',    // replaces the hint during this phase
