@@ -17,6 +17,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `pursed-lip-breathing.html` | nose in 2 · lips out 4 |
 | `bhramari.html` | in 4 · hum 8, optional hum sound |
 | `bhastrika.html` | 3 rounds of 20 bellows breaths (1s in · 1s out) + 30s rest; safety screen |
+| `kapalabhati.html` | 3 rounds of 30 pumps (sharp 0.3s out · passive 0.7s in) + 30s rest; safety screen |
 
 ## Running locally
 
