@@ -4,6 +4,8 @@
 
 - Every change reaches `main` through a pull request, never a direct push, so the work is trackable on GitHub. Work on a branch, open a PR that links its issues (`Closes #n`), then merge the PR.
 - Merge with a merge commit (not squash) so the individual commits stay visible.
+- Stacked PRs: merge top-down into the bottom PR's branch, then merge the bottom PR into `main` once, so a stack triggers a single `main` build. Close the upper PRs' issues by hand ("Closes #n" only fires on merges into `main`).
+- Every push to `main` builds the Android APK and replaces the "Latest app build" release; avoid needless merges to `main`.
 - `main` is served live by GitHub Pages; merging a PR deploys it.
 
 ## Commands
@@ -20,3 +22,7 @@ npm run serve    # local server; pages use ES modules so file:// won't work
 - The engine writes state as CSS variables (`--breath-scale`, `--breath-glow`, …); styling stays in CSS, never in JS.
 - New visuals go in as components (`js/components/` + `css/components/`), new layouts and screens as patterns (`js/ui/`).
 - When adding a technique, also add it to `index.html` and the README table.
+
+## Talking to the owner
+
+- Always give links as full, clickable `https://` URLs (Markdown links), never bare paths like `github.com/...`. The owner often reads on a phone.

@@ -8,6 +8,12 @@ on:
 permissions:
   contents: write
 
+# One build per branch at a time: a newer push cancels any build still running,
+# so only the newest commit finishes and (on main) publishes the release.
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   apk:
     runs-on: ubuntu-latest
