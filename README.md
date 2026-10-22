@@ -33,7 +33,7 @@ npm run serve      # then open the printed URL
 npm test           # timeline and config tests (Node 20+)
 ```
 
-## Apps (iOS + Android)
+## Apps (iOS, Android, Mac)
 
 The same pages run inside native apps built with [Capacitor](https://capacitorjs.com). `npm run build` copies the site into `www/`, and `npx cap sync` puts it into the `android/` and `ios/` projects.
 
@@ -50,6 +50,8 @@ npm run ios          # builds the web bundle, syncs, opens Xcode
 In Xcode: plug in the iPhone, pick it as the run target, select the **App** target → *Signing & Capabilities* → choose your Apple ID as the team, then press ▶. The first time, approve the developer profile on the phone under *Settings → General → VPN & Device Management*. A free Apple ID works for your own phone (apps expire after 7 days); TestFlight needs the paid developer account.
 
 After pulling new changes, run `npm run sync` (or `npm run ios`) before building again.
+
+**Mac menu-bar app:** the same pages in a [Tauri](https://tauri.app) shell (`src-tauri/`), using the Mac's built-in WebKit. Every merge to `main` builds a universal `Breathing.dmg` (Apple Silicon + Intel) on GitHub Actions and publishes it as the [Latest Mac build](https://github.com/mexitalian/breathing-animations/releases/tag/mac-latest). It's ad-hoc signed, so the first time you open it macOS asks you to allow it under *System Settings → Privacy & Security → Open Anyway*. Click the ring icon in the menu bar (or press ⌥⌘B) to open it; right-click for *Float window*, *Launch at login* and *Quit*. To run it from source on the Mac (needs [Rust](https://rustup.rs)): `npm ci && npm run mac`.
 
 **Icon and splash:** the sources are in `assets/` (`icon-only.png`, `icon-foreground.png` + `icon-background.png` for Android's adaptive icon, `splash.png`, `splash-dark.png`). After changing them, regenerate every size with:
 
