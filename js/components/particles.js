@@ -3,6 +3,8 @@ import { noise1D } from '../noise.js';
 
 // Particles drift between named radii (fractions of the field radius) once per phase.
 // Each phase sets { from, to }; a phase without `particles` hides them.
+// Optional cone: { angle, spread } in degrees (0 = right, -90 = up) keeps them in
+// one direction instead of all around, e.g. a stream of breath leaving the lips.
 // Open-ended holds loop the drift every HOLD_LOOP_MS.
 const HOLD_LOOP_MS = 4000;
 
@@ -47,7 +49,10 @@ export function particles({ field, cfg }) {
     const envelope = Math.sin(frac * Math.PI);
 
     for (const p of items) {
-      const angle = noise1D(p.seed + phaseSeed * 9.13) * Math.PI * 2;
+      const n = noise1D(p.seed + phaseSeed * 9.13);
+      const angle = motion.cone
+        ? ((motion.cone.angle + (n - 0.5) * motion.cone.spread) * Math.PI) / 180
+        : n * Math.PI * 2;
       const spread = 0.65 + noise1D(p.radiusSeed + phaseSeed * 13.7) * 0.55;
       const r = (fromR + (toR - fromR) * frac ** p.speedExp) * spread;
       p.node.style.transform = `translate(${Math.cos(angle) * r}px,${Math.sin(angle) * r}px) scale(${p.sizeJitter})`;
