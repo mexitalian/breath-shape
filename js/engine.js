@@ -10,6 +10,7 @@ import { durationScaleFor, loadPace, savePace } from './pace.js';
 import { initHueControl } from './controls/hue.js';
 import { initVibration } from './controls/vibration.js';
 import { initSound } from './controls/sound.js';
+import { createKeepAwake } from './controls/keep-awake.js';
 import { el } from './dom.js';
 
 const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
@@ -77,6 +78,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   const sound = cfg.sound ? initSound(ui.actions, ui.notify, cfg.sound) : null;
   const vibration = cfg.vibration ? initVibration(ui.actions, ui.notify) : null;
+  const awake = createKeepAwake();
 
   let raf = 0;
   let running = false;
@@ -125,6 +127,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     render(snap);
     if (snap.finished) {
       running = false;
+      awake.release();
       showSummary(snap);
       return;
     }
@@ -143,6 +146,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     timeline.start(performance.now());
     lastSerial = -1;
     running = true;
+    awake.acquire();
     raf = requestAnimationFrame(frame);
   }
 
@@ -265,6 +269,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       vibration?.destroy();
       paceControl?.destroy();
       sound?.destroy();
+      awake.destroy();
       screen?.close();
       ui.stage.remove();
     },
