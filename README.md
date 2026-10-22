@@ -11,7 +11,9 @@ Guided breathing animations built on one shared engine. Each technique is a smal
 | `478-breathing.html` | in 4 · hold 7 · out 8 |
 | `physiological-sigh.html` | in 2 · sip 1 · out 5 |
 
-Open any page directly in a browser; there's no build step. Drag anywhere on the screen to change the colour.
+Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub Pages from `main`).
+
+Or open any page directly in a browser; there's no build step. Drag anywhere on the screen to change the colour.
 
 ## Layout
 
@@ -24,3 +26,8 @@ Open any page directly in a browser; there's no build step. Drag anywhere on the
 
 1. Copy a file in `configs/` and set its phases (`name`, `dur` in seconds, `scale`), `hue`, and particle radii.
 2. Copy one of the HTML pages and point its first `<script>` at the new config.
+3. Add a row for it to `index.html`.
+
+## License
+
+© 2026 mexitalian. All rights reserved. See [LICENSE](LICENSE). The source is visible so the pages can be hosted; no rights to use or copy the code are granted.

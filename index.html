@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guided breathing animations: box, resonance, 4-7-8 and the physiological sigh.">
+  <title>Breathing Animations</title>
+  <style>
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+
+    :root {
+      --ink:  hsl(220, 16%, 90%);
+      --dim:  hsl(220, 10%, 60%);
+      --line: hsla(220, 14%, 60%, 0.16);
+      --bg-1: hsl(225, 30%, 6%);
+      --bg-2: hsl(225, 24%, 11%);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { background: var(--bg-1); }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(120% 80% at 50% 0%, var(--bg-2) 0%, var(--bg-1) 70%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      padding: 4.5rem 1rem 3rem;
+    }
+
+    main {
+      width: 100%;
+      max-width: 34rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.75rem;
+    }
+
+    header { display: flex; flex-direction: column; gap: 0.9rem; }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--dim);
+      font-weight: 500;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 7vw, 2.6rem);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      text-wrap: balance;
+    }
+
+    .lede {
+      color: var(--dim);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 52ch;
+    }
+
+    ul { list-style: none; display: flex; flex-direction: column; }
+
+    li + li { border-top: 1px solid var(--line); }
+
+    a.row {
+      --glow: hsl(var(--hue), 55%, 68%);
+      --glow-soft: hsla(var(--hue), 55%, 68%, 0.18);
+      display: grid;
+      grid-template-columns: 3.25rem 1fr auto;
+      align-items: center;
+      gap: 1.1rem;
+      padding: 1.15rem 0.5rem;
+      color: inherit;
+      text-decoration: none;
+      border-radius: 14px;
+      transition: background 0.25s;
+    }
+
+    a.row:hover { background: hsla(var(--hue), 40%, 50%, 0.07); }
+
+    a.row:focus-visible {
+      outline: 2px solid var(--glow);
+      outline-offset: 2px;
+    }
+
+    .orb {
+      width: 3.25rem;
+      height: 3.25rem;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, var(--glow-soft), transparent 75%);
+    }
+
+    .orb span {
+      width: 60%;
+      height: 60%;
+      border-radius: 50%;
+      background: hsla(var(--hue), 55%, 68%, 0.16);
+      border: 1px solid hsla(var(--hue), 55%, 68%, 0.6);
+      animation: var(--anim) var(--cycle) ease-in-out infinite;
+    }
+
+    .orb.square { border-radius: 10px; }
+    .orb.square span { border-radius: 5px; }
+
+    .name { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+
+    .name strong { font-size: 1.05rem; font-weight: 500; }
+
+    .pattern {
+      font-size: 0.8rem;
+      color: var(--glow);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+
+    .use { font-size: 0.8rem; color: var(--dim); line-height: 1.45; }
+
+    .arrow { color: var(--dim); font-size: 1.1rem; transition: transform 0.25s, color 0.25s; }
+    a.row:hover .arrow { transform: translateX(3px); color: var(--glow); }
+
+    .note {
+      font-size: 0.8rem;
+      color: var(--dim);
+      line-height: 1.6;
+    }
+
+    footer {
+      font-size: 0.72rem;
+      color: var(--dim);
+      border-top: 1px solid var(--line);
+      padding-top: 1.25rem;
+    }
+
+    @keyframes box {
+      0%, 100% { transform: scale(0.72); }
+      25%, 50% { transform: scale(1); }
+      75%      { transform: scale(0.72); }
+    }
+    @keyframes resonance {
+      0%, 100% { transform: scale(0.55); }
+      50%      { transform: scale(1); }
+    }
+    @keyframes four78 {
+      0%, 100%         { transform: scale(0.55); }
+      21.05%, 57.89%   { transform: scale(1); }
+    }
+    @keyframes sigh {
+      0%, 100% { transform: scale(0.55); animation-timing-function: ease-out; }
+      25%      { transform: scale(0.82); animation-timing-function: ease-out; }
+      37.5%    { transform: scale(1);    animation-timing-function: ease-in; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">Breathing Animations</div>
+      <h1>Pick a pace and follow the light.</h1>
+      <p class="lede">Each one is a guided breathing pattern. Follow the shape as it grows and shrinks, and drag anywhere on the screen to change the colour.</p>
+    </header>
+
+    <ul>
+      <li>
+        <a class="row" href="box-breathing.html" style="--hue:185; --anim:box; --cycle:16s">
+          <div class="orb square"><span></span></div>
+          <div class="name">
+            <strong>Box Breathing</strong>
+            <span class="pattern">in 4 · hold 4 · out 4 · hold 4</span>
+            <span class="use">Steady focus under pressure.</span>
+          </div>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a class="row" href="resonance-breathing.html" style="--hue:262; --anim:resonance; --cycle:12s">
+          <div class="orb"><span></span></div>
+          <div class="name">
+            <strong>Resonance Breathing</strong>
+            <span class="pattern">in 6 · out 6 · 5 breaths/min</span>
+            <span class="use">Even breathing that lifts heart rate variability.</span>
+          </div>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a class="row" href="478-breathing.html" style="--hue:14; --anim:four78; --cycle:19s">
+          <div class="orb"><span></span></div>
+          <div class="name">
+            <strong>4-7-8 Breathing</strong>
+            <span class="pattern">in 4 · hold 7 · out 8</span>
+            <span class="use">A long exhale for winding down and sleep.</span>
+          </div>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a class="row" href="physiological-sigh.html" style="--hue:42; --anim:sigh; --cycle:8s">
+          <div class="orb"><span></span></div>
+          <div class="name">
+            <strong>Physiological Sigh</strong>
+            <span class="pattern">in 2 · sip 1 · out 5</span>
+            <span class="use">The fastest way to take the edge off stress.</span>
+          </div>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    </ul>
+
+    <p class="note">More techniques are on the way, including Wim Hof, alternate nostril and connected breathing.</p>
+
+    <footer>© 2026 mexitalian. All rights reserved.</footer>
+  </main>
+</body>
+</html>
