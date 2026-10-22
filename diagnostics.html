@@ -9,6 +9,9 @@
   <style>
     .diag-actions { display: flex; flex-direction: column; gap: var(--space-sm); }
     .diag-actions .button { justify-content: flex-start; }
+    .diag-usage { display: flex; align-items: center; gap: var(--space-sm); }
+    .diag-usage .button { flex: 1; justify-content: flex-start; }
+    .diag-usage .chip:not([aria-pressed="true"]) { background: transparent; }
     .diag-out {
       font-family: var(--font-mono);
       font-size: var(--text-sm);
@@ -37,6 +40,12 @@
         <div class="diag-out" id="env"></div>
       </section>
 
+      <section class="technique-group" id="usage-section" hidden>
+        <h2 class="technique-group__title">Vibration types (Android)</h2>
+        <p class="page__lede">Android can mute each type of vibration separately. Tap each one and note which you feel, then tap <strong>Use</strong> on one you felt. Sessions will vibrate with that type.</p>
+        <div class="diag-actions" id="usages"></div>
+      </section>
+
       <section class="technique-group">
         <h2 class="technique-group__title">Vibration tests</h2>
         <div class="diag-actions">
@@ -60,21 +69,32 @@
 
   <script type="module">
     import { initAppShell } from './js/app.js';
-    import { isNativeApp, platform, nativePlugin } from './js/native.js';
+    import { isNativeApp, platform, nativePlugin, VIBRATION_USAGES, vibrationUsage, setVibrationUsage } from './js/native.js';
     import { readHapticsLog, clearHapticsLog } from './js/haptics-log.js';
 
     initAppShell({ home: false });
     const cap = window.Capacitor;
     const haptics = nativePlugin('Haptics');
+    const breath = nativePlugin('BreathVibration');
 
-    document.getElementById('env').textContent = [
+    const envEl = document.getElementById('env');
+    envEl.textContent = [
       `App: ${isNativeApp ? 'yes' : 'no (website)'}`,
       `Platform: ${platform}`,
       `Haptics plugin: ${haptics ? 'found' : 'NOT found'}`,
       `Native plugins: ${(cap?.PluginHeaders ?? []).map(h => h.name).join(', ') || 'none'}`,
       `navigator.vibrate: ${'vibrate' in navigator ? 'present' : 'missing'}`,
       `Browser: ${navigator.userAgent}`,
+      `Session vibration type: ${breath ? vibrationUsage() : 'n/a'}`,
     ].join('\n');
+
+    if (breath) {
+      breath.info().then((info) => {
+        const settings = Object.entries(info.settings ?? {}).map(([k, v]) => `  ${k}: ${v}`);
+        envEl.textContent += ['', `Android SDK: ${info.sdk}`, `Vibration motor: ${info.hasVibrator ? 'yes' : 'NO'}`,
+          `Strength control: ${info.amplitudeControl ? 'yes' : 'no'}`, `Ring mode: ${info.ringerMode}`, 'Phone settings:', ...settings].join('\n');
+      }, (err) => { envEl.textContent += `\nPhone info failed: ${err?.message ?? err}`; });
+    }
 
     const results = document.getElementById('results');
     const lines = [];
@@ -110,6 +130,38 @@
         return navigator.vibrate(500);
       }),
     };
+    if (breath) {
+      document.getElementById('usage-section').hidden = false;
+      const list = document.getElementById('usages');
+      const useButtons = [];
+      const markChosen = () => { for (const b of useButtons) b.setAttribute('aria-pressed', String(b.dataset.usage === vibrationUsage())); };
+      for (const usage of VIBRATION_USAGES) {
+        const row = document.createElement('div');
+        row.className = 'diag-usage';
+        const test = document.createElement('button');
+        test.type = 'button';
+        test.className = 'button button--ghost';
+        test.textContent = `${usage[0].toUpperCase()}${usage.slice(1)} · 500 ms`;
+        test.addEventListener('click', () => run(`Type ${usage}`, () => breath.vibrate({ duration: 500, usage })));
+        const use = document.createElement('button');
+        use.type = 'button';
+        use.className = 'chip chip--link';
+        use.textContent = 'Use';
+        use.dataset.usage = usage;
+        use.setAttribute('aria-label', `Use ${usage} for sessions`);
+        use.addEventListener('click', () => {
+          setVibrationUsage(usage);
+          markChosen();
+          report(`Sessions now vibrate as: ${usage}`);
+          envEl.textContent = envEl.textContent.replace(/Session vibration type: \w+/, `Session vibration type: ${usage}`);
+        });
+        useButtons.push(use);
+        row.append(test, use);
+        list.append(row);
+      }
+      markChosen();
+    }
+
     for (const btn of document.querySelectorAll('[data-test]')) {
       btn.addEventListener('click', () => tests[btn.dataset.test]());
     }

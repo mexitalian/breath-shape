@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { pulses, impactStyleFor, isNativeApp, nativePlugin, pluginFromBridge } from '../js/native.js';
+import { pulses, impactStyleFor, isNativeApp, nativePlugin, pluginFromBridge, waveform, vibrationUsage, setVibrationUsage } from '../js/native.js';
 
 test('vibration patterns become timed pulses', () => {
   assert.deepEqual(pulses([120]), [{ at: 0, duration: 120 }]);
@@ -48,4 +48,20 @@ test('unknown plugins and the website get null', () => {
   assert.equal(pluginFromBridge(realLikeBridge([]), 'Nope'), null);
   assert.equal(pluginFromBridge(undefined, 'Haptics'), null);
   assert.equal(pluginFromBridge({ isNativePlatform: () => false }, 'Haptics'), null);
+});
+
+test('web patterns become Android waveforms', () => {
+  assert.deepEqual(waveform([120]), [0, 120]);
+  assert.deepEqual(waveform([30, 60, 30]), [0, 30, 60, 30]);
+  assert.deepEqual(waveform(200), [0, 200]);
+});
+
+test('the vibration usage defaults to alarm and only keeps known values', () => {
+  const store = new Map();
+  const storage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v) };
+  assert.equal(vibrationUsage(storage), 'alarm');
+  setVibrationUsage('touch', storage);
+  assert.equal(vibrationUsage(storage), 'touch');
+  setVibrationUsage('bogus', storage);
+  assert.equal(vibrationUsage(storage), 'alarm');
 });

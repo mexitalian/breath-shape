@@ -40,3 +40,26 @@ export function impactStyleFor(duration) {
   if (duration < 100) return 'MEDIUM';
   return 'HEAVY';
 }
+
+// Web patterns are [on, off, on, ...]; Android waveforms start with an off time.
+export function waveform(pattern) {
+  return [0, ...(Array.isArray(pattern) ? pattern : [pattern])];
+}
+
+// Android silences vibrations of some kinds depending on the phone's settings, so the
+// app tags them with a usage. The Diagnostics page lets the user pick one that works.
+export const VIBRATION_USAGES = ['alarm', 'notification', 'touch', 'media', 'accessibility', 'unknown'];
+const USAGE_KEY = 'breathing:vibration-usage';
+
+export function vibrationUsage(storage = globalThis.localStorage) {
+  try {
+    const saved = storage?.getItem(USAGE_KEY);
+    return VIBRATION_USAGES.includes(saved) ? saved : 'alarm';
+  } catch {
+    return 'alarm';
+  }
+}
+
+export function setVibrationUsage(usage, storage = globalThis.localStorage) {
+  try { storage?.setItem(USAGE_KEY, usage); } catch { /* best-effort */ }
+}

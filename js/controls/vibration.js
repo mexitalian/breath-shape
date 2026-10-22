@@ -1,12 +1,14 @@
 import { createIconToggle } from '../ui/icon-toggle.js';
-import { nativePlugin, platform, pulses, impactStyleFor } from '../native.js';
+import { nativePlugin, platform, pulses, impactStyleFor, waveform, vibrationUsage } from '../native.js';
 import { logHaptics } from '../haptics-log.js';
 
-// In the app, patterns play through native haptics (iPhones have no web vibration)
-// and start switched on. On the website, the Vibration API is used and the user
+// In the app, patterns play natively and start switched on: on Android through the
+// app's own BreathVibration plugin, tagged with a usage the phone doesn't silence
+// (see Diagnostics); on iPhone as Haptics taps, since iOS has no web vibration. On the website, the Vibration API is used and the user
 // turns it on with a tap, because browsers require a gesture first.
 export function initVibration(container, notify) {
-  const haptics = nativePlugin('Haptics');
+  const android = platform === 'android' ? nativePlugin('BreathVibration') : null;
+  const haptics = android ?? nativePlugin('Haptics');
   const webSupported = 'vibrate' in navigator;
   const supported = !!haptics || webSupported;
   let armed = !!haptics;
@@ -16,6 +18,7 @@ export function initVibration(container, notify) {
 
   // Every native call is logged (Diagnostics page) and the first failure is shown.
   function call(method, options) {
+    const via = `${android ? 'BreathVibration' : 'Haptics'}.${method}`;
     let result;
     try {
       result = Promise.resolve(haptics[method](options));
@@ -23,10 +26,10 @@ export function initVibration(container, notify) {
       result = Promise.reject(err);
     }
     return result.then(
-      () => logHaptics({ via: `Haptics.${method}`, options, ok: true }),
+      () => logHaptics({ via, options, ok: true }),
       (err) => {
         const message = err?.message ?? String(err);
-        logHaptics({ via: `Haptics.${method}`, options, ok: false, error: message });
+        logHaptics({ via, options, ok: false, error: message });
         if (!reportedError) {
           reportedError = true;
           notify(`Vibration failed: ${message}`);
@@ -37,6 +40,10 @@ export function initVibration(container, notify) {
 
   function playNative(pattern) {
     for (const t of timers) clearTimeout(t);
+    if (android) {
+      call('pattern', { timings: waveform(pattern), usage: vibrationUsage() });
+      return;
+    }
     timers = pulses(pattern).map(({ at, duration }) => setTimeout(() => {
       if (platform === 'ios') call('impact', { style: impactStyleFor(duration) });
       else call('vibrate', { duration });
@@ -63,7 +70,7 @@ export function initVibration(container, notify) {
     },
   });
   toggle.set(armed);
-  logHaptics({ via: 'init', options: { platform, nativeHaptics: !!haptics, webVibrate: webSupported, armed }, ok: true });
+  logHaptics({ via: 'init', options: { platform, native: android ? 'BreathVibration' : haptics ? 'Haptics' : null, usage: android ? vibrationUsage() : undefined, webVibrate: webSupported, armed }, ok: true });
 
   container.append(toggle.button);
 
