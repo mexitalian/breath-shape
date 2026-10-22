@@ -51,3 +51,10 @@ test('result line summarises how the session went', () => {
   assert.equal(formatDuration(65_000), '1 min 5 s');
   assert.equal(formatDuration(40_000), '40 s');
 });
+
+test('heart rate checks show their bpm and are left out of practice totals', () => {
+  const now = Date.UTC(2026, 9, 22, 12);
+  const check = { id: 'hr', kind: 'heart-rate', startedAt: now - 1000, durationMs: 40_000, heartRate: 64 };
+  assert.equal(sessionResult(check), '64 bpm');
+  assert.deepEqual(weekTotals([check], now), { sessions: 0, minutes: 0 });
+});
