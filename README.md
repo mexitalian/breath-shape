@@ -21,6 +21,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `wim-hof.html` | 3 rounds: 30 power breaths, empty-lung hold (tap to end, timed), 15s recovery hold; safety screen |
 | `tummo.html` | 5 rounds: 20 deep breaths, full-breath hold with squeeze (tap to release, timed), 12s rest; safety screen |
 | `connected-breathing.html` | holotropic-style connected breathing: 10/20/30 min, adjustable pace, 2 min wind-down; safety screen |
+| `buteyko.html` | control pause (timed), 30 light breaths, control pause again; summary compares them |
 
 ## Running locally
 
@@ -81,6 +82,7 @@ export default {
   sessionMinutes: null,        // end after this long (at the end of a breath)
   sessionChoices: [10, 20, 30],// start screen offers these lengths (minutes); sessionMinutes is the default
   windDown: { minutes: 2, bpm: 8, prompt: '…' },  // with pace + session: slow down over the last minutes
+  summaryNote: '…',            // text on the end screen, under the title
   vibration: true,             // show the "Enable vibration" button
   sound: { tone: 130 },        // optional "Hum sound" toggle (off by default) for hum phases
 

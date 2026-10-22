@@ -144,6 +144,10 @@
   0%, 100% { transform: scale(0.88); }
   30%      { transform: scale(0.7); animation-timing-function: ease-in; }
 }
+@keyframes orb-light {
+  0%, 100% { transform: scale(0.74); }
+  42.86%   { transform: scale(0.84); }
+}
 @keyframes orb-sigh {
   0%, 100% { transform: scale(0.55); animation-timing-function: ease-out; }
   25%      { transform: scale(0.82); animation-timing-function: ease-out; }
