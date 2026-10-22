@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>History</title>
+  <link rel="icon" href="icons/icon-96.webp" type="image/webp">
+  <link rel="apple-touch-icon" href="icons/icon-192.webp">
+  <link rel="stylesheet" href="css/system.css">
+</head>
+<body>
+  <div class="page">
+    <main class="page__main">
+      <header class="page__header">
+        <div class="eyebrow"><a href="./" style="color: inherit">← All techniques</a></div>
+        <h1 class="page__title">History</h1>
+        <div class="history-summary" id="summary"></div>
+      </header>
+
+      <div id="groups"></div>
+
+      <footer class="page__footer">
+        <span>Saved only on this device.</span>
+        <button class="button button--ghost" type="button" id="clear" hidden>Clear history</button>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initAppShell } from './js/app.js';
+    import { readHistory, removeSession, clearHistory, groupByDay, weekTotals, formatDuration, sessionResult } from './js/history.js';
+    import { loadConfig } from './js/techniques.js';
+    import { createThumbnail } from './js/ui/thumbnail.js';
+    import { el } from './js/dom.js';
+
+    initAppShell({ home: false });
+
+    const groupsEl = document.getElementById('groups');
+    const summaryEl = document.getElementById('summary');
+    const clearBtn = document.getElementById('clear');
+    const thumbs = new Map();
+    const visible = new Set();
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const observer = new IntersectionObserver((items) => {
+      for (const item of items) {
+        if (item.isIntersecting) visible.add(item.target); else visible.delete(item.target);
+      }
+    });
+
+    async function thumbFor(entry) {
+      const cfg = await loadConfig(entry.page);
+      if (!cfg) return el('div', 'thumb');
+      const thumb = createThumbnail(cfg);
+      thumbs.set(thumb.root, thumb);
+      thumb.update(performance.now());
+      observer.observe(thumb.root);
+      return thumb.root;
+    }
+
+    async function render() {
+      const list = readHistory();
+      const totals = weekTotals(list);
+      summaryEl.replaceChildren(...[[totals.sessions, 'sessions this week'], [totals.minutes, 'minutes this week']].map(([n, label]) => {
+        const box = el('div');
+        box.append(el('strong', '', { textContent: String(n) }), label);
+        return box;
+      }));
+      clearBtn.hidden = !list.length;
+      thumbs.clear(); visible.clear(); observer.disconnect();
+
+      if (!list.length) {
+        groupsEl.replaceChildren(el('p', 'history-empty', { textContent: 'No sessions yet. Every practice you do for at least 30 seconds is saved here automatically.' }));
+        return;
+      }
+
+      const sections = [];
+      for (const group of groupByDay(list)) {
+        const section = el('section', 'technique-group');
+        const header = el('div', 'technique-group__header');
+        header.append(el('h2', 'technique-group__title', { textContent: group.label }));
+        const ul = el('ul', 'history-list');
+        for (const entry of group.entries) {
+          const li = el('li');
+          const row = el('div', 'history-row');
+          const open = el('a', 'history-row__open', { href: entry.page });
+          open.setAttribute('aria-label', `Open ${entry.title}`);
+          const text = el('div', 'history-row__text');
+          const time = new Date(entry.startedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+          text.append(
+            el('span', 'history-row__title', { textContent: entry.title }),
+            el('span', 'history-row__when', { textContent: `${time} · ${formatDuration(entry.durationMs)}` }),
+          );
+          const result = sessionResult(entry);
+          if (result) text.append(el('span', 'history-row__result', { textContent: result }));
+          open.append(await thumbFor(entry), text);
+          const remove = el('button', 'icon-button', { type: 'button', textContent: '✕', title: 'Remove from history' });
+          remove.setAttribute('aria-label', `Remove ${entry.title} at ${time}`);
+          remove.addEventListener('click', () => { removeSession(entry.id); render(); });
+          row.append(open, remove);
+          li.append(row);
+          ul.append(li);
+        }
+        section.append(header, ul);
+        sections.push(section);
+      }
+      groupsEl.replaceChildren(...sections);
+    }
+
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Clear all saved sessions on this device?')) { clearHistory(); render(); }
+    });
+
+    function frame(now) {
+      if (!reduceMotion) for (const node of visible) thumbs.get(node)?.update(now);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    render();
+  </script>
+</body>
+</html>

@@ -12,6 +12,7 @@ import { initVibration } from './controls/vibration.js';
 import { initSound } from './controls/sound.js';
 import { createKeepAwake } from './controls/keep-awake.js';
 import { initAppShell } from './app.js';
+import { saveSession, MIN_SESSION_MS } from './history.js';
 import { el } from './dom.js';
 
 const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
@@ -82,6 +83,47 @@ export function start(rawConfig, { mount = document.body } = {}) {
   const vibration = cfg.vibration ? initVibration(ui.actions, ui.notify) : null;
   const awake = createKeepAwake();
 
+  // Session history: saved while running and again when the session ends.
+  let session = null;
+  let lastSnap = null;
+  let variantLabel = cfg.variants ? cfg.variants[0].label : null;
+  let chosenMinutes = cfg.sessionMinutes;
+
+  function saveProgress() {
+    if (!session || !lastSnap) return;
+    const now = Date.now();
+    const durationMs = now - session.startedAt;
+    if (!lastSnap.finished && durationMs < MIN_SESSION_MS) return;
+    saveSession({
+      id: session.id,
+      page: location.pathname.split('/').pop() || 'index.html',
+      techniqueId: cfg.id,
+      title: cfg.title,
+      hue: cfg.hue,
+      shape: cfg.shape,
+      layout: cfg.layout,
+      startedAt: session.startedAt,
+      endedAt: now,
+      durationMs,
+      completed: !!lastSnap.finished,
+      rounds: Number.isFinite(lastSnap.rounds) && lastSnap.rounds > 1 ? lastSnap.rounds : null,
+      round: lastSnap.round,
+      records: lastSnap.records,
+      bpm: cfg.pace ? currentBpm : null,
+      variant: variantLabel,
+      sessionMinutes: chosenMinutes,
+    });
+  }
+
+  const onHide = () => {
+    if (running && document.visibilityState === 'hidden') saveProgress();
+  };
+  const onPageHide = () => {
+    if (running) saveProgress();
+  };
+  document.addEventListener('visibilitychange', onHide);
+  window.addEventListener('pagehide', onPageHide);
+
   let raf = 0;
   let running = false;
   let lastSerial = -1;
@@ -121,6 +163,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   function frame(now) {
     const snap = timeline.tick(now);
+    lastSnap = snap;
     windDown(snap);
     if (snap.serial !== lastSerial) {
       lastSerial = snap.serial;
@@ -130,6 +173,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
     if (snap.finished) {
       running = false;
       awake.release();
+      saveProgress();
+      session = null;
       showSummary(snap);
       return;
     }
@@ -149,6 +194,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
     lastSerial = -1;
     running = true;
     awake.acquire();
+    session = { id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, startedAt: Date.now() };
+    lastSnap = null;
     raf = requestAnimationFrame(frame);
   }
 
@@ -195,7 +242,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
   function showStart() {
     preview();
     const choices = cfg.sessionChoices;
-    const session = choices
+    const sessionText = choices
       ? 'Choose how long to breathe.'
       : cfg.sessionMinutes ? `${cfg.sessionMinutes} minute session.` : '';
     const variants = cfg.variants;
@@ -204,6 +251,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
           label: variant.label,
           primary: i === 0,
           onClick: () => {
+            variantLabel = variant.label;
             timeline = createTimeline(variant.sequence, { sessionMs });
             begin();
           },
@@ -213,6 +261,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
           label: `${minutes} min`,
           primary: minutes === cfg.sessionMinutes,
           onClick: () => {
+            chosenMinutes = minutes;
             timeline.setSessionMs(minutes * 60_000);
             begin();
           },
@@ -221,7 +270,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     screen = showScreen(mount, {
       eyebrow: cfg.rate || cfg.eyebrow,
       title: cfg.title,
-      body: [cfg.hint, session].filter(Boolean).join(' '),
+      body: [cfg.hint, sessionText].filter(Boolean).join(' '),
       actions,
     });
   }
@@ -264,7 +313,10 @@ export function start(rawConfig, { mount = document.body } = {}) {
     advance,
     restart: begin,
     stop() {
+      if (running) saveProgress();
       running = false;
+      document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('pagehide', onPageHide);
       cancelAnimationFrame(raf);
       hue.destroy();
       document.removeEventListener('keydown', onKey);
