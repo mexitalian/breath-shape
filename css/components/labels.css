@@ -26,6 +26,13 @@
   color: var(--color-ink);
 }
 
+/* Breath number during counted breaths */
+.count[data-mode="counter"] {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-light);
+  color: var(--color-ink);
+}
+
 /* Round / breath counters, session time */
 .meta {
   font-size: var(--text-xs);
