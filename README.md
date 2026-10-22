@@ -14,6 +14,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | `physiological-sigh.html` | in 2 · sip 1 · out 5 |
 | `extended-exhale.html` | in 4 · out 8, adjustable pace (1:2 ratio kept) |
 | `triangle-breathing.html` | in 4 · hold 4 · out 4 |
+| `pursed-lip-breathing.html` | nose in 2 · lips out 4 |
 
 ## Running locally
 
@@ -95,6 +96,7 @@ export default {
   easing: 'ease-in-out',       // linear | ease | ease-in | ease-out | ease-in-out
   vibrate: [120],              // vibration pattern when the phase starts
   particles: { from: 'outer', to: 'inner' },  // radii names; omit to hide
+                               // add cone: { angle: -90, spread: 40 } to stream one way (degrees, -90 = up)
   ripple: true,                // expanding ring during this phase
   record: 'Retention',         // record this phase's duration for the summary
   action: 'Breathe',           // button label on open-ended holds
