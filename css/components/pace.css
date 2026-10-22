@@ -1,0 +1,21 @@
+.pace {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.pace__step {
+  width: var(--step-button-size);
+  height: var(--step-button-size);
+  padding: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-regular);
+}
+
+.pace__value {
+  min-width: var(--pace-value-width);
+  text-align: center;
+  font-size: var(--text-md);
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}

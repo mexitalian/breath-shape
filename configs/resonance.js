@@ -1,7 +1,9 @@
 export default {
   title: 'Resonance Breathing',
-  rate: '5 breaths/min',
-  hint: 'Follow the orb — 6 seconds in, 6 seconds out, no holds. This pace is where heart rate and breathing sync up.',
+  hint: 'Equal time in and out, no holds. Adjust the pace until it feels easy; most people settle between 4.5 and 6.5 breaths a minute.',
+
+  // 6s in + 6s out = 5 breaths/min at the default pace.
+  pace: { min: 4.5, max: 6.5, step: 0.5, default: 5 },
 
   hue: 262,
   shape: 'circle',

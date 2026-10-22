@@ -9,7 +9,7 @@ Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub
 | Page | Pattern |
 |---|---|
 | `box-breathing.html` | in 4 · hold 4 · out 4 · hold 4 |
-| `resonance-breathing.html` | in 6 · out 6 (5 breaths/min) |
+| `resonance-breathing.html` | equal in and out, adjustable 4.5–6.5 breaths/min (default 5) |
 | `478-breathing.html` | in 4 · hold 7 · out 8 |
 | `physiological-sigh.html` | in 2 · sip 1 · out 5 |
 
@@ -66,6 +66,8 @@ export default {
 
   id: 'box-breathing',         // optional; defaults to a slug of the title
   safety: false,               // true, or { extra: ['…'] }: warning screen before anything starts
+  pace: { min: 4.5, max: 6.5, step: 0.5, default: 5 },  // optional − / + control in breaths/min;
+                               // scales every timed phase, changes apply from the next breath
   startScreen: false,          // show a Start screen first
   sessionMinutes: null,        // end after this long (at the end of a breath)
   vibration: true,             // show the "Enable vibration" button
