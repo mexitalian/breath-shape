@@ -1,5 +1,7 @@
 import { SHAPES } from './shapes.js';
 
+const slug = (text) => String(text).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 const DEFAULT_OPACITY = { min: 0.35, max: 0.9 };
 
 function normalizePhase(p) {
@@ -51,6 +53,7 @@ export function normalize(cfg) {
   );
 
   return {
+    id: cfg.id ?? slug(cfg.title),
     title: cfg.title,
     eyebrow: cfg.eyebrow ?? cfg.title,
     rate: cfg.rate ?? '',
@@ -63,6 +66,7 @@ export function normalize(cfg) {
     opacity: cfg.opacity ?? DEFAULT_OPACITY,
     vibration: cfg.vibration ?? true,
     startScreen: cfg.startScreen ?? false,
+    safety: cfg.safety ?? false,
     sessionMinutes: cfg.sessionMinutes ?? null,
     sequence: {
       rounds: source.rounds ?? Infinity,

@@ -4,6 +4,7 @@ import { COMPONENTS } from './components/index.js';
 import { buildStage } from './ui/stage.js';
 import { showScreen } from './ui/screen.js';
 import { formatClock } from './ui/labels.js';
+import { safetyPoints, hasAcknowledged, rememberAcknowledged } from './ui/safety.js';
 import { initHueControl } from './controls/hue.js';
 import { initVibration } from './controls/vibration.js';
 import { el } from './dom.js';
@@ -85,10 +86,48 @@ export function start(rawConfig, { mount = document.body } = {}) {
     if (running) timeline.advance(performance.now());
   }
 
-  function showStart() {
+  // Shows the first frame, still, behind a screen.
+  function preview() {
     const now = performance.now();
     timeline.start(now);
     render(timeline.tick(now));
+  }
+
+  const storage = (() => {
+    try { return window.localStorage; } catch { return null; }
+  })();
+
+  function showSafety() {
+    preview();
+    screen = showScreen(mount, {
+      eyebrow: cfg.title,
+      title: 'Before you start',
+      body: 'This technique changes your breathing a lot and can make you light-headed.',
+      points: safetyPoints(cfg.safety),
+      checkbox: { label: "Don't show this again for this technique" },
+      actions: [
+        {
+          label: 'I understand, continue',
+          primary: true,
+          onClick: ({ checked }) => {
+            if (checked) rememberAcknowledged(storage, cfg.id);
+            screen.close();
+            screen = null;
+            afterSafety();
+          },
+        },
+        { label: 'All techniques', href: './' },
+      ],
+    });
+  }
+
+  function afterSafety() {
+    if (cfg.startScreen) showStart();
+    else begin();
+  }
+
+  function showStart() {
+    preview();
     const session = cfg.sessionMinutes ? `${cfg.sessionMinutes} minute session.` : '';
     screen = showScreen(mount, {
       eyebrow: cfg.rate || cfg.eyebrow,
@@ -129,8 +168,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
   };
   document.addEventListener('keydown', onKey);
 
-  if (cfg.startScreen) showStart();
-  else begin();
+  if (cfg.safety && !hasAcknowledged(storage, cfg.id)) showSafety();
+  else afterSafety();
 
   return {
     advance,
