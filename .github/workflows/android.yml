@@ -8,11 +8,11 @@ on:
 permissions:
   contents: write
 
-# One build per branch at a time. On main, builds queue in merge order so the
-# newest always publishes the release last; on PRs, a new push cancels the old run.
+# One build per branch at a time: a newer push cancels any build still running,
+# so only the newest commit finishes and (on main) publishes the release.
 concurrency:
   group: android-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 jobs:
   apk:
