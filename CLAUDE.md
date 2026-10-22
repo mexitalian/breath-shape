@@ -22,3 +22,7 @@ npm run serve    # local server; pages use ES modules so file:// won't work
 - The engine writes state as CSS variables (`--breath-scale`, `--breath-glow`, …); styling stays in CSS, never in JS.
 - New visuals go in as components (`js/components/` + `css/components/`), new layouts and screens as patterns (`js/ui/`).
 - When adding a technique, also add it to `index.html` and the README table.
+
+## Talking to the owner
+
+- Always give links as full, clickable `https://` URLs (Markdown links), never bare paths like `github.com/...`. The owner often reads on a phone.
