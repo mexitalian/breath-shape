@@ -1,7 +1,7 @@
 export default {
   title: 'Box Breathing',
   rate: 'in 4 · hold 4 · out 4 · hold 4',
-  hint: 'Follow the marker around the square. In for 4, hold for 4, out for 4, hold for 4.',
+  hint: 'Follow the marker around the square: up as you breathe in, across the top as you hold, down as you breathe out, along the bottom as you hold.',
 
   hue: 185,
   shape: 'box',
