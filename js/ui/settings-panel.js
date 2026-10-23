@@ -130,6 +130,10 @@ export function openSettings({ particleOptions = [['on', 'On'], ['off', 'Off'], 
     panel.append(choiceRow('Vibration', ON_OFF, settings.vibration, vibration => saveSettings({ vibration })));
     const type = vibrationTypeRow();
     if (type) panel.append(type);
+    // Continuous needs the app's own session player (Android).
+    if (platform === 'android' && nativePlugin('BreathSession')) {
+      panel.append(choiceRow('Vibration style', [['taps', 'Taps'], ['continuous', 'Continuous']], settings.vibrationStyle, vibrationStyle => saveSettings({ vibrationStyle })));
+    }
   }
   panel.append(dataRow());
   const done = el('button', 'button button--primary', { type: 'button', textContent: 'Done' });

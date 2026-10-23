@@ -13,6 +13,7 @@ import { initHueControl } from './controls/hue.js';
 import { initVibration, canVibrate } from './controls/vibration.js';
 import { createSettingsButton } from './ui/settings-panel.js';
 import { initSound } from './controls/sound.js';
+import { createSessionCues } from './controls/session-cues.js';
 import { createKeepAwake } from './controls/keep-awake.js';
 import { readSettings, onSettingsChange } from './settings.js';
 import { initAppShell } from './app.js';
@@ -69,6 +70,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       currentBpm = bpm;
       applyPace(bpm, false);
       savePace(storage, cfg.id, bpm);
+      cues?.sync(performance.now());
     });
   }
 
@@ -87,8 +89,11 @@ export function start(rawConfig, { mount = document.body } = {}) {
     paceControl.lock(bpm);
   }
 
-  const sound = cfg.sound ? initSound(ui.actions, ui.notify, cfg.sound) : null;
-  const vibration = cfg.vibration && canVibrate() ? initVibration(ui.notify) : null;
+  // In the Android app the phone plays vibration and hum (so they carry on with the
+  // screen off); elsewhere the page does.
+  const cues = createSessionCues({ cfg, getTimeline: () => timeline, onStoppedFromNotification: stoppedFromNotification });
+  const sound = cfg.sound ? initSound(ui.actions, ui.notify, { ...cfg.sound, silent: !!cues }) : null;
+  const vibration = !cues && cfg.vibration && canVibrate() ? initVibration(ui.notify) : null;
   ui.actions.append(createSettingsButton());
   const awake = createKeepAwake();
   // Keep screen on (Settings): follows the setting live while a session runs.
@@ -135,6 +140,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
   };
   const onPageHide = () => {
     if (running) saveProgress();
+    cues?.stop();
   };
   document.addEventListener('visibilitychange', onHide);
   window.addEventListener('pagehide', onPageHide);
@@ -185,11 +191,13 @@ export function start(rawConfig, { mount = document.body } = {}) {
     if (snap.serial !== lastSerial) {
       lastSerial = snap.serial;
       vibration?.buzz(snap.phase.vibrate);
+      if (!snap.finished) cues?.sync(now);
     }
     render(snap);
     perf?.frame(performance.now() - workStart);
     if (snap.finished) {
       running = false;
+      cues?.stop();
       awake.release();
       saveProgress();
       session = null;
@@ -215,7 +223,20 @@ export function start(rawConfig, { mount = document.body } = {}) {
     if (readSettings().keepAwake) awake.acquire();
     session = { id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, startedAt: Date.now() };
     lastSnap = null;
+    cues?.start(performance.now());
     raf = requestAnimationFrame(frame);
+  }
+
+  // Stop on the session notification (Android app): the session ends where it is.
+  function stoppedFromNotification() {
+    if (!running) return;
+    running = false;
+    cancelAnimationFrame(raf);
+    awake.release();
+    lastSnap = timeline.tick(performance.now());
+    saveProgress();
+    session = null;
+    showSummary(lastSnap, { stopped: true });
   }
 
   function advance() {
@@ -294,7 +315,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     });
   }
 
-  function showSummary(snap) {
+  function showSummary(snap, { stopped = false } = {}) {
     const multiRound = Number.isFinite(snap.rounds) && snap.rounds > 1;
     const list = snap.records.map(r => [
       multiRound ? `Round ${r.round} · ${r.label}` : r.label,
@@ -302,7 +323,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     ]);
     screen = showScreen(mount, {
       eyebrow: cfg.eyebrow,
-      title: 'Session complete',
+      title: stopped ? 'Session stopped' : 'Session complete',
       body: cfg.summaryNote ?? (list.length ? '' : 'Take a moment before you get up.'),
       list,
       actions: [
@@ -341,6 +362,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       hue.destroy();
       document.removeEventListener('keydown', onKey);
       vibration?.destroy();
+      cues?.destroy();
       paceControl?.destroy();
       sound?.destroy();
       perf?.destroy();

@@ -4,11 +4,14 @@ import { readSettings, saveSettings, onSettingsChange } from '../settings.js';
 // Hum tone for phases marked hum: true. On/off and volume live in Settings; the
 // top-bar toggle is a quick mute that flips the same setting. Browsers only allow
 // audio after a tap, so the sound starts on the first tap on the page.
+// silent: the Android app plays the hum itself (js/controls/session-cues.js); the
+// toggle still flips the setting.
 const FADE_S = 0.35;
 const MAX_LEVEL = 0.13;
 
-export function initSound(container, notify, { tone = 130 } = {}) {
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+export function initSound(container, notify, { tone = 130, silent = false } = {}) {
+  const AudioCtx = silent ? null : window.AudioContext || window.webkitAudioContext;
+  const supported = silent || !!AudioCtx;
   let ctx = null;
   let gain = null;
   let { sound: on, volume } = readSettings();
@@ -52,8 +55,8 @@ export function initSound(container, notify, { tone = 130 } = {}) {
 
   const toggle = createIconToggle({
     name: 'sound',
-    label: AudioCtx ? 'Hum sound' : 'Sound not supported in this browser',
-    disabled: !AudioCtx,
+    label: supported ? 'Hum sound' : 'Sound not supported in this browser',
+    disabled: !supported,
     onClick: () => {
       wakeAudio();
       saveSettings({ sound: !on });
@@ -61,13 +64,13 @@ export function initSound(container, notify, { tone = 130 } = {}) {
     },
   });
 
-  toggle.set(on && !!AudioCtx);
+  toggle.set(on && supported);
   container.append(toggle.button);
 
   const stopListening = onSettingsChange((settings) => {
     on = settings.sound;
     volume = settings.volume;
-    toggle.set(on && !!AudioCtx);
+    toggle.set(on && supported);
     setTarget();
   });
 
