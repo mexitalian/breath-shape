@@ -6,6 +6,6 @@
     var s = JSON.parse(localStorage.getItem('breathing:settings') || '{}') || {};
     var root = document.documentElement;
     if (s.theme === 'light' || s.theme === 'dark') root.setAttribute('data-theme', s.theme);
-    root.setAttribute('data-particles', s.particles === 'off' ? 'off' : 'on');
+    root.setAttribute('data-particles', s.particles === 'off' || s.particles === 'webgl' ? s.particles : 'on');
   } catch (e) { /* defaults */ }
 })();

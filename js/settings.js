@@ -4,7 +4,8 @@
 export const SETTINGS_KEY = 'breathing:settings';
 export const DEFAULTS = { theme: 'system', particles: 'on', vibration: true };
 export const THEMES = ['system', 'light', 'dark'];
-export const PARTICLES = ['on', 'off'];
+// 'webgl' is a test of a richer particle layer (see js/components/particles-gl.js).
+export const PARTICLES = ['on', 'off', 'webgl'];
 
 function defaultStorage() {
   try { return window.localStorage; } catch { return null; }

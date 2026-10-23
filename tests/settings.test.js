@@ -31,3 +31,10 @@ test('unknown or broken values fall back to the defaults', () => {
 test('the boot script reads the same key', () => {
   assert.ok(readFileSync(new URL('../js/settings-boot.js', import.meta.url), 'utf8').includes(`'${SETTINGS_KEY}'`));
 });
+
+test('battery drain per hour waits for a real drop and ignores charging', async () => {
+  const { drainPerHour } = await import('../js/ui/perf-overlay.js');
+  assert.equal(drainPerHour({ startLevel: 0.80, level: 0.80, minutes: 5, charging: false }), null);
+  assert.equal(drainPerHour({ startLevel: 0.80, level: 0.78, minutes: 10, charging: true }), null);
+  assert.equal(Math.round(drainPerHour({ startLevel: 0.80, level: 0.78, minutes: 10, charging: false })), 12);
+});
