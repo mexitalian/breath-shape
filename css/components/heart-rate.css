@@ -48,6 +48,24 @@
   text-transform: none;
 }
 
+.hr__hrv {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-dim);
+}
+
+.hr__hrv strong {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
 .hr__trace {
   width: 100%;
   height: var(--hr-trace-height);
