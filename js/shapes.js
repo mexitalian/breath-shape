@@ -6,8 +6,10 @@ export const SHAPES = {
   },
   box: {
     components: ['track', 'glow', 'particles', 'core', 'dot'],
-    // Corners in percent of the field, one side per phase: TL → BL → BR → TR.
-    path: [[0, 0], [0, 100], [100, 100], [100, 0]],
+    // Corners in percent of the field, one side per phase, clockwise like the
+    // triangle: in up the left side, hold across the top, out down the right side,
+    // hold along the bottom. BL → TL → TR → BR.
+    path: [[0, 100], [0, 0], [100, 0], [100, 100]],
   },
   triangle: {
     components: ['outline', 'glow', 'particles', 'core', 'dot'],
