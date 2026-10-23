@@ -146,5 +146,37 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
     sessionMs = ms;
   }
 
-  return { start, tick, advance, setDurationScale, setSessionMs };
+  // The phases ahead from now, as the clock would run them (pending pace changes
+  // included), without moving the real timeline. Stops at an open-ended hold, the end
+  // of the session, or the horizon. The app hands this to the phone so a session's
+  // cues keep playing with the screen off.
+  // Returns { phases: [{ serial, start, durMs, phase, fromScale }], ends }, start in ms
+  // relative to now (the current phase's is zero or negative).
+  function forecast(now, { horizonMs = 2 * 3_600_000, maxPhases = 3000 } = {}) {
+    if (!s || s.finished) return { phases: [], ends: true };
+    const real = s;
+    const realScale = durScale;
+    const realPending = pendingScale;
+    s = { ...real, records: [] };
+    const phases = [];
+    let ends = false;
+    try {
+      while (phases.length < maxPhases) {
+        const ph = phaseOf(s);
+        const durMs = durMsOf(ph);
+        phases.push({ serial: s.serial, start: s.phaseStart - now, durMs, phase: ph, fromScale: s.fromScale });
+        if (durMs == null) break;
+        const end = s.phaseStart + durMs;
+        if (!advanceAt(end)) { ends = true; break; }
+        if (end - now > horizonMs) break;
+      }
+    } finally {
+      s = real;
+      durScale = realScale;
+      pendingScale = realPending;
+    }
+    return { phases, ends };
+  }
+
+  return { start, tick, advance, setDurationScale, setSessionMs, forecast };
 }

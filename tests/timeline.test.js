@@ -127,3 +127,41 @@ test('invalid configs fail loudly', () => {
   assert.throws(() => normalize({ title: 'x', phases: [{ name: 'In', dur: 0, scale: 1 }] }), /dur > 0/);
   assert.throws(() => normalize({ title: 'x', shape: 'hexagon', phases: [{ name: 'In', dur: 1, scale: 1 }] }), /Unknown shape/);
 });
+
+test('forecast lists the phases ahead without moving the timeline', () => {
+  const { tl } = run(box);
+  tl.tick(5000); // 1 s into the first hold
+  const { phases, ends } = tl.forecast(5000, { horizonMs: 20_000 });
+  assert.deepEqual(phases.slice(0, 4).map(p => [p.phase.name, p.start, p.durMs]), [
+    ['Hold', -1000, 4000],
+    ['Exhale', 3000, 4000],
+    ['Hold', 7000, 4000],
+    ['Inhale', 11000, 4000],
+  ]);
+  assert.equal(phases.at(-1).start + phases.at(-1).durMs > 20_000, true, 'reaches the horizon');
+  assert.equal(ends, false);
+  assert.equal(tl.tick(5000).phase.name, 'Hold', 'real timeline untouched');
+  assert.equal(tl.tick(5000).serial, 1);
+});
+
+test('forecast stops at an open-ended hold and at the session end', () => {
+  const { tl } = run(wimHofLike);
+  const held = tl.forecast(0);
+  assert.equal(held.phases.length, 7, '3 breaths of 2 phases, then the hold');
+  assert.equal(held.phases.at(-1).durMs, null);
+  assert.equal(held.ends, false);
+
+  const timed = createTimeline(normalize(box).sequence, { sessionMs: 30_000 });
+  timed.start(0);
+  const { phases, ends } = timed.forecast(0);
+  assert.equal(ends, true);
+  assert.equal(phases.at(-1).start + phases.at(-1).durMs, 32_000, 'finishes the breath under way');
+});
+
+test('forecast follows a pace change waiting for the next breath', () => {
+  const { tl } = run(box);
+  tl.tick(1000);
+  tl.setDurationScale(0.5);
+  const { phases } = tl.forecast(1000, { horizonMs: 30_000 });
+  assert.deepEqual(phases.slice(0, 6).map(p => p.durMs), [4000, 4000, 4000, 4000, 2000, 2000]);
+});
