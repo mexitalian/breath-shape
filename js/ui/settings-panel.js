@@ -28,7 +28,7 @@ function choiceRow(label, options, current, onPick) {
 
 // Pattern: the settings panel, opened from the gear. Uses the screen pattern so it
 // sits over the stage like the start and summary screens. Changes apply at once.
-export function openSettings({ canVibrate, particleOptions = [['on', 'On'], ['off', 'Off']] }) {
+export function openSettings({ canVibrate, particleOptions = [['on', 'On'], ['off', 'Off'], ['webgl', 'WebGL (test)']] }) {
   const settings = readSettings();
   const titleId = `settings-title-${++panelId}`;
   const screen = el('div', 'screen settings');
