@@ -7,6 +7,7 @@ import { formatClock } from './ui/labels.js';
 import { safetyPoints, hasAcknowledged, rememberAcknowledged } from './ui/safety.js';
 import { createPaceControl } from './ui/pace-control.js';
 import { createCycleCounter } from './ui/cycle-counter.js';
+import { createPerfOverlay } from './ui/perf-overlay.js';
 import { durationScaleFor, loadPace, savePace } from './pace.js';
 import { initHueControl } from './controls/hue.js';
 import { initVibration, canVibrate } from './controls/vibration.js';
@@ -43,6 +44,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
   }));
 
   const cycles = createCycleCounter(ui.cycles, cfg);
+  const perf = createPerfOverlay();
 
   const holdButton = el('button', 'button button--primary', { type: 'button', hidden: true });
   ui.labels.root.append(holdButton);
@@ -169,6 +171,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
   }
 
   function frame(now) {
+    const workStart = performance.now();
     const snap = timeline.tick(now);
     lastSnap = snap;
     windDown(snap);
@@ -177,6 +180,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       vibration?.buzz(snap.phase.vibrate);
     }
     render(snap);
+    perf?.frame(performance.now() - workStart);
     if (snap.finished) {
       running = false;
       awake.release();
@@ -332,6 +336,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       vibration?.destroy();
       paceControl?.destroy();
       sound?.destroy();
+      perf?.destroy();
       awake.destroy();
       screen?.close();
       ui.stage.remove();
