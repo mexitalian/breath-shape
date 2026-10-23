@@ -1,6 +1,6 @@
-// Heart rate from the camera (photoplethysmography). A fingertip over the lens and
-// flash glows red; each heartbeat pushes blood in and dims it slightly. These pure
-// functions turn per-frame colour averages into beats and BPM.
+// Heart rate and HRV from the camera (photoplethysmography). A fingertip over the lens
+// and flash glows red; each heartbeat pushes blood in and dims it slightly. These pure
+// functions turn per-frame colour averages into beats, BPM and RMSSD.
 
 export const MIN_BPM = 40;
 export const MAX_BPM = 180;
@@ -36,25 +36,46 @@ export function pulseWave(samples) {
   return detrended.map((s, i) => ({ t: s.t, v: smooth[i] }));
 }
 
-// Peaks at least one shortest beat apart and above a share of the recent amplitude.
+// Vertex of the parabola through three samples: a beat's time to well under a frame.
+function peakTime(a, b, c) {
+  const denom = (a.t - b.t) * (a.t - c.t) * (b.t - c.t);
+  if (!denom) return b.t;
+  const A = (c.t * (b.v - a.v) + b.t * (a.v - c.v) + a.t * (c.v - b.v)) / denom;
+  const B = (c.t * c.t * (a.v - b.v) + b.t * b.t * (c.v - a.v) + a.t * a.t * (b.v - c.v)) / denom;
+  if (A >= 0) return b.t;
+  return Math.min(c.t, Math.max(a.t, -B / (2 * A)));
+}
+
+// Largest |v| within ±half seconds of each sample, so one movement spike only
+// raises the bar near itself, not across the whole reading.
+function localAmplitude(wave, half) {
+  return wave.map((s, i) => {
+    let max = 0;
+    for (let j = i; j >= 0 && wave[j].t >= s.t - half; j--) max = Math.max(max, Math.abs(wave[j].v));
+    for (let j = i + 1; j < wave.length && wave[j].t <= s.t + half; j++) max = Math.max(max, Math.abs(wave[j].v));
+    return max;
+  });
+}
+
+// Beat times: peaks at least one shortest beat apart and above a share of the
+// amplitude around them, each timed between frames.
 export function findBeats(wave) {
   if (wave.length < 3) return [];
   const minGap = 60 / MAX_BPM;
-  const amplitude = Math.max(...wave.map(s => Math.abs(s.v)));
-  const threshold = amplitude * 0.25;
-  const beats = [];
+  const amplitude = localAmplitude(wave, 1.5);
+  const peaks = [];
   for (let i = 1; i < wave.length - 1; i++) {
     const s = wave[i];
-    if (s.v < threshold || s.v < wave[i - 1].v || s.v < wave[i + 1].v) continue;
+    if (s.v < amplitude[i] * 0.25 || s.v < wave[i - 1].v || s.v < wave[i + 1].v) continue;
     // Keep the higher of two peaks that are too close together.
-    const last = beats.at(-1);
-    if (last && s.t - last.t < minGap) {
-      if (s.v > last.v) beats[beats.length - 1] = s;
+    const last = peaks.at(-1);
+    if (last && s.t - wave[last].t < minGap) {
+      if (s.v > wave[last].v) peaks[peaks.length - 1] = i;
       continue;
     }
-    beats.push(s);
+    peaks.push(i);
   }
-  return beats.map(b => b.t);
+  return peaks.map(i => peakTime(wave[i - 1], wave[i], wave[i + 1]));
 }
 
 const median = (list) => {
@@ -76,4 +97,31 @@ export function estimateBpm(beatTimes) {
   const steady = intervals.filter(gap => Math.abs(gap - mid) / mid < 0.25);
   if (steady.length < intervals.length * 0.7) return null;
   return Math.round(60 / median(steady));
+}
+
+// HRV as RMSSD (ms): the root mean square of differences between successive beat
+// intervals. Intervals far from their neighbours (movement, a missed or extra beat)
+// are dropped, and a difference only counts between two clean, adjacent intervals.
+// Returns null when too little of the reading is clean to trust.
+export const HRV_MIN_PAIRS = 30;
+export function estimateHrv(beatTimes) {
+  const intervals = [];
+  for (let i = 1; i < beatTimes.length; i++) intervals.push((beatTimes[i] - beatTimes[i - 1]) * 1000);
+  const plausible = (ms) => ms >= 60000 / MAX_BPM && ms <= 60000 / MIN_BPM;
+  const clean = intervals.map((ms, i) => {
+    if (!plausible(ms)) return false;
+    const around = intervals.slice(Math.max(0, i - 3), i + 4).filter(plausible);
+    const mid = median(around);
+    return Math.abs(ms - mid) / mid < 0.2;
+  });
+  const diffs = [];
+  for (let i = 1; i < intervals.length; i++) {
+    if (clean[i] && clean[i - 1]) diffs.push(intervals[i] - intervals[i - 1]);
+  }
+  const share = clean.filter(Boolean).length / Math.max(1, intervals.length);
+  if (diffs.length < HRV_MIN_PAIRS || share < 0.8) return null;
+  const rmssd = Math.sqrt(diffs.reduce((sum, d) => sum + d * d, 0) / diffs.length);
+  // Beyond this, a camera reading is almost always noise rather than the heart.
+  if (rmssd > 200) return null;
+  return Math.round(rmssd);
 }
