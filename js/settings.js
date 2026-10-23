@@ -2,10 +2,12 @@
 // They apply straight away on every open page (the 'breathing:settings' event)
 // and before first paint on the next one (js/settings-boot.js reads the same key).
 export const SETTINGS_KEY = 'breathing:settings';
-export const DEFAULTS = { theme: 'system', particles: 'on', sound: true, volume: 0.6, keepAwake: true, vibration: true };
+export const DEFAULTS = { theme: 'system', particles: 'on', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps' };
 export const THEMES = ['system', 'light', 'dark'];
 // 'webgl' is a test of a richer particle layer (see js/components/particles-gl.js).
 export const PARTICLES = ['on', 'off', 'webgl'];
+// Continuous: inhale ramps soft to strong, exhale strong to soft (Android app only).
+export const VIBRATION_STYLES = ['taps', 'continuous'];
 
 function defaultStorage() {
   try { return window.localStorage; } catch { return null; }
@@ -22,6 +24,7 @@ export function readSettings(storage = defaultStorage()) {
     volume: Number.isFinite(saved.volume) ? Math.min(1, Math.max(0, saved.volume)) : DEFAULTS.volume,
     keepAwake: bool('keepAwake'),
     vibration: bool('vibration'),
+    vibrationStyle: VIBRATION_STYLES.includes(saved.vibrationStyle) ? saved.vibrationStyle : DEFAULTS.vibrationStyle,
   };
 }
 
