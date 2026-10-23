@@ -66,3 +66,21 @@ export function vibrationUsage(storage = globalThis.localStorage) {
 export function setVibrationUsage(usage, storage = globalThis.localStorage) {
   try { storage?.setItem(USAGE_KEY, usage); } catch { /* best-effort */ }
 }
+
+// The continuous vibration style's ramp: even (straight soft-to-strong) or eased (a
+// slow start, a strong finish). Picked on the Diagnostics page.
+export const RAMP_CURVES = ['even', 'eased'];
+const CURVE_KEY = 'breathing:ramp-curve';
+
+export function rampCurve(storage = globalThis.localStorage) {
+  try {
+    const saved = storage?.getItem(CURVE_KEY);
+    return RAMP_CURVES.includes(saved) ? saved : 'even';
+  } catch {
+    return 'even';
+  }
+}
+
+export function setRampCurve(curve, storage = globalThis.localStorage) {
+  try { storage?.setItem(CURVE_KEY, curve); } catch { /* best-effort */ }
+}

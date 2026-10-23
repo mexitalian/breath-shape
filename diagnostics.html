@@ -46,6 +46,12 @@
         <div class="diag-actions" id="usages"></div>
       </section>
 
+      <section class="technique-group" id="ramp-section" hidden>
+        <h2 class="technique-group__title">Continuous vibration (Android)</h2>
+        <p class="page__lede">For Settings → Vibration style → Continuous. Each test ramps up for 4 seconds, like breathing in, then down for 4, like breathing out. Tap <strong>Use</strong> on the one that feels better; sessions will ramp that way.</p>
+        <div class="diag-actions" id="ramps"></div>
+      </section>
+
       <section class="technique-group">
         <h2 class="technique-group__title">Vibration tests</h2>
         <div class="diag-actions">
@@ -77,7 +83,7 @@
 
   <script type="module">
     import { initAppShell } from './js/app.js';
-    import { isNativeApp, platform, nativePlugin, VIBRATION_USAGES, vibrationUsage, setVibrationUsage } from './js/native.js';
+    import { isNativeApp, platform, nativePlugin, VIBRATION_USAGES, vibrationUsage, setVibrationUsage, RAMP_CURVES, rampCurve, setRampCurve } from './js/native.js';
     import { readHapticsLog, clearHapticsLog } from './js/haptics-log.js';
     import { perfOverlayEnabled, setPerfOverlay } from './js/ui/perf-overlay.js';
 
@@ -169,6 +175,36 @@
         list.append(row);
       }
       markChosen();
+
+      document.getElementById('ramp-section').hidden = false;
+      const ramps = document.getElementById('ramps');
+      const curveButtons = [];
+      const markCurve = () => { for (const b of curveButtons) b.setAttribute('aria-pressed', String(b.dataset.curve === rampCurve())); };
+      const curveLabels = { even: 'Even ramp', eased: 'Eased ramp (slow start, strong finish)' };
+      for (const curve of RAMP_CURVES) {
+        const row = document.createElement('div');
+        row.className = 'diag-usage';
+        const test = document.createElement('button');
+        test.type = 'button';
+        test.className = 'button button--ghost';
+        test.textContent = `${curveLabels[curve]} · 4 s up, 4 s down`;
+        test.addEventListener('click', () => run(curveLabels[curve], () => breath.ramp({ duration: 4000, curve, usage: vibrationUsage() })));
+        const use = document.createElement('button');
+        use.type = 'button';
+        use.className = 'chip chip--link';
+        use.textContent = 'Use';
+        use.dataset.curve = curve;
+        use.setAttribute('aria-label', `Use the ${curve} ramp for sessions`);
+        use.addEventListener('click', () => {
+          setRampCurve(curve);
+          markCurve();
+          report(`Continuous sessions now use the ${curve} ramp`);
+        });
+        curveButtons.push(use);
+        row.append(test, use);
+        ramps.append(row);
+      }
+      markCurve();
     }
 
     for (const btn of document.querySelectorAll('[data-test]')) {

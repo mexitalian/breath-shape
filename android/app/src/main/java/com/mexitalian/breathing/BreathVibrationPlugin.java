@@ -2,13 +2,9 @@ package com.mexitalian.breathing;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.os.Build;
-import android.os.VibrationAttributes;
-import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.os.VibratorManager;
 import android.provider.Settings;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -26,12 +22,7 @@ import org.json.JSONException;
 public class BreathVibrationPlugin extends Plugin {
 
     private Vibrator vibrator() {
-        Context context = getContext();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            VibratorManager manager = (VibratorManager) context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
-            return manager.getDefaultVibrator();
-        }
-        return (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        return Vibes.vibrator(getContext());
     }
 
     @PluginMethod
@@ -71,48 +62,30 @@ public class BreathVibrationPlugin extends Plugin {
             return;
         }
         String usage = call.getString("usage", "alarm");
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            vibrateLegacy(vibrator, timings);
-        } else {
-            VibrationEffect effect = VibrationEffect.createWaveform(timings, -1);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                vibrator.vibrate(effect, new VibrationAttributes.Builder().setUsage(vibrationUsage(usage)).build());
-            } else {
-                vibrator.vibrate(effect, new AudioAttributes.Builder().setUsage(audioUsage(usage)).build());
-            }
-        }
+        Vibes.play(vibrator, timings, null, usage);
         JSObject result = new JSObject();
         result.put("usage", usage);
         call.resolve(result);
     }
 
-    @SuppressWarnings("deprecation")
-    private void vibrateLegacy(Vibrator vibrator, long[] timings) {
-        vibrator.vibrate(timings, -1);
-    }
-
-    private int vibrationUsage(String usage) {
-        switch (usage) {
-            case "alarm": return VibrationAttributes.USAGE_ALARM;
-            case "notification": return VibrationAttributes.USAGE_NOTIFICATION;
-            case "ringtone": return VibrationAttributes.USAGE_RINGTONE;
-            case "touch": return VibrationAttributes.USAGE_TOUCH;
-            case "media": return VibrationAttributes.USAGE_MEDIA;
-            case "accessibility": return VibrationAttributes.USAGE_ACCESSIBILITY;
-            default: return VibrationAttributes.USAGE_UNKNOWN;
+    // Diagnostics: a continuous-style ramp up then down, durationMs each way.
+    @PluginMethod
+    public void ramp(PluginCall call) {
+        Vibrator vibrator = vibrator();
+        if (!vibrator.hasVibrator()) {
+            call.reject("This phone has no vibration motor");
+            return;
         }
-    }
-
-    private int audioUsage(String usage) {
-        switch (usage) {
-            case "alarm": return AudioAttributes.USAGE_ALARM;
-            case "notification": return AudioAttributes.USAGE_NOTIFICATION;
-            case "ringtone": return AudioAttributes.USAGE_NOTIFICATION_RINGTONE;
-            case "touch": return AudioAttributes.USAGE_ASSISTANCE_SONIFICATION;
-            case "media": return AudioAttributes.USAGE_MEDIA;
-            case "accessibility": return AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY;
-            default: return AudioAttributes.USAGE_UNKNOWN;
-        }
+        long duration = call.getInt("duration", 4000);
+        String curve = call.getString("curve", "even");
+        boolean amplitude = Vibes.amplitudeControl(vibrator);
+        Vibes.Waveform wave = new Vibes.Waveform();
+        Vibes.appendRamp(wave, duration, true, curve, 0, amplitude);
+        Vibes.appendRamp(wave, duration, false, curve, 0, amplitude);
+        wave.play(vibrator, call.getString("usage", "alarm"));
+        JSObject result = new JSObject();
+        result.put("amplitudeControl", amplitude);
+        call.resolve(result);
     }
 
     // What the phone reports about vibration, for the Diagnostics page.
