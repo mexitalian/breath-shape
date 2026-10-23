@@ -1,27 +1,10 @@
 name: macOS app
 
-# Changes that can't affect the Mac app (docs, tests, Claude settings, the other
-# app's native code) don't build or publish a new release.
+# Paused: the Mac app no longer builds on PRs or merges, so Android work isn't held
+# up by it. Run it by hand from the Actions tab (Run workflow) when needed; a manual
+# run on main still publishes the "mac-latest" release.
 on:
-  pull_request:
-    paths-ignore:
-      - '.claude/**'
-      - '**/*.md'
-      - 'tests/**'
-      - 'LICENSE'
-      - 'android/**'
-      - 'ios/**'
-      - '.github/workflows/android.yml'
-  push:
-    branches: [main]
-    paths-ignore:
-      - '.claude/**'
-      - '**/*.md'
-      - 'tests/**'
-      - 'LICENSE'
-      - 'android/**'
-      - 'ios/**'
-      - '.github/workflows/android.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -66,7 +49,7 @@ jobs:
           path: Breathing.dmg
 
       - name: Publish "Latest Mac build" release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
