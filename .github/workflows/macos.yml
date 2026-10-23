@@ -1,9 +1,27 @@
 name: macOS app
 
+# Changes that can't affect the Mac app (docs, tests, Claude settings, the other
+# app's native code) don't build or publish a new release.
 on:
   pull_request:
+    paths-ignore:
+      - '.claude/**'
+      - '**/*.md'
+      - 'tests/**'
+      - 'LICENSE'
+      - 'android/**'
+      - 'ios/**'
+      - '.github/workflows/android.yml'
   push:
     branches: [main]
+    paths-ignore:
+      - '.claude/**'
+      - '**/*.md'
+      - 'tests/**'
+      - 'LICENSE'
+      - 'android/**'
+      - 'ios/**'
+      - '.github/workflows/android.yml'
 
 permissions:
   contents: write

@@ -1,9 +1,25 @@
 name: Android app
 
+# Changes that can't affect the Android app (docs, tests, Claude settings, the other
+# app's native code) don't build or publish a new release.
 on:
   pull_request:
+    paths-ignore:
+      - '.claude/**'
+      - '**/*.md'
+      - 'tests/**'
+      - 'LICENSE'
+      - 'src-tauri/**'
+      - '.github/workflows/macos.yml'
   push:
     branches: [main]
+    paths-ignore:
+      - '.claude/**'
+      - '**/*.md'
+      - 'tests/**'
+      - 'LICENSE'
+      - 'src-tauri/**'
+      - '.github/workflows/macos.yml'
 
 permissions:
   contents: write
