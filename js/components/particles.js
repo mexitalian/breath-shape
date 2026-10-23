@@ -1,5 +1,6 @@
 import { el } from '../dom.js';
 import { noise1D } from '../noise.js';
+import { createGlParticles } from './particles-gl.js';
 
 // Particles drift between named radii (fractions of the field radius) once per phase.
 // Each phase sets { from, to }; a phase without `particles` hides them.
@@ -29,7 +30,35 @@ export function particles({ field, cfg }) {
     };
   });
 
+  // Settings → Particles: 'on' (these), 'off' (hidden by CSS), 'webgl' (the test layer).
+  let gl = null;
+  let glFailed = false;
+  let hidden = false;
+  const hideDom = () => {
+    if (hidden) return;
+    for (const p of items) p.node.style.opacity = 0;
+    hidden = true;
+  };
+
   function update(snap) {
+    const mode = document.documentElement.dataset.particles ?? 'on';
+    if (mode === 'webgl' && !glFailed) {
+      try {
+        gl ??= createGlParticles({ field, layer, cfg });
+      } catch (err) {
+        console.warn('WebGL particles unavailable, using the standard ones', err);
+        gl = null;
+      }
+      if (gl) {
+        hideDom();
+        gl.update(snap);
+        return;
+      }
+      glFailed = true;
+    }
+    gl?.clear();
+    if (mode === 'off') return;
+    hidden = false;
     const motion = snap.phase.particles;
     if (!motion || snap.finished) {
       for (const p of items) p.node.style.opacity = 0;

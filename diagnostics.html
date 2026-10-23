@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Diagnostics</title>
   <link rel="icon" href="icons/icon-96.webp" type="image/webp">
+  <script src="js/settings-boot.js"></script>
   <link rel="stylesheet" href="css/system.css">
   <style>
     .diag-actions { display: flex; flex-direction: column; gap: var(--space-sm); }
@@ -57,6 +58,14 @@
       </section>
 
       <section class="technique-group">
+        <h2 class="technique-group__title">Performance</h2>
+        <p class="page__lede">Shows a small readout on practice screens: frames per second, how long each frame's work takes, the particle mode, and how much battery the session has used. To compare particle modes, run the same technique for 10 minutes in each mode (Settings → Particles), unplugged, at the same screen brightness.</p>
+        <div class="diag-actions">
+          <button class="button button--ghost" type="button" id="perf"></button>
+        </div>
+      </section>
+
+      <section class="technique-group">
         <h2 class="technique-group__title">Recent vibrations from sessions</h2>
         <div class="diag-actions">
           <button class="button button--ghost" type="button" id="clear">Clear log</button>
@@ -70,6 +79,7 @@
     import { initAppShell } from './js/app.js';
     import { isNativeApp, platform, nativePlugin, VIBRATION_USAGES, vibrationUsage, setVibrationUsage } from './js/native.js';
     import { readHapticsLog, clearHapticsLog } from './js/haptics-log.js';
+    import { perfOverlayEnabled, setPerfOverlay } from './js/ui/perf-overlay.js';
 
     initAppShell({ home: false });
     const cap = window.Capacitor;
@@ -164,6 +174,11 @@
     for (const btn of document.querySelectorAll('[data-test]')) {
       btn.addEventListener('click', () => tests[btn.dataset.test]());
     }
+
+    const perfBtn = document.getElementById('perf');
+    const renderPerf = () => { perfBtn.textContent = `Performance overlay: ${perfOverlayEnabled() ? 'on' : 'off'}`; };
+    perfBtn.addEventListener('click', () => { setPerfOverlay(!perfOverlayEnabled()); renderPerf(); });
+    renderPerf();
 
     const logEl = document.getElementById('log');
     const renderLog = () => {

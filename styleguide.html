@@ -75,7 +75,7 @@
           <button class="button button--ghost" type="button">All techniques</button>
           <button class="button button--primary" type="button" disabled>Disabled</button>
         </div>
-        <p class="sg-note">Icon toggles live in the practice top bar; <code>aria-pressed="true"</code> fills them.</p>
+        <p class="sg-note">Icon buttons live in the practice top bar: back, the sound toggle (Bhramari) and the settings gear; <code>aria-pressed="true"</code> fills a toggle. Vibration is a setting now, not a top-bar toggle.</p>
         <div class="sg-demo" id="icon-buttons"></div>
         <div class="sg-demo">
           <div class="pace" role="group" aria-label="Breathing pace">
@@ -166,7 +166,10 @@
     const vib = createIconToggle({ name: 'vibrate', label: 'Vibration', onClick: () => vib.set(vib.button.getAttribute('aria-pressed') !== 'true') });
     const snd = createIconToggle({ name: 'sound', label: 'Hum sound', onClick: () => snd.set(snd.button.getAttribute('aria-pressed') !== 'true') });
     snd.set(true);
-    iconRow.append(back, vib.button, snd.button);
+    const gear = el('button', 'icon-button', { type: 'button' });
+    gear.setAttribute('aria-label', 'Settings');
+    gear.append(icon('settings'));
+    iconRow.append(back, snd.button, gear, vib.button);
 
     const root = document.documentElement;
     for (const btn of document.querySelectorAll('[data-theme-choice]')) {

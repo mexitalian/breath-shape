@@ -7,13 +7,14 @@
   <title>Breathing Animations</title>
   <link rel="icon" href="icons/icon-96.webp" type="image/webp">
   <link rel="apple-touch-icon" href="icons/icon-192.webp">
+  <script src="js/settings-boot.js"></script>
   <link rel="stylesheet" href="css/system.css">
 </head>
 <body>
   <div class="page">
     <main class="page__main">
       <header class="page__header">
-        <div class="eyebrow">Breathing Animations</div>
+        <div class="page__bar"><div class="eyebrow">Breathing Animations</div><div id="settings"></div></div>
         <h1 class="page__title">Pick a pace and follow the light.</h1>
         <p class="page__lede">Each one is a guided breathing pattern. Follow the shape as it grows and shrinks, and drag anywhere on the screen to change the colour.</p>
       </header>
@@ -255,7 +256,10 @@
   <script type="module">
     import { initAppShell } from './js/app.js';
     import { initHome } from './js/home.js';
+    import { createSettingsButton } from './js/ui/settings-panel.js';
+    import { canVibrate } from './js/controls/vibration.js';
     initAppShell({ home: true });
+    document.getElementById('settings').replaceWith(createSettingsButton({ canVibrate: canVibrate() }));
     initHome();
   </script>
 </body>

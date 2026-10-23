@@ -1,18 +1,25 @@
-import { createIconToggle } from '../ui/icon-toggle.js';
-import { nativePlugin, platform, pulses, impactStyleFor, waveform, vibrationUsage } from '../native.js';
+import { nativePlugin, platform, isDesktopApp, pulses, impactStyleFor, waveform, vibrationUsage } from '../native.js';
 import { logHaptics } from '../haptics-log.js';
+import { readSettings, onSettingsChange } from '../settings.js';
 
-// In the app, patterns play natively and start switched on: on Android through the
-// app's own BreathVibration plugin, tagged with a usage the phone doesn't silence
-// (see Diagnostics); on iPhone as Haptics taps, since iOS has no web vibration. On the website, the Vibration API is used and the user
-// turns it on with a tap, because browsers require a gesture first.
-export function initVibration(container, notify) {
+// Whether this device can vibrate at all (no motor on a Mac).
+export function canVibrate() {
+  if (isDesktopApp) return false;
+  return !!nativePlugin('BreathVibration') || !!nativePlugin('Haptics') || 'vibrate' in navigator;
+}
+
+// Phase-change vibration, on or off from Settings. In the app, patterns play natively:
+// on Android through the app's own BreathVibration plugin, tagged with a usage the
+// phone doesn't silence (see Diagnostics); on iPhone as Haptics taps, since iOS has no
+// web vibration. On the website the Vibration API is used; browsers only allow it
+// after the first tap on the page.
+export function initVibration(notify) {
   const android = platform === 'android' ? nativePlugin('BreathVibration') : null;
   const haptics = android ?? nativePlugin('Haptics');
   const webSupported = 'vibrate' in navigator;
-  const supported = !!haptics || webSupported;
-  let armed = !!haptics;
+  let armed = readSettings().vibration;
   let timers = [];
+  const stopListening = onSettingsChange((settings) => { armed = settings.vibration; });
 
   let reportedError = false;
 
@@ -50,29 +57,7 @@ export function initVibration(container, notify) {
     }, at));
   }
 
-  const toggle = createIconToggle({
-    name: 'vibrate',
-    label: supported ? 'Vibration' : 'Vibration not supported on this device',
-    disabled: !supported,
-    onClick: () => {
-      if (armed) {
-        armed = false;
-        notify('Vibration off');
-      } else if (haptics) {
-        armed = true;
-        playNative([120]);
-        notify('Vibration on: you’ll feel each phase change');
-      } else {
-        armed = !!navigator.vibrate(200);
-        notify(armed ? 'Vibration on: you’ll feel each phase change' : 'This browser blocked vibration');
-      }
-      toggle.set(armed);
-    },
-  });
-  toggle.set(armed);
   logHaptics({ via: 'init', options: { platform, native: android ? 'BreathVibration' : haptics ? 'Haptics' : null, usage: android ? vibrationUsage() : undefined, webVibrate: webSupported, armed }, ok: true });
-
-  container.append(toggle.button);
 
   return {
     buzz(pattern) {
@@ -87,7 +72,7 @@ export function initVibration(container, notify) {
     },
     destroy() {
       for (const t of timers) clearTimeout(t);
-      toggle.button.remove();
+      stopListening();
     },
   };
 }

@@ -25,3 +25,20 @@
   align-items: center;
   gap: var(--space-sm);
 }
+
+/* Performance readout (Diagnostics → Performance overlay). */
+.perf {
+  position: fixed;
+  left: calc(var(--space-xs) + var(--safe-left));
+  bottom: calc(var(--space-xs) + var(--safe-bottom));
+  z-index: 5;
+  padding: var(--space-2xs) var(--space-xs);
+  border-radius: var(--radius-sm);
+  background: var(--color-glass);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-normal);
+  white-space: pre;
+  pointer-events: none;
+}

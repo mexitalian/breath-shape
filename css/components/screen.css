@@ -94,3 +94,15 @@
   gap: var(--space-sm);
   margin-top: var(--space-xs);
 }
+
+/* Settings panel: a label over a row of chips per setting. */
+.settings .screen__panel { align-items: stretch; text-align: left; gap: var(--space-lg); }
+.settings__row { display: flex; flex-direction: column; gap: var(--space-xs); }
+.settings__label {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-dim);
+  font-weight: var(--weight-medium);
+}
+.settings .screen__actions { justify-content: flex-start; }
