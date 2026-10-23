@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { saveSession, readHistory, removeSession, clearHistory, groupByDay, weekTotals, sessionResult, formatDuration, dayLabel } from '../js/history.js';
+import { saveSession, readHistory, removeSession, clearHistory, groupByDay, weekTotals, sessionResult, formatDuration, dayLabel, historyCsv } from '../js/history.js';
 
 const memory = () => {
   const data = new Map();
@@ -62,4 +62,16 @@ test('heart rate checks show their bpm and are left out of practice totals', () 
 test('heart rate checks with HRV show both', () => {
   assert.equal(sessionResult({ kind: 'heart-rate', heartRate: 64, hrv: 42 }), '64 bpm · HRV 42 ms');
   assert.equal(sessionResult({ kind: 'heart-rate', heartRate: 64, hrv: null }), '64 bpm');
+});
+
+test('history exports as CSV, oldest first, quoting where needed', () => {
+  const csv = historyCsv([
+    entry('b', now, { kind: 'heart-rate', title: 'Heart rate', durationMs: 61_000, heartRate: 62, hrv: 41 }),
+    entry('a', now - DAY, { title: 'Box, "slow"', completed: true, rounds: 4, round: 4 }),
+  ]);
+  const lines = csv.trimEnd().split('\r\n');
+  assert.equal(lines[0], 'date,time,activity,minutes,completed,heart_rate_bpm,hrv_ms,result');
+  assert.equal(lines[1], '2026-10-21,18:00,"Box, ""slow""",5.0,yes,,,4 rounds');
+  assert.equal(lines[2], '2026-10-22,18:00,Heart rate,1.0,,62,41,62 bpm · HRV 41 ms');
+  assert.ok(csv.endsWith('\r\n'));
 });
