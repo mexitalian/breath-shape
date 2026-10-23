@@ -1,16 +1,21 @@
-import { fingerPresent, pulseWave, findBeats, estimateBpm } from './heart-rate.js';
+import { fingerPresent, pulseWave, findBeats, estimateBpm, estimateHrv } from './heart-rate.js';
 import { saveSession, HEART_RATE } from './history.js';
 
-const MEASURE_S = 30;      // seconds of steady finger contact for a result
-const WINDOW_S = 12;       // seconds of signal used for each estimate
+const SETTLE_S = 4;        // auto-exposure settles before samples count
+const HR_S = 30;           // contact for a heart rate
+const HRV_S = 60;          // contact for HRV (and the end of the reading)
+const WINDOW_S = 12;       // seconds of signal used for each live estimate
 const TRACE_S = 5;         // seconds of pulse wave drawn
-const GIVE_UP_S = 75;      // stop trying after this much finger contact
+const GIVE_UP_S = 90;      // no heart rate by now: stop
 const SAMPLE_SIZE = 24;    // frames are averaged from a tiny copy
 
-// Heart rate check page: camera + flash, live pulse trace, result saved to history.
+// Heart rate + HRV page: camera + flash, live pulse trace. A minute of contact gives
+// both; if the signal isn't clean enough for HRV (or the finger lifts after the heart
+// rate is ready) the result is the heart rate alone. Saved to history.
 export function initHeartRate() {
   const video = document.querySelector('.hr__preview');
   const bpmEl = document.getElementById('bpm');
+  const hrvEl = document.getElementById('hrv');
   const statusEl = document.getElementById('status');
   const progressEl = document.getElementById('progress');
   const startBtn = document.getElementById('start');
@@ -21,7 +26,8 @@ export function initHeartRate() {
   const sampleCtx = sampler.getContext('2d', { willReadFrequently: true });
 
   let stream = null;
-  let samples = [];        // { t, v } while the finger is on the lens
+  let samples = [];        // { t, v }: the live window
+  let all = [];            // { t, v }: every settled sample this attempt, for HRV
   let contactS = 0;        // finger-on time in this attempt
   let lastT = null;
   let startedAt = 0;
@@ -43,6 +49,7 @@ export function initHeartRate() {
     startBtn.hidden = true;
     doneLink.hidden = true;
     bpmEl.textContent = '--';
+    hrvEl.textContent = '--';
     status('Starting the camera…');
     try {
       stream = await navigator.mediaDevices.getUserMedia({
@@ -62,7 +69,7 @@ export function initHeartRate() {
     if (torch) {
       try { await track.applyConstraints({ advanced: [{ torch: true }] }); } catch { /* reading still works in bright light */ }
     }
-    samples = []; readings = []; contactS = 0; lastT = null;
+    samples = []; all = []; readings = []; contactS = 0; lastT = null;
     startedAt = Date.now();
     running = true;
     status(torch ? 'Cover the camera and flash with your fingertip.' : 'The flash isn’t available here. Cover the camera with your fingertip and hold the phone up to a bright lamp.');
@@ -82,8 +89,13 @@ export function initHeartRate() {
     lastT = t;
 
     if (!fingerPresent(colour)) {
+      // Lifted after the heart rate was ready: keep it, without HRV.
+      if (contactS >= HR_S && readings.length >= 30) {
+        finish({ lifted: true });
+        return;
+      }
       if (samples.length) status('Lost contact. Cover the camera and flash again, and keep still.');
-      samples = []; readings = []; contactS = 0;
+      samples = []; all = []; readings = []; contactS = 0;
       bpmEl.textContent = '--';
       progressEl.style.width = '0%';
       drawTrace([]);
@@ -93,24 +105,28 @@ export function initHeartRate() {
 
     contactS += dt;
     // Red carries the pulse, but the flash often maxes it out; green still moves then.
-    samples.push({ t, v: colour.r + colour.g });
+    const sample = { t, v: colour.r + colour.g };
+    samples.push(sample);
+    if (contactS > SETTLE_S) all.push(sample);
     while (samples.length && samples[0].t < t - WINDOW_S) samples.shift();
     const wave = pulseWave(samples);
     drawTrace(wave.filter(s => s.t > t - TRACE_S));
 
     // Give the camera's auto-exposure a few seconds to settle before trusting it.
-    if (contactS > 4) {
+    if (contactS > SETTLE_S) {
       const bpm = estimateBpm(findBeats(wave.filter(s => s.t > t - WINDOW_S + 0.6)));
       if (bpm) { readings.push(bpm); if (readings.length > 90) readings.shift(); }
       bpmEl.textContent = bpm ?? '--';
-      status(bpm ? 'Keep still…' : 'Finding your pulse. Keep still and press lightly.');
+      if (!bpm) status('Finding your pulse. Keep still and press lightly.');
+      else if (contactS < HR_S) status('Keep still…');
+      else status('Heart rate ready. Keep still a little longer for your HRV…');
     } else {
       status('Hold still…');
     }
-    progressEl.style.width = `${Math.min(100, (contactS / MEASURE_S) * 100)}%`;
+    progressEl.style.width = `${Math.min(100, (contactS / HRV_S) * 100)}%`;
 
-    if (contactS >= MEASURE_S && readings.length >= 30) {
-      finish();
+    if (contactS >= HRV_S && readings.length >= 30) {
+      finish({ lifted: false });
       return;
     }
     if (contactS >= GIVE_UP_S) {
@@ -127,14 +143,22 @@ export function initHeartRate() {
     video.srcObject = null;
   }
 
-  function finish() {
+  function finish({ lifted }) {
     stopCamera();
     // Median of the last ~3 seconds of estimates.
     const recent = readings.slice(-90).sort((a, b) => a - b);
     const bpm = recent[recent.length >> 1];
+    const hrv = lifted ? null : estimateHrv(findBeats(pulseWave(all)));
     bpmEl.textContent = bpm;
+    hrvEl.textContent = hrv ?? '--';
     progressEl.style.width = '100%';
-    status(`Your heart rate is ${bpm} beats per minute. Saved to Your history.`);
+    if (hrv != null) {
+      status(`Heart rate ${bpm} bpm, HRV ${hrv} ms. Saved to Your history.`);
+    } else if (lifted) {
+      status(`Heart rate ${bpm} bpm, saved. HRV needs a full minute: keep your finger on until the bar fills.`);
+    } else {
+      status(`Heart rate ${bpm} bpm, saved. The signal wasn't steady enough for HRV: rest your hand on a table, press lightly and breathe normally.`);
+    }
     saveSession({
       id: `hr-${startedAt}`,
       kind: HEART_RATE,
@@ -143,6 +167,7 @@ export function initHeartRate() {
       startedAt,
       durationMs: Date.now() - startedAt,
       heartRate: bpm,
+      hrv,
     });
     startBtn.textContent = 'Measure again';
     startBtn.hidden = false;
