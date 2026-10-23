@@ -80,7 +80,7 @@ export function formatDuration(ms) {
 
 // One line describing how the session went.
 export function sessionResult(e) {
-  if (e.kind === HEART_RATE) return `${e.heartRate} bpm`;
+  if (e.kind === HEART_RATE) return e.hrv ? `${e.heartRate} bpm · HRV ${e.hrv} ms` : `${e.heartRate} bpm`;
   const parts = [];
   if (e.records?.length) {
     if (e.records.every(r => r.label.startsWith('Control pause'))) {

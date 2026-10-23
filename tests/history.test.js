@@ -58,3 +58,8 @@ test('heart rate checks show their bpm and are left out of practice totals', () 
   assert.equal(sessionResult(check), '64 bpm');
   assert.deepEqual(weekTotals([check], now), { sessions: 0, minutes: 0 });
 });
+
+test('heart rate checks with HRV show both', () => {
+  assert.equal(sessionResult({ kind: 'heart-rate', heartRate: 64, hrv: 42 }), '64 bpm · HRV 42 ms');
+  assert.equal(sessionResult({ kind: 'heart-rate', heartRate: 64, hrv: null }), '64 bpm');
+});
