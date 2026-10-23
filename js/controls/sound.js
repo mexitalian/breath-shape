@@ -1,15 +1,17 @@
 import { createIconToggle } from '../ui/icon-toggle.js';
+import { readSettings, saveSettings, onSettingsChange } from '../settings.js';
 
-// Opt-in hum tone for phases marked hum: true. Off until the user turns it on
-// (browsers only allow audio after a tap anyway).
+// Hum tone for phases marked hum: true. On/off and volume live in Settings; the
+// top-bar toggle is a quick mute that flips the same setting. Browsers only allow
+// audio after a tap, so the sound starts on the first tap on the page.
 const FADE_S = 0.35;
-const LEVEL = 0.08;
+const MAX_LEVEL = 0.13;
 
 export function initSound(container, notify, { tone = 130 } = {}) {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   let ctx = null;
   let gain = null;
-  let on = false;
+  let { sound: on, volume } = readSettings();
   let humming = false;
 
   function build() {
@@ -29,26 +31,45 @@ export function initSound(container, notify, { tone = 130 } = {}) {
     }
   }
 
+  // Only called once a tap has happened (or the context already exists).
+  function wakeAudio() {
+    if (!AudioCtx) return;
+    if (!ctx) build();
+    if (ctx.state !== 'running') ctx.resume();
+  }
+
   function setTarget() {
     if (!gain) return;
-    gain.gain.setTargetAtTime(on && humming ? LEVEL : 0, ctx.currentTime, FADE_S / 3);
+    gain.gain.setTargetAtTime(on && humming ? MAX_LEVEL * volume : 0, ctx.currentTime, FADE_S / 3);
   }
+
+  const onTap = () => {
+    if (!on) return;
+    wakeAudio();
+    setTarget();
+  };
+  document.addEventListener('pointerdown', onTap);
 
   const toggle = createIconToggle({
     name: 'sound',
     label: AudioCtx ? 'Hum sound' : 'Sound not supported in this browser',
     disabled: !AudioCtx,
     onClick: () => {
-      if (!ctx) build();
-      on = !on;
-      if (on) ctx.resume();
-      toggle.set(on);
+      wakeAudio();
+      saveSettings({ sound: !on });
       notify(on ? 'Hum sound on' : 'Hum sound off');
-      setTarget();
     },
   });
 
+  toggle.set(on && !!AudioCtx);
   container.append(toggle.button);
+
+  const stopListening = onSettingsChange((settings) => {
+    on = settings.sound;
+    volume = settings.volume;
+    toggle.set(on && !!AudioCtx);
+    setTarget();
+  });
 
   return {
     update(snap) {
@@ -58,6 +79,8 @@ export function initSound(container, notify, { tone = 130 } = {}) {
       setTarget();
     },
     destroy() {
+      stopListening();
+      document.removeEventListener('pointerdown', onTap);
       toggle.button.remove();
       ctx?.close();
     },

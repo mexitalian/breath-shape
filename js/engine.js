@@ -14,6 +14,7 @@ import { initVibration, canVibrate } from './controls/vibration.js';
 import { createSettingsButton } from './ui/settings-panel.js';
 import { initSound } from './controls/sound.js';
 import { createKeepAwake } from './controls/keep-awake.js';
+import { readSettings, onSettingsChange } from './settings.js';
 import { initAppShell } from './app.js';
 import { isDesktopApp } from './native.js';
 import { saveSession, MIN_SESSION_MS } from './history.js';
@@ -88,8 +89,14 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   const sound = cfg.sound ? initSound(ui.actions, ui.notify, cfg.sound) : null;
   const vibration = cfg.vibration && canVibrate() ? initVibration(ui.notify) : null;
-  ui.actions.append(createSettingsButton({ canVibrate: canVibrate() }));
+  ui.actions.append(createSettingsButton());
   const awake = createKeepAwake();
+  // Keep screen on (Settings): follows the setting live while a session runs.
+  const stopAwakeSetting = onSettingsChange((settings) => {
+    if (!running) return;
+    if (settings.keepAwake) awake.acquire();
+    else awake.release();
+  });
 
   // Session history: saved while running and again when the session ends.
   let session = null;
@@ -205,7 +212,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     cycles.reset();
     lastSerial = -1;
     running = true;
-    awake.acquire();
+    if (readSettings().keepAwake) awake.acquire();
     session = { id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, startedAt: Date.now() };
     lastSnap = null;
     raf = requestAnimationFrame(frame);
@@ -337,6 +344,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       paceControl?.destroy();
       sound?.destroy();
       perf?.destroy();
+      stopAwakeSetting();
       awake.destroy();
       screen?.close();
       ui.stage.remove();

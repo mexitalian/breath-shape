@@ -98,3 +98,29 @@ export function sessionResult(e) {
   if (e.variant) parts.push(e.variant);
   return parts.join(' · ');
 }
+
+// History as CSV (one row per session, oldest first), for the Export in Settings.
+const CSV_COLUMNS = ['date', 'time', 'activity', 'minutes', 'completed', 'heart_rate_bpm', 'hrv_ms', 'result'];
+const pad = (n) => String(n).padStart(2, '0');
+const csvCell = (value) => {
+  const text = value == null ? '' : String(value);
+  return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+};
+
+export function historyCsv(list) {
+  const rows = [...list].sort((a, b) => a.startedAt - b.startedAt).map((e) => {
+    const d = new Date(e.startedAt);
+    const heart = e.kind === HEART_RATE;
+    return [
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+      `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+      e.title,
+      (e.durationMs / 60_000).toFixed(1),
+      heart ? '' : e.completed ? 'yes' : 'no',
+      heart ? e.heartRate : '',
+      heart ? e.hrv ?? '' : '',
+      sessionResult(e),
+    ];
+  });
+  return [CSV_COLUMNS, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n') + '\r\n';
+}

@@ -257,9 +257,8 @@
     import { initAppShell } from './js/app.js';
     import { initHome } from './js/home.js';
     import { createSettingsButton } from './js/ui/settings-panel.js';
-    import { canVibrate } from './js/controls/vibration.js';
     initAppShell({ home: true });
-    document.getElementById('settings').replaceWith(createSettingsButton({ canVibrate: canVibrate() }));
+    document.getElementById('settings').replaceWith(createSettingsButton());
     initHome();
   </script>
 </body>
