@@ -17,3 +17,6 @@
   opacity: 0;
   will-change: transform, opacity;
 }
+
+/* Settings → Particles: Off. */
+[data-particles="off"] .particle-layer { display: none; }

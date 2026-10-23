@@ -9,7 +9,8 @@ import { createPaceControl } from './ui/pace-control.js';
 import { createCycleCounter } from './ui/cycle-counter.js';
 import { durationScaleFor, loadPace, savePace } from './pace.js';
 import { initHueControl } from './controls/hue.js';
-import { initVibration } from './controls/vibration.js';
+import { initVibration, canVibrate } from './controls/vibration.js';
+import { createSettingsButton } from './ui/settings-panel.js';
 import { initSound } from './controls/sound.js';
 import { createKeepAwake } from './controls/keep-awake.js';
 import { initAppShell } from './app.js';
@@ -84,7 +85,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
   }
 
   const sound = cfg.sound ? initSound(ui.actions, ui.notify, cfg.sound) : null;
-  const vibration = cfg.vibration && !isDesktopApp ? initVibration(ui.actions, ui.notify) : null;
+  const vibration = cfg.vibration && canVibrate() ? initVibration(ui.notify) : null;
+  ui.actions.append(createSettingsButton({ canVibrate: canVibrate() }));
   const awake = createKeepAwake();
 
   // Session history: saved while running and again when the session ends.
