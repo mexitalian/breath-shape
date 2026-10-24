@@ -11,6 +11,7 @@ on:
       - 'LICENSE'
       - 'src-tauri/**'
       - '.github/workflows/macos.yml'
+      - '.github/workflows/release.yml'
   push:
     branches: [main]
     paths-ignore:
@@ -20,6 +21,7 @@ on:
       - 'LICENSE'
       - 'src-tauri/**'
       - '.github/workflows/macos.yml'
+      - '.github/workflows/release.yml'
 
 permissions:
   contents: write
@@ -75,4 +77,4 @@ jobs:
             --target "$GITHUB_SHA" \
             --notes "Debug build of main at ${GITHUB_SHA::7} (build ${{ github.run_number }}).
 
-          Install on Android: open this page on your phone, tap **breathing.apk**, then allow your browser to install apps when asked. New builds install over the old one."
+          Install on Android: open this page on your phone, tap **breathing.apk**, then allow your browser to install apps when asked. It installs as **Breath Dev**, next to the Google Play version; new builds install over the old one."
