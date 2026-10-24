@@ -224,7 +224,7 @@ public class BreathSessionService extends Service {
         PendingIntent stopIntent = PendingIntent.getService(this, 1, stop, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         return new NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.ic_stat_breath)
-            .setContentTitle(plan != null ? plan.title : "Breathing")
+            .setContentTitle(plan != null ? plan.title : "Breath Shape")
             .setContentText(text)
             .setContentIntent(openIntent)
             .addAction(0, "Stop", stopIntent)

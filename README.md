@@ -1,6 +1,6 @@
-# Breathing Animations
+# Breath Shape
 
-Guided breathing animations built on one shared engine and design system. Each technique is a small config file; the engine handles timing, visuals, counters, screens, vibration and the colour drag control.
+Guided breathing animations (the repo started as "Breathing Animations") built on one shared engine and design system. Each technique is a small config file; the engine handles timing, visuals, counters, screens, vibration and the colour drag control.
 
 Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub Pages from `main`). The [style guide](https://mexitalian.github.io/breathing-animations/styleguide.html) shows every token and component.
 
