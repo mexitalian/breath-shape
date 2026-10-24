@@ -1,15 +1,15 @@
-# Breathing: features and functionality
+# Breath Shape: features and functionality
 
-What the app does today, where each feature lives and how it ships. Last updated 23 October 2026.
+What the app does today, where each feature lives and how it ships. Last updated 24 October 2026.
 
 ## Overview
 
-Breathing is a guided breathing app: 15 techniques shown as calm, colour-coded animations, plus a camera check for heart rate and HRV. One codebase of plain HTML, CSS and JavaScript ships as:
+Breath Shape ("Breath Shape: Guided Breathing" on Google Play) is a guided breathing app: 15 techniques shown as calm, colour-coded animations, plus a camera check for heart rate and HRV. One codebase of plain HTML, CSS and JavaScript ships as:
 
 | Product | How it's built | Where to get it |
 | --- | --- | --- |
 | Website | Static pages on GitHub Pages | [mexitalian.github.io/breathing-animations](https://mexitalian.github.io/breathing-animations/) |
-| Android app | Capacitor 8; CI builds the APK | [app-latest release](https://github.com/mexitalian/breathing-animations/releases/tag/app-latest) |
+| Android app | Capacitor 8; Google Play closed beta (see [PLAY_STORE.md](PLAY_STORE.md)) | Play beta link; test builds: [app-latest](https://github.com/mexitalian/breathing-animations/releases/tag/app-latest), installed as "Breath Dev" |
 | iPhone app | Capacitor 8 project in `ios/` | Not built or distributed yet |
 | Mac menu-bar app | Tauri 2; build paused, manual runs only | [mac-latest release](https://github.com/mexitalian/breathing-animations/releases/tag/mac-latest) |
 
@@ -142,6 +142,7 @@ Every change reaches main through a PR. On merge to main:
 
 - **Website:** republished every time (GitHub Pages, about 30 s).
 - **Android:** builds and replaces the `app-latest` release, unless the change only touched `.claude/`, Markdown docs, `tests/`, `LICENSE`, `src-tauri/` or `macos.yml`.
+- **Google Play:** run Actions → Play release by hand to build the signed `.aab`, then upload it in the Play Console ([PLAY_STORE.md](PLAY_STORE.md)).
 - **Mac:** paused. Run it by hand from Actions → macOS app → Run workflow; a manual run on main publishes `mac-latest`.
 
 Other rules:

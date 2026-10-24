@@ -36,7 +36,7 @@ final class SessionPlan {
 
     static SessionPlan from(JSONObject data) throws JSONException {
         SessionPlan plan = new SessionPlan();
-        plan.title = data.optString("title", "Breathing");
+        plan.title = data.optString("title", "Breath Shape");
         plan.usage = data.optString("usage", "alarm");
         plan.curve = data.optString("curve", "even");
         plan.vibration = data.optBoolean("vibration", true);

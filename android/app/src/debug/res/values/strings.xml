@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Test builds (debug) show a different name so they can sit next to the Play version. -->
+<resources>
+    <string name="app_name">Breath Dev</string>
+    <string name="title_activity_main">Breath Dev</string>
+</resources>

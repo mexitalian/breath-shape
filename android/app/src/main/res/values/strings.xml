@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Breathing</string>
-    <string name="title_activity_main">Breathing</string>
+    <string name="app_name">Breath Shape</string>
+    <string name="title_activity_main">Breath Shape</string>
     <string name="package_name">com.mexitalian.breathing</string>
     <string name="custom_url_scheme">com.mexitalian.breathing</string>
 </resources>

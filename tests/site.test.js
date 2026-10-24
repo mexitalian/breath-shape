@@ -6,7 +6,7 @@ import { normalize } from '../js/config.js';
 import { TECHNIQUES } from '../js/techniques.js';
 
 const root = new URL('..', import.meta.url).pathname;
-const pages = readdirSync(root).filter(f => f.endsWith('.html') && !['index.html', 'styleguide.html', 'diagnostics.html', 'history.html', 'heart-rate.html'].includes(f) && !f.startsWith('_tmp-'));
+const pages = readdirSync(root).filter(f => f.endsWith('.html') && !['index.html', 'styleguide.html', 'diagnostics.html', 'history.html', 'heart-rate.html', 'privacy.html'].includes(f) && !f.startsWith('_tmp-'));
 const index = readFileSync(join(root, 'index.html'), 'utf8');
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 

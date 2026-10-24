@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Privacy policy · Breath Shape</title>
+  <link rel="icon" href="icons/icon-96.webp" type="image/webp">
+  <link rel="apple-touch-icon" href="icons/icon-192.webp">
+  <script src="js/settings-boot.js"></script>
+  <link rel="stylesheet" href="css/system.css">
+  <style>
+    .policy { display: flex; flex-direction: column; gap: var(--space-lg); max-width: var(--measure-text); }
+    .policy h2 { font-size: var(--text-lg); font-weight: var(--weight-medium); color: var(--color-ink); margin: 0; }
+    .policy section { display: flex; flex-direction: column; gap: var(--space-xs); }
+    .policy p, .policy li { color: var(--color-dim); line-height: var(--leading-normal); margin: 0; }
+    .policy ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: var(--space-xs); }
+    .policy a { color: var(--color-accent); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="page__main">
+      <header class="page__header">
+        <div class="eyebrow"><a href="./" style="color: inherit">← All techniques</a></div>
+        <h1 class="page__title">Privacy policy</h1>
+        <p class="page__lede">Breath Shape collects nothing. Everything the app saves stays on your device.</p>
+      </header>
+
+      <article class="policy">
+        <p>This policy covers the Breath Shape app for Android and the Breath Shape website. Last updated 24 October 2026.</p>
+
+        <section>
+          <h2>What is saved, and where</h2>
+          <ul>
+            <li><strong>Session history:</strong> technique, date and time, length, rounds and results (such as hold times), and heart rate and HRV from heart checks.</li>
+            <li><strong>Settings:</strong> theme, sound, vibration and similar choices.</li>
+          </ul>
+          <p>These are stored only in the app's own storage on your device (in your browser's storage on the website). They are never sent to us or to anyone else. Uninstalling the app, or clearing the website's data, deletes them. You can also clear them in Settings → Your data.</p>
+        </section>
+
+        <section>
+          <h2>What is not collected</h2>
+          <p>No account, no analytics, no advertising, no tracking, no crash reports. The app makes no network requests about you. We have no server that receives your data.</p>
+        </section>
+
+        <section>
+          <h2>Camera and flash</h2>
+          <p>The heart rate and HRV check uses the back camera and flash while you hold your fingertip over them. Each camera frame is reduced to a brightness value on your device and discarded. No image or video is stored or sent anywhere. Only the result (heart rate, and HRV when available) is saved to your history.</p>
+        </section>
+
+        <section>
+          <h2>Notifications, vibration and the screen</h2>
+          <p>While a session plays with the screen locked, the app shows a notification with a Stop button. Notification permission is used only for that. Vibration and keeping the screen awake are used only during sessions.</p>
+        </section>
+
+        <section>
+          <h2>Exporting your data</h2>
+          <p>Settings → Your data → Export history creates a file on your device and opens your phone's share sheet. Where it goes after that (email, Drive, a spreadsheet) is your choice, and that service's own privacy policy applies.</p>
+        </section>
+
+        <section>
+          <h2>Children</h2>
+          <p>Breath Shape is not directed at children under 13 and collects no information from anyone.</p>
+        </section>
+
+        <section>
+          <h2>Health information</h2>
+          <p>Breath Shape is for relaxation and general wellbeing. It is not a medical device and does not diagnose, treat or prevent any condition. Heart rate and HRV readings are estimates.</p>
+        </section>
+
+        <section>
+          <h2>Changes and contact</h2>
+          <p>If this policy changes, the new version will be posted on this page with a new date. Questions: open an issue at <a href="https://github.com/mexitalian/breathing-animations/issues">github.com/mexitalian/breathing-animations/issues</a>.</p>
+        </section>
+      </article>
+    </main>
+  </div>
+  <script type="module">
+    import { initAppShell } from './js/app.js';
+    initAppShell({ home: false });
+  </script>
+</body>
+</html>

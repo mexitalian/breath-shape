@@ -1,0 +1,101 @@
+name: Play release
+
+# Builds the signed app bundle (.aab) for Google Play. Run by hand: Actions → Play
+# release → Run workflow, with the version name people will see (e.g. 0.1.0).
+# Needs the upload key in the repo's secrets: ANDROID_KEYSTORE_BASE64,
+# ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+# (see docs/PLAY_STORE.md). The bundle is attached to a GitHub release named
+# after the version, ready to upload in the Play Console.
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: Version name shown on Google Play (e.g. 0.1.0)
+        required: true
+        default: 0.1.0
+
+permissions:
+  contents: write
+
+concurrency:
+  group: play-release
+  cancel-in-progress: false
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Check the upload key is set up
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          missing=""
+          [ -n "$KEYSTORE" ] || missing="$missing ANDROID_KEYSTORE_BASE64"
+          [ -n "$STORE_PASSWORD" ] || missing="$missing ANDROID_KEYSTORE_PASSWORD"
+          [ -n "$ALIAS" ] || missing="$missing ANDROID_KEY_ALIAS"
+          [ -n "$KEY_PASSWORD" ] || missing="$missing ANDROID_KEY_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repo secrets:$missing. See docs/PLAY_STORE.md, step 1."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync android
+
+      - name: Unpack the upload key
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE" | base64 --decode > "$RUNNER_TEMP/upload.jks"
+
+      # Version codes only need to go up: this workflow's run number does.
+      - name: Build signed app bundle
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: ${{ inputs.version_name }}
+          ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/upload.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew bundleRelease --no-daemon
+
+      - name: Remove the upload key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: breath-shape-${{ inputs.version_name }}-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Attach to a GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION_NAME: ${{ inputs.version_name }}
+        run: |
+          cp android/app/build/outputs/bundle/release/app-release.aab "breath-shape-$VERSION_NAME.aab"
+          gh release create "play-$VERSION_NAME" "breath-shape-$VERSION_NAME.aab" \
+            --title "Breath Shape $VERSION_NAME (Google Play)" \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --notes "Signed app bundle for Google Play: version $VERSION_NAME, version code ${{ github.run_number }}.
+
+          Upload **breath-shape-$VERSION_NAME.aab** in the Play Console (Testing → Closed testing → Create new release). It can't be installed directly; for a test install use the [Latest app build](https://github.com/mexitalian/breathing-animations/releases/tag/app-latest)."
