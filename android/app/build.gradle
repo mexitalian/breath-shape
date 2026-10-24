@@ -9,7 +9,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         // CI passes the run number so each build installs as an update.
         versionCode((System.getenv("VERSION_CODE") ?: "1") as Integer)
-        versionName "1.0"
+        versionName(System.getenv("VERSION_NAME") ?: "1.0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -26,12 +26,26 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        // Play upload key, from GitHub secrets via .github/workflows/release.yml.
+        // Never committed; release builds are unsigned without it.
+        release {
+            def keystore = System.getenv("ANDROID_KEYSTORE_FILE")
+            if (keystore) {
+                storeFile file(keystore)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
     }
     buildTypes {
+        // Test builds from GitHub install alongside the Play version ("Breath Dev").
         debug {
             signingConfig signingConfigs.debug
+            applicationIdSuffix ".dev"
         }
         release {
+            if (System.getenv("ANDROID_KEYSTORE_FILE")) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
