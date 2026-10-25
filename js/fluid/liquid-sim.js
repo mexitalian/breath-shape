@@ -8,7 +8,8 @@
 //     a tilted phone tilts the liquid, and changing the tilt makes it slosh
 //   - friction, so everything comes to rest
 //   - an optional hold: a hand pressing a bell-shaped bump or dip
-// The ends are the glass walls: waves reflect off them.
+// The ends are the glass walls: waves reflect off them. With { ring: true } the
+// ends join instead, for a closed loop such as a shape's outline (Membrane).
 // Fixed small sub-steps keep it the same at any frame rate.
 
 const POINT_SPACING = 6;
@@ -18,10 +19,13 @@ const REST_VELOCITY = 1.5;
 
 export class LiquidSim {
   // params: { waveSpeed px/s, friction 1/s, settlePull 1/s², maxRise px, maxDepth px }
-  constructor(width, params) {
+  // width: length of the surface, px (for a ring, the loop's length).
+  constructor(width, params, { ring = false } = {}) {
     this.width = Math.max(1, width);
-    this.count = Math.min(400, Math.max(24, Math.round(this.width / POINT_SPACING) + 1));
-    this.spacing = this.width / (this.count - 1);
+    this.ring = ring;
+    const points = Math.round(this.width / POINT_SPACING);
+    this.count = Math.min(400, Math.max(24, ring ? points : points + 1));
+    this.spacing = this.width / (ring ? this.count : this.count - 1);
     this.h = new Float64Array(this.count);
     this.v = new Float64Array(this.count);
     this.rest = new Float64Array(this.count);
@@ -39,10 +43,17 @@ export class LiquidSim {
     const sigma = Math.max(1, width / 2.5);
     const w = new Float64Array(this.count);
     for (let i = 0; i < this.count; i++) {
-      const d = (this.x(i) - x) / sigma;
+      let dx = this.x(i) - x;
+      if (this.ring) dx -= this.width * Math.round(dx / this.width); // nearest way round
+      const d = dx / sigma;
       w[i] = Math.exp(-0.5 * d * d);
     }
     return w;
+  }
+
+  // The rest shape, point by point (px), e.g. a membrane sagging under gravity.
+  setRest(heights) {
+    this.rest.set(heights);
   }
 
   // The rest line's slope (dy/dx, y down), pivoting on the middle. 0 = level.
@@ -113,8 +124,11 @@ export class LiquidSim {
     for (let s = 0; s < steps; s++) {
       for (let i = 0; i <= last; i++) {
         const d = h[i] - rest[i];
-        const left = i === 0 ? h[1] - rest[1] : h[i - 1] - rest[i - 1];
-        const right = i === last ? h[last - 1] - rest[last - 1] : h[i + 1] - rest[i + 1];
+        // Walls mirror the neighbour (waves reflect); a ring wraps round.
+        const li = i === 0 ? (this.ring ? last : 1) : i - 1;
+        const ri = i === last ? (this.ring ? 0 : last - 1) : i + 1;
+        const left = h[li] - rest[li];
+        const right = h[ri] - rest[ri];
         let a = c2 * (left - 2 * d + right) - settlePull * d - friction * v[i];
         if (this.holdShape) {
           const w = this.holdShape[i];

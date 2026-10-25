@@ -44,3 +44,22 @@ test('a hold presses the surface and it never passes the limits', () => {
   run(sim, 15);
   assert.ok(sim.isSettled);
 });
+
+test('a ring has no walls: a wave crosses the join and the loop settles', () => {
+  const sim = new LiquidSim(600, params, { ring: true });
+  assert.equal(sim.spacing * sim.count, 600, 'points spread evenly round the loop');
+  sim.impulse(0, 40, 600); // at the join
+  run(sim, 0.15);
+  assert.ok(Math.abs(sim.h[sim.count - 3]) > 0.1, 'reached the far end by going backwards across the join');
+  run(sim, 15);
+  assert.ok(sim.isSettled);
+});
+
+test('a ring settles on its rest shape', () => {
+  const sim = new LiquidSim(600, params, { ring: true });
+  const rest = Array.from({ length: sim.count }, (_, i) => 10 * Math.sin((2 * Math.PI * i) / sim.count));
+  sim.setRest(rest);
+  run(sim, 20);
+  assert.ok(sim.isSettled);
+  assert.ok(Math.abs(sim.h[Math.round(sim.count / 4)] - 10) < 0.5, 'bulges where the rest shape does');
+});
