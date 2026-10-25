@@ -8,10 +8,10 @@ Breath Shape ("Breath Shape: Guided Breathing" on Google Play) is a guided breat
 
 | Product | How it's built | Where to get it |
 | --- | --- | --- |
-| Website | Static pages on GitHub Pages | [mexitalian.github.io/breathing-animations](https://mexitalian.github.io/breathing-animations/) |
-| Android app | Capacitor 8; Google Play closed beta (see [PLAY_STORE.md](PLAY_STORE.md)) | Play beta link; test builds: [app-latest](https://github.com/mexitalian/breathing-animations/releases/tag/app-latest), installed as "Breath Dev" |
+| Website | Static pages on GitHub Pages | [mexitalian.github.io/breath-shape](https://mexitalian.github.io/breath-shape/) |
+| Android app | Capacitor 8; Google Play closed beta (see [PLAY_STORE.md](PLAY_STORE.md)) | Play beta link; test builds: [app-latest](https://github.com/mexitalian/breath-shape/releases/tag/app-latest), installed as "Breath Dev" |
 | iPhone app | Capacitor 8 project in `ios/` | Not built or distributed yet |
-| Mac menu-bar app | Tauri 2; build paused, manual runs only | [mac-latest release](https://github.com/mexitalian/breathing-animations/releases/tag/mac-latest) |
+| Mac menu-bar app | Tauri 2; build paused, manual runs only | [mac-latest release](https://github.com/mexitalian/breath-shape/releases/tag/mac-latest) |
 
 Everything stays on the device: no accounts, no server, no analytics.
 
@@ -155,12 +155,12 @@ Other rules:
 
 | Ticket | What | Label |
 | --- | --- | --- |
-| [#46](https://github.com/mexitalian/breathing-animations/issues/46) | Store listings, privacy policy, signing, beta testing | |
-| [#47](https://github.com/mexitalian/breathing-animations/issues/47) | Submit to the App Store and Google Play | |
-| [#43](https://github.com/mexitalian/breathing-animations/issues/43) | Daily practice reminders | On hold |
-| [#48](https://github.com/mexitalian/breathing-animations/issues/48) | Native app plan (tracking) | |
-| [#86](https://github.com/mexitalian/breathing-animations/issues/86) | First-use onboarding: settings, permissions, where things are | stub |
-| [#87](https://github.com/mexitalian/breathing-animations/issues/87) | Build your own technique | stub, genAI suggestion |
-| [#88](https://github.com/mexitalian/breathing-animations/issues/88) | Progress over time in History | stub, genAI suggestion |
-| [#89](https://github.com/mexitalian/breathing-animations/issues/89) | Health Connect for sessions and heart checks | stub, genAI suggestion |
-| [#90](https://github.com/mexitalian/breathing-animations/issues/90) | Quick Settings tile and shortcuts | stub, genAI suggestion |
+| [#46](https://github.com/mexitalian/breath-shape/issues/46) | Store listings, privacy policy, signing, beta testing | |
+| [#47](https://github.com/mexitalian/breath-shape/issues/47) | Submit to the App Store and Google Play | |
+| [#43](https://github.com/mexitalian/breath-shape/issues/43) | Daily practice reminders | On hold |
+| [#48](https://github.com/mexitalian/breath-shape/issues/48) | Native app plan (tracking) | |
+| [#86](https://github.com/mexitalian/breath-shape/issues/86) | First-use onboarding: settings, permissions, where things are | stub |
+| [#87](https://github.com/mexitalian/breath-shape/issues/87) | Build your own technique | stub, genAI suggestion |
+| [#88](https://github.com/mexitalian/breath-shape/issues/88) | Progress over time in History | stub, genAI suggestion |
+| [#89](https://github.com/mexitalian/breath-shape/issues/89) | Health Connect for sessions and heart checks | stub, genAI suggestion |
+| [#90](https://github.com/mexitalian/breath-shape/issues/90) | Quick Settings tile and shortcuts | stub, genAI suggestion |

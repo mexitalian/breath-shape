@@ -13,8 +13,8 @@ Your account is a personal one made before November 2023, so there is no 12-test
 | Application ID | `com.mexitalian.breathing` (permanent once uploaded) |
 | Category | Health & Fitness |
 | Price | Free, no ads, no in-app purchases |
-| Privacy policy | https://mexitalian.github.io/breathing-animations/privacy.html |
-| Website | https://mexitalian.github.io/breathing-animations/ |
+| Privacy policy | https://mexitalian.github.io/breath-shape/privacy.html |
+| Website | https://mexitalian.github.io/breath-shape/ |
 | First version | 0.1.0 |
 | Graphics | [`store/`](../store) |
 
@@ -39,7 +39,7 @@ base64 -w0 upload.jks | termux-clipboard-set
 
 `keytool` asks for a password and a name; any name is fine.
 
-**Then, in the repo's [Settings → Secrets → Actions](https://github.com/mexitalian/breathing-animations/settings/secrets/actions), add four secrets:**
+**Then, in the repo's [Settings → Secrets → Actions](https://github.com/mexitalian/breath-shape/settings/secrets/actions), add four secrets:**
 
 | Secret | Value |
 | --- | --- |
@@ -52,7 +52,7 @@ base64 -w0 upload.jks | termux-clipboard-set
 
 ## 2. Build the app bundle (GitHub, one tap)
 
-1. Go to [Actions → Play release → Run workflow](https://github.com/mexitalian/breathing-animations/actions/workflows/release.yml).
+1. Go to [Actions → Play release → Run workflow](https://github.com/mexitalian/breath-shape/actions/workflows/release.yml).
 2. Enter the version name (`0.1.0`) and run it.
 3. After about 3 minutes, a release named **play-0.1.0** holds `breath-shape-0.1.0.aab`, ready to download.
 
@@ -73,7 +73,7 @@ Every later run makes a new version code automatically; just raise the version n
 The Dashboard lists these as "Set up your app". Answers to paste:
 
 **Privacy policy**
-- https://mexitalian.github.io/breathing-animations/privacy.html
+- https://mexitalian.github.io/breath-shape/privacy.html
 
 **App access**
 - All functionality is available without special access.
@@ -190,7 +190,7 @@ Breath Shape is for relaxation and general wellbeing. It is not a medical device
 - **Category:** Health & Fitness.
 - **Tags:** meditation, stress relief, wellness, or the nearest offered.
 - **Email:** your public contact email (required).
-- **Website:** https://mexitalian.github.io/breathing-animations/
+- **Website:** https://mexitalian.github.io/breath-shape/
 
 ## 6. Closed testing with a Google Group
 
@@ -201,7 +201,7 @@ Breath Shape is for relaxation and general wellbeing. It is not a medical device
 
 **Set up the track**
 1. In the Console go to **Testing → Closed testing**, open the default track and choose **Manage track**.
-2. **Testers:** choose **Google Groups**, add the group address, and set the feedback email or URL. For example, use https://github.com/mexitalian/breathing-animations/issues or your email.
+2. **Testers:** choose **Google Groups**, add the group address, and set the feedback email or URL. For example, use https://github.com/mexitalian/breath-shape/issues or your email.
 3. **Countries:** pick where testers are; picking all is fine.
 
 **Publish a release**
@@ -219,7 +219,7 @@ Testers update through Google Play like any app. For each new beta: run step 2 w
 
 ## 7. Your own phone: test build vs Play beta
 
-- **Test builds:** from now on, test builds from GitHub ([Latest app build](https://github.com/mexitalian/breathing-animations/releases/tag/app-latest)) install as **Breath Dev**, next to the Play version.
+- **Test builds:** from now on, test builds from GitHub ([Latest app build](https://github.com/mexitalian/breath-shape/releases/tag/app-latest)) install as **Breath Dev**, next to the Play version.
 - **The old test build:** it is still installed under the Play app's ID, so Play can't install over it. Before joining the beta:
   1. Open the old "Breath Shape" or "Breathing" test app.
   2. Export your history (Settings → Your data → Export history).
