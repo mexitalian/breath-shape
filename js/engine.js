@@ -94,7 +94,13 @@ export function start(rawConfig, { mount = document.body } = {}) {
   const cues = createSessionCues({ cfg, getTimeline: () => timeline, onStoppedFromNotification: stoppedFromNotification });
   const sound = cfg.sound ? initSound(ui.actions, ui.notify, { ...cfg.sound, silent: !!cues }) : null;
   const vibration = !cues && cfg.vibration && canVibrate() ? initVibration(ui.notify) : null;
-  ui.actions.append(createSettingsButton());
+  const root = document.documentElement;
+  ui.actions.append(createSettingsButton({
+    hue: {
+      get: () => Number.parseFloat(getComputedStyle(root).getPropertyValue('--hue')) || cfg.hue,
+      set: (deg) => root.style.setProperty('--hue', String(deg)),
+    },
+  }));
   const awake = createKeepAwake();
   // Keep screen on (Settings): follows the setting live while a session runs.
   const stopAwakeSetting = onSettingsChange((settings) => {
@@ -336,7 +342,9 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   holdButton.addEventListener('click', advance);
 
-  const hue = initHueControl({ onTap: advance });
+  // With Fluid shapes on, touch moves the liquid; colour is set in Settings and holds
+  // end with their button.
+  const hue = initHueControl({ onTap: advance, paused: () => readSettings().fluid !== 'off' });
 
   const onKey = (e) => {
     if (e.target.closest?.('button, a')) return;

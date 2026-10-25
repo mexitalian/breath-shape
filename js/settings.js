@@ -2,7 +2,7 @@
 // They apply straight away on every open page (the 'breathing:settings' event)
 // and before first paint on the next one (js/settings-boot.js reads the same key).
 export const SETTINGS_KEY = 'breathing:settings';
-export const DEFAULTS = { theme: 'system', particles: 'webgl', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps' };
+export const DEFAULTS = { theme: 'system', particles: 'webgl', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps', fluid: 'off', fluidInput: 'tilt' };
 export const THEMES = ['system', 'light', 'dark'];
 // 'webgl' (the default) draws a richer particle layer on one canvas
 // (js/components/particles-gl.js); 'on' is the standard one, and the fallback
@@ -10,6 +10,10 @@ export const THEMES = ['system', 'light', 'dark'];
 export const PARTICLES = ['on', 'off', 'webgl'];
 // Continuous: inhale ramps soft to strong, exhale strong to soft (Android app only).
 export const VIBRATION_STYLES = ['taps', 'continuous'];
+// Fluid shapes (#94): the shape as a vessel of liquid, or a rippling membrane;
+// moved by touch, or by tilt and touch where the phone's motion sensor reports.
+export const FLUIDS = ['off', 'vessel', 'membrane'];
+export const FLUID_INPUTS = ['tilt', 'touch'];
 
 function defaultStorage() {
   try { return window.localStorage; } catch { return null; }
@@ -27,6 +31,8 @@ export function readSettings(storage = defaultStorage()) {
     keepAwake: bool('keepAwake'),
     vibration: bool('vibration'),
     vibrationStyle: VIBRATION_STYLES.includes(saved.vibrationStyle) ? saved.vibrationStyle : DEFAULTS.vibrationStyle,
+    fluid: FLUIDS.includes(saved.fluid) ? saved.fluid : DEFAULTS.fluid,
+    fluidInput: FLUID_INPUTS.includes(saved.fluidInput) ? saved.fluidInput : DEFAULTS.fluidInput,
   };
 }
 

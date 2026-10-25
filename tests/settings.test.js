@@ -48,3 +48,13 @@ test('volume is kept between 0 and 1', () => {
   storage.setItem(SETTINGS_KEY, JSON.stringify({ volume: -1 }));
   assert.equal(readSettings(storage).volume, 0);
 });
+
+test('fluid shapes start off, moved by tilt where available', () => {
+  const storage = memoryStorage();
+  assert.equal(readSettings(storage).fluid, 'off');
+  assert.equal(readSettings(storage).fluidInput, 'tilt');
+  saveSettings({ fluid: 'vessel', fluidInput: 'touch' }, storage);
+  assert.equal(readSettings(storage).fluid, 'vessel');
+  storage.setItem(SETTINGS_KEY, JSON.stringify({ fluid: 'lava', fluidInput: 'mind' }));
+  assert.deepEqual([readSettings(storage).fluid, readSettings(storage).fluidInput], ['off', 'tilt']);
+});
