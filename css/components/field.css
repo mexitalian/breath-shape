@@ -80,6 +80,14 @@
 }
 .field[data-fluid="vessel"] .dot { mask: none; }
 
+/* Fluid → Membrane: the fill's edge is drawn by membrane.js as a clip-path, a
+   little inside the box so it has room to bulge out. */
+.field[data-fluid="membrane"] .core {
+  border-radius: 0;
+  mask: none;
+}
+.field[data-fluid="membrane"] .dot { mask: none; }
+
 /* Phase name + count at the centre of the shape. Two copies: light behind the
    fill, dark inside it (counter-scaled so both stay the same size). */
 .shape-label {

@@ -2,6 +2,7 @@ import { el } from '../dom.js';
 import { readout } from '../ui/labels.js';
 import { readSettings, onSettingsChange } from '../settings.js';
 import { createVessel } from '../fluid/vessel.js';
+import { createMembrane } from '../fluid/membrane.js';
 
 // The breathing shape: a solid fill that grows to fill the outline at full inhale.
 // The phase name and count are drawn twice at the centre: a light copy behind the
@@ -10,6 +11,7 @@ import { createVessel } from '../fluid/vessel.js';
 // The dark copy sits in a liquid layer: normally the whole fill, but with
 // Settings → Fluid → Vessel the shape becomes a glass and the liquid layer is
 // clipped to a moving surface whose level is the breath (js/fluid/vessel.js).
+// With Fluid → Membrane the fill's own edge wobbles (js/fluid/membrane.js).
 export function core({ field, cfg }) {
   const light = el('div', 'shape-label');
   const fill = el('div', 'core');
@@ -29,22 +31,24 @@ export function core({ field, cfg }) {
 
   // Fluid shapes follow Settings live; the phone's reduce-motion setting keeps them off.
   const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  let vessel = null;
+  let fluid = null;
+  let fluidMode = 'off';
   function applyFluid(mode) {
     const want = reduceMotion ? 'off' : mode;
+    if (want === fluidMode) return;
+    fluid?.destroy();
+    fluid = null;
+    fluidMode = want;
     field.dataset.fluid = want;
-    if (want === 'vessel' && !vessel) vessel = createVessel({ core: fill, liquid, cfg });
-    if (want !== 'vessel' && vessel) {
-      vessel.destroy();
-      vessel = null;
-    }
+    if (want === 'vessel') fluid = createVessel({ core: fill, liquid, cfg });
+    if (want === 'membrane') fluid = createMembrane({ core: fill, cfg });
   }
   applyFluid(readSettings().fluid);
   onSettingsChange((settings) => applyFluid(settings.fluid));
 
   let last = '';
   function update(snap) {
-    vessel?.update(snap);
+    fluid?.update(snap);
     const r = readout(snap);
     const hidden = !!snap.quiet;
     const key = `${hidden}|${r.phase}|${r.count}|${r.mode}`;
