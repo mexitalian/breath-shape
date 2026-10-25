@@ -1,15 +1,24 @@
 import { el } from '../dom.js';
 import { readout } from '../ui/labels.js';
+import { readSettings, onSettingsChange } from '../settings.js';
+import { createVessel } from '../fluid/vessel.js';
+import { createMembrane } from '../fluid/membrane.js';
 
 // The breathing shape: a solid fill that grows to fill the outline at full inhale.
 // The phase name and count are drawn twice at the centre: a light copy behind the
 // fill and a dark copy inside it (clipped by the fill and counter-scaled), so the
 // text reads as a negative wherever the fill covers it.
+// The dark copy sits in a liquid layer: normally the whole fill, but with
+// Settings → Fluid → Vessel the shape becomes a glass and the liquid layer is
+// clipped to a moving surface whose level is the breath (js/fluid/vessel.js).
+// With Fluid → Membrane the fill's own edge wobbles (js/fluid/membrane.js).
 export function core({ field, cfg }) {
   const light = el('div', 'shape-label');
   const fill = el('div', 'core');
   const dark = el('div', 'shape-label shape-label--on-fill');
-  fill.append(dark);
+  const liquid = el('div', 'core__liquid');
+  liquid.append(dark);
+  fill.append(liquid);
   field.append(light, fill);
   if (cfg.coreClip) fill.style.setProperty('--core-clip', cfg.coreClip);
 
@@ -20,8 +29,26 @@ export function core({ field, cfg }) {
     return { root, phase, count };
   });
 
+  // Fluid shapes follow Settings live; the phone's reduce-motion setting keeps them off.
+  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  let fluid = null;
+  let fluidMode = 'off';
+  function applyFluid(mode) {
+    const want = reduceMotion ? 'off' : mode;
+    if (want === fluidMode) return;
+    fluid?.destroy();
+    fluid = null;
+    fluidMode = want;
+    field.dataset.fluid = want;
+    if (want === 'vessel') fluid = createVessel({ core: fill, liquid, cfg });
+    if (want === 'membrane') fluid = createMembrane({ core: fill, cfg });
+  }
+  applyFluid(readSettings().fluid);
+  onSettingsChange((settings) => applyFluid(settings.fluid));
+
   let last = '';
   function update(snap) {
+    fluid?.update(snap);
     const r = readout(snap);
     const hidden = !!snap.quiet;
     const key = `${hidden}|${r.phase}|${r.count}|${r.mode}`;
