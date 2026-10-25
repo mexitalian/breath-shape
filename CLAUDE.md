@@ -1,4 +1,4 @@
-# breathing-animations
+# breath-shape
 
 ## Workflow
 

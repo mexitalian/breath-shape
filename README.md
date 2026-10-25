@@ -2,7 +2,7 @@
 
 Guided breathing animations (the repo started as "Breathing Animations") built on one shared engine and design system. Each technique is a small config file; the engine handles timing, visuals, counters, screens, vibration and the colour drag control.
 
-Live at **https://mexitalian.github.io/breathing-animations/** (served by GitHub Pages from `main`). The [style guide](https://mexitalian.github.io/breathing-animations/styleguide.html) shows every token and component.
+Live at **https://mexitalian.github.io/breath-shape/** (served by GitHub Pages from `main`). The [style guide](https://mexitalian.github.io/breath-shape/styleguide.html) shows every token and component.
 
 ## Techniques
 
@@ -37,12 +37,12 @@ npm test           # timeline and config tests (Node 20+)
 
 The same pages run inside native apps built with [Capacitor](https://capacitorjs.com). `npm run build` copies the site into `www/`, and `npx cap sync` puts it into the `android/` and `ios/` projects.
 
-**Android, from your phone:** every merge to `main` builds a test APK on GitHub Actions. Open the [Latest app build](https://github.com/mexitalian/breathing-animations/releases/tag/app-latest) release on your Android phone, tap `breathing.apk`, and allow your browser to install apps when asked. Later builds install over the earlier one.
+**Android, from your phone:** every merge to `main` builds a test APK on GitHub Actions. Open the [Latest app build](https://github.com/mexitalian/breath-shape/releases/tag/app-latest) release on your Android phone, tap `breathing.apk`, and allow your browser to install apps when asked. Later builds install over the earlier one.
 
 **iPhone, from the Mac** (one-time setup: Xcode from the App Store, Node 22+):
 
 ```sh
-git clone https://github.com/mexitalian/breathing-animations && cd breathing-animations
+git clone https://github.com/mexitalian/breath-shape && cd breath-shape
 npm ci
 npm run ios          # builds the web bundle, syncs, opens Xcode
 ```
@@ -51,7 +51,7 @@ In Xcode: plug in the iPhone, pick it as the run target, select the **App** targ
 
 After pulling new changes, run `npm run sync` (or `npm run ios`) before building again.
 
-**Mac menu-bar app:** the same pages in a [Tauri](https://tauri.app) shell (`src-tauri/`), using the Mac's built-in WebKit. Every merge to `main` builds a universal `Breathing.dmg` (Apple Silicon + Intel) on GitHub Actions and publishes it as the [Latest Mac build](https://github.com/mexitalian/breathing-animations/releases/tag/mac-latest). It's ad-hoc signed, so the first time you open it macOS asks you to allow it under *System Settings → Privacy & Security → Open Anyway*. Click the ring icon in the menu bar (or press ⌥⌘B) to open it; right-click for *Float window*, *Launch at login* and *Quit*. To run it from source on the Mac (needs [Rust](https://rustup.rs)): `npm ci && npm run mac`.
+**Mac menu-bar app:** the same pages in a [Tauri](https://tauri.app) shell (`src-tauri/`), using the Mac's built-in WebKit. Its build is paused for now: run it by hand from Actions → macOS app → Run workflow, which builds a universal `Breathing.dmg` (Apple Silicon + Intel) and publishes it as the [Latest Mac build](https://github.com/mexitalian/breath-shape/releases/tag/mac-latest). It's ad-hoc signed, so the first time you open it macOS asks you to allow it under *System Settings → Privacy & Security → Open Anyway*. Click the ring icon in the menu bar (or press ⌥⌘B) to open it; right-click for *Float window*, *Launch at login* and *Quit*. To run it from source on the Mac (needs [Rust](https://rustup.rs)): `npm ci && npm run mac`.
 
 **Icon and splash:** the sources are in `assets/` (`icon-only.png`, `icon-foreground.png` + `icon-background.png` for Android's adaptive icon, `splash.png`, `splash-dark.png`). After changing them, regenerate every size with:
 

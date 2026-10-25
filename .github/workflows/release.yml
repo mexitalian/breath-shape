@@ -98,4 +98,4 @@ jobs:
             --target "$GITHUB_SHA" \
             --notes "Signed app bundle for Google Play: version $VERSION_NAME, version code ${{ github.run_number }}.
 
-          Upload **breath-shape-$VERSION_NAME.aab** in the Play Console (Testing → Closed testing → Create new release). It can't be installed directly; for a test install use the [Latest app build](https://github.com/mexitalian/breathing-animations/releases/tag/app-latest)."
+          Upload **breath-shape-$VERSION_NAME.aab** in the Play Console (Testing → Closed testing → Create new release). It can't be installed directly; for a test install use the [Latest app build](https://github.com/mexitalian/breath-shape/releases/tag/app-latest)."
