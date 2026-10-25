@@ -1,0 +1,45 @@
+name: Bug
+description: Something doesn't work as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This repository is public. Leave out names, emails and anything else that identifies a tester; those go in the private repo.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to see it
+      value: |
+        1. 
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options:
+        - Android app (Google Play beta)
+        - Android test build (Breath Dev)
+        - Website
+        - iPhone
+        - Mac app
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone / browser and app version
+      placeholder: e.g. Pixel 6a, Android 17, Breath Shape 0.1.0
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshot or recording

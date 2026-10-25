@@ -1,0 +1,20 @@
+name: Idea
+description: Something worth considering later; not ready to build yet.
+labels: ["idea", "stub"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea and why it might matter
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Where it came from
+      options:
+        - Me
+        - Tester feedback (anonymised)
+        - genAI suggestion
+    validations:
+      required: true
