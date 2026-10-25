@@ -59,6 +59,35 @@
   will-change: transform;
 }
 
+/* The liquid layer inside the fill: the whole fill normally; with Fluid → Vessel
+   it carries the fill colour and is clipped to the moving surface (vessel.js). */
+.core__liquid {
+  position: absolute;
+  inset: 0;
+}
+
+/* Fluid → Vessel: the shape stays full size as a faint glass; the breath is the
+   liquid level inside it. */
+.field[data-fluid="vessel"] .core {
+  --core-transform: 1;
+  background: color-mix(in srgb, var(--color-accent-fill) 14%, transparent);
+  mask: none;
+}
+.field[data-fluid="vessel"] .core__liquid {
+  background: radial-gradient(circle at 50% 45%,
+    color-mix(in srgb, var(--color-accent-fill), var(--color-heat) calc(var(--heat, 0) * 80%)) 0%,
+    var(--color-accent-fill) 72%);
+}
+.field[data-fluid="vessel"] .dot { mask: none; }
+
+/* Fluid → Membrane: the fill's edge is drawn by membrane.js as a clip-path, a
+   little inside the box so it has room to bulge out. */
+.field[data-fluid="membrane"] .core {
+  border-radius: 0;
+  mask: none;
+}
+.field[data-fluid="membrane"] .dot { mask: none; }
+
 /* Phase name + count at the centre of the shape. Two copies: light behind the
    fill, dark inside it (counter-scaled so both stay the same size). */
 .shape-label {
