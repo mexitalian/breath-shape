@@ -139,7 +139,7 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   if (hue) panel.append(colourRow(hue));
   panel.append(choiceRow('Particles', particleOptions, settings.particles, particles => saveSettings({ particles })));
   // Fluid shapes (#94). Touch moves the liquid everywhere; the Android app can add tilt.
-  panel.append(choiceRow('Fluid', [['off', 'Off'], ['vessel', 'Vessel']], settings.fluid, fluid => saveSettings({ fluid })));
+  panel.append(choiceRow('Fluid', [['off', 'Off'], ['vessel', 'Vessel'], ['membrane', 'Membrane']], settings.fluid, fluid => saveSettings({ fluid })));
   if (platform === 'android') {
     panel.append(choiceRow('Fluid moves with', [['tilt', 'Tilt + touch'], ['touch', 'Touch']], settings.fluidInput, fluidInput => saveSettings({ fluidInput })));
   }
