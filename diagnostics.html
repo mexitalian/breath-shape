@@ -64,6 +64,12 @@
       </section>
 
       <section class="technique-group">
+        <h2 class="technique-group__title">Motion sensor</h2>
+        <p class="page__lede">What the fluid shapes and particles will read: which way is down on the screen, how fast the phone turns, and shakes. Tilt, turn and shake the phone to see it change.</p>
+        <div class="diag-out" id="motion">Waiting for the motion sensor…</div>
+      </section>
+
+      <section class="technique-group">
         <h2 class="technique-group__title">Performance</h2>
         <p class="page__lede">Shows a small readout on practice screens: frames per second, how long each frame's work takes, the particle mode, and how much battery the session has used. To compare particle modes, run the same technique for 10 minutes in each mode (Settings → Particles), unplugged, at the same screen brightness.</p>
         <div class="diag-actions">
@@ -83,6 +89,7 @@
 
   <script type="module">
     import { initAppShell } from './js/app.js';
+    import { createMotion } from './js/controls/motion.js';
     import { isNativeApp, platform, nativePlugin, VIBRATION_USAGES, vibrationUsage, setVibrationUsage, RAMP_CURVES, rampCurve, setRampCurve } from './js/native.js';
     import { readHapticsLog, clearHapticsLog } from './js/haptics-log.js';
     import { perfOverlayEnabled, setPerfOverlay } from './js/ui/perf-overlay.js';
@@ -205,6 +212,28 @@
         ramps.append(row);
       }
       markCurve();
+    }
+
+    {
+      let shakes = 0;
+      let lastShake = '';
+      const motion = createMotion({ onShake: (s) => { shakes++; lastShake = `strength ${s.strength.toFixed(2)}, towards (${s.x.toFixed(2)}, ${s.y.toFixed(2)})`; } });
+      const out = document.getElementById('motion');
+      const fmt = (n) => (n >= 0 ? ' ' : '') + n.toFixed(2);
+      const show = () => {
+        if (motion.available) {
+          const { x, y } = motion.gravity;
+          out.textContent = [
+            `Down on screen: x ${fmt(x)}, y ${fmt(y)}  (upright = 0, 1)`,
+            `Tilt: ${(Math.atan2(x, y) * 180 / Math.PI).toFixed(0)}°, lean ${(Math.min(1, Math.hypot(x, y)) * 100).toFixed(0)}%`,
+            `Spin: ${motion.spin.toFixed(0)}°/s`,
+            `Shakes: ${shakes}${lastShake ? `, last ${lastShake}` : ''}`,
+          ].join('\n');
+        }
+        requestAnimationFrame(show);
+      };
+      setTimeout(() => { if (!motion.available) out.textContent = 'No motion sensor reported (desktop, or iPhone Safari without permission). Fluid shapes will use touch here.'; }, 3000);
+      requestAnimationFrame(show);
     }
 
     for (const btn of document.querySelectorAll('[data-test]')) {

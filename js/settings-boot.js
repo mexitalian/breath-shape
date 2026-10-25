@@ -7,5 +7,6 @@
     var root = document.documentElement;
     if (s.theme === 'light' || s.theme === 'dark') root.setAttribute('data-theme', s.theme);
     root.setAttribute('data-particles', s.particles === 'off' || s.particles === 'on' ? s.particles : 'webgl');
+    root.setAttribute('data-fluid', s.fluid === 'vessel' || s.fluid === 'membrane' ? s.fluid : 'off');
   } catch (e) { /* defaults */ }
 })();

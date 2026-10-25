@@ -1,8 +1,10 @@
 // Drag anywhere to set --hue from the angle around the screen centre.
 // A press that doesn't move past DRAG_THRESHOLD counts as a tap instead.
+// While `paused()` is true (Fluid shapes on: the liquid takes the touch) it ignores
+// presses; the colour is then set in Settings instead.
 const DRAG_THRESHOLD = 6;
 
-export function initHueControl({ target = document, root = document.documentElement, onTap } = {}) {
+export function initHueControl({ target = document, root = document.documentElement, onTap, paused = () => false } = {}) {
   let start = null;
   let dragging = false;
 
@@ -14,7 +16,7 @@ export function initHueControl({ target = document, root = document.documentElem
   };
 
   const down = (e) => {
-    if (ignored(e)) return;
+    if (ignored(e) || paused()) return;
     start = { x: e.clientX, y: e.clientY };
     dragging = false;
   };
