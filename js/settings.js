@@ -41,6 +41,7 @@ export function applySettings(settings, root = document.documentElement) {
   if (settings.theme === 'system') delete root.dataset.theme;
   else root.dataset.theme = settings.theme;
   root.dataset.particles = settings.particles;
+  root.dataset.fluid = settings.fluid;
 }
 
 export function saveSettings(changes, storage = defaultStorage()) {
