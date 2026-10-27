@@ -18,16 +18,20 @@
       </header>
 
       <section class="hr" aria-live="polite">
-        <div class="hr__dial">
-          <video class="hr__preview" playsinline muted aria-hidden="true"></video>
-          <div class="hr__value"><strong id="bpm">--</strong><span>bpm</span></div>
-        </div>
+        <button class="hr__dial" type="button" id="dial" aria-describedby="status">
+          <!-- The camera view is masked by the membrane, so its edge wobbles round it.
+               A see-through poster: without one Android draws a play icon on the preview. -->
+          <div class="hr__membrane" aria-hidden="true">
+            <video class="hr__preview" playsinline muted aria-hidden="true" hidden
+              poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>
+          </div>
+          <div class="hr__value"><strong id="bpm">--</strong><span>bpm</span><span class="hr__hint" id="hint">Tap to start</span></div>
+        </button>
         <div class="hr__hrv"><span>HRV</span> <strong id="hrv">--</strong> <span>ms</span></div>
         <canvas class="hr__trace" id="trace" aria-hidden="true"></canvas>
         <div class="hr__progress" aria-hidden="true"><span id="progress"></span></div>
-        <p class="hr__status" id="status">Tap Start, then allow the camera when asked.</p>
+        <p class="hr__status" id="status">Tap the circle, then allow the camera when asked.</p>
         <div class="hr__actions">
-          <button class="button button--primary" type="button" id="start">Start</button>
           <a class="button button--ghost" href="./" id="done" hidden>All techniques</a>
         </div>
         <p class="page__note">HRV is the beat-to-beat variation of your heart (RMSSD). Higher usually means more relaxed; it differs a lot between people, so compare your own readings, before and after a session.</p>
