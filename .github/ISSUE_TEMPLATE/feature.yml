@@ -1,0 +1,44 @@
+name: Feature
+description: Something new or changed in the app. Written so it can be built from as-is.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What's missing or awkward for the person using the app, and how we know.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What changes for them
+      description: The result we want, in plain words.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      value: |
+        - In:
+        - Not in:
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Checks that are tried on the phone before closing.
+      value: |
+        - [ ] 
+    validations:
+      required: true
+  - type: input
+    id: design
+    attributes:
+      label: Design
+      description: Penpot board link, or attach exported frames below.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes and decisions
+      description: Constraints, open questions, decisions with their reasons.

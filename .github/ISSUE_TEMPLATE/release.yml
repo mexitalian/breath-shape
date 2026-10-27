@@ -1,0 +1,28 @@
+name: Release
+description: Checklist for a Google Play beta or production release.
+title: "Release: Beta 0.x"
+labels: ["release"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version name
+      placeholder: 0.2.0
+    validations:
+      required: true
+  - type: textarea
+    id: contents
+    attributes:
+      label: In this release
+      value: |
+        - [ ] #
+  - type: textarea
+    id: checklist
+    attributes:
+      label: Checklist
+      value: |
+        - [ ] Actions → Play release → version → .aab
+        - [ ] Smoke test on the Pixel from the Play beta
+        - [ ] Play Console: new release on the closed testing track, release notes, sent for review
+        - [ ] Approved; testers told what's new
+        - [ ] One week later: feedback and Android vitals reviewed, follow-up issues filed

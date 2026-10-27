@@ -6,6 +6,7 @@ on:
   pull_request:
     paths-ignore:
       - '.claude/**'
+      - '.github/ISSUE_TEMPLATE/**'
       - '**/*.md'
       - 'tests/**'
       - 'LICENSE'
@@ -16,6 +17,7 @@ on:
     branches: [main]
     paths-ignore:
       - '.claude/**'
+      - '.github/ISSUE_TEMPLATE/**'
       - '**/*.md'
       - 'tests/**'
       - 'LICENSE'
