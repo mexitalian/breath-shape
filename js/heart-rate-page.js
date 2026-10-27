@@ -10,7 +10,7 @@ const TRACE_S = 5;         // seconds of pulse wave drawn
 const GIVE_UP_S = 90;      // no heart rate by now: stop
 const SAMPLE_SIZE = 24;    // frames are averaged from a tiny copy
 const IDLE_SCALE = 0.8;    // the membrane's size before and between readings
-const CONTACT_SCALE = [0.72, 0.94]; // and as a reading fills, from first contact to done
+const CONTACT_SCALE = [0.86, 1]; // and as a reading fills, from first contact to done
 
 // Heart rate + HRV page: camera + flash, live pulse trace. A minute of contact gives
 // both; if the signal isn't clean enough for HRV (or the finger lifts after the heart

@@ -19,10 +19,12 @@
 
       <section class="hr" aria-live="polite">
         <button class="hr__dial" type="button" id="dial" aria-describedby="status">
-          <!-- A see-through poster: without one Android draws a play icon on the preview. -->
-          <video class="hr__preview" playsinline muted aria-hidden="true" hidden
-            poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>
-          <div class="hr__membrane" aria-hidden="true"></div>
+          <!-- The camera view is masked by the membrane, so its edge wobbles round it.
+               A see-through poster: without one Android draws a play icon on the preview. -->
+          <div class="hr__membrane" aria-hidden="true">
+            <video class="hr__preview" playsinline muted aria-hidden="true" hidden
+              poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>
+          </div>
           <div class="hr__value"><strong id="bpm">--</strong><span>bpm</span><span class="hr__hint" id="hint">Tap to start</span></div>
         </button>
         <div class="hr__hrv"><span>HRV</span> <strong id="hrv">--</strong> <span>ms</span></div>
