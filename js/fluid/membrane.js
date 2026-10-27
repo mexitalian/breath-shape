@@ -138,6 +138,16 @@ export function createMembrane({ core, cfg }) {
   document.addEventListener('pointercancel', up);
 
   return {
+    // A beat: the whole edge swells out and settles (heart rate, #103). strength 0–1.
+    pulse(strength = 1) {
+      if (!sim) return;
+      for (let i = 0; i < sim.count; i++) sim.v[i] -= strength * radius * 2.2;
+    },
+    // An uneven nudge somewhere on the edge, e.g. for a noisy signal. strength 0–1.
+    ripple(strength = 1) {
+      if (!sim) return;
+      sim.impulse(Math.random() * sim.width, radius * 0.4, (Math.random() - 0.5) * strength * radius * 4);
+    },
     update(snap, now = performance.now()) {
       ensure();
       const dt = Math.min(0.05, last ? (now - last) / 1000 : 1 / 60);

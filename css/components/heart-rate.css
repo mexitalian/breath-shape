@@ -7,16 +7,38 @@
   text-align: center;
 }
 
+/* The dial is the start button: tap the circle to start, stop or measure again. */
 .hr__dial {
   position: relative;
   width: var(--hr-dial-size);
   height: var(--hr-dial-size);
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
   border-radius: var(--radius-round);
   overflow: hidden;
   display: grid;
   place-items: center;
   background: radial-gradient(closest-side, var(--color-accent-soft), transparent 80%);
   border: var(--border-hair) solid var(--color-line);
+  -webkit-tap-highlight-color: transparent;
+}
+.hr__dial--clear { border-color: var(--color-accent); }
+
+/* Membrane fluid (#103): its edge is a clip-path from membrane.js; the page sets
+   its size (--hr-scale) as the reading fills. */
+.hr__membrane {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 45%,
+    color-mix(in srgb, var(--color-accent-fill) 70%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent-fill) 45%, transparent) 72%);
+  transform: scale(var(--hr-scale, 0.8));
+  will-change: transform, clip-path;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hr__membrane { border-radius: var(--radius-round); }
 }
 
 /* The camera view sits faintly behind the number so you can see the lens is covered. */
@@ -31,6 +53,7 @@
 
 .hr__value {
   position: relative;
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -46,6 +69,12 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--tracking-tight);
   text-transform: none;
+}
+
+.hr__hint {
+  margin-block-start: var(--space-xs);
+  font-size: var(--text-xs);
+  color: var(--color-dim);
 }
 
 .hr__hrv {
@@ -66,11 +95,15 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* The pulse wave: dimmed while searching, the accent once the pulse is steady. */
 .hr__trace {
   width: 100%;
   height: var(--hr-trace-height);
-  color: var(--color-accent);
+  color: var(--color-dim);
+  opacity: 0.6;
+  transition: color var(--duration-fast), opacity var(--duration-fast);
 }
+.hr__trace--clear { color: var(--color-accent); opacity: 1; }
 
 .hr__progress {
   width: 100%;
