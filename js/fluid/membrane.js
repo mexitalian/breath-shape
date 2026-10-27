@@ -1,6 +1,6 @@
 import { LiquidSim } from './liquid-sim.js';
 import { createMotion } from '../controls/motion.js';
-import { readSettings } from '../settings.js';
+import { readSettings, onSettingsChange } from '../settings.js';
 import { outlineFor, outlineRadius } from '../particle-outline.js';
 
 // Fluid shapes → Membrane (#94): the shape's edge is a liquid skin. The breath grows
@@ -10,6 +10,8 @@ import { outlineFor, outlineRadius } from '../particle-outline.js';
 // a bulge circling the edge; shakes jolt it; touch anywhere: tap = poke the edge in,
 // drag = pull the edge towards your finger (out when you're outside the shape, in
 // when inside), press and hold = push it in.
+// Settings → Fluid → Membrane can turn the motion up or down, and set how small and
+// how large the shape gets in place of the technique's own sizes (#102).
 
 const SHRINK = 0.9;      // the shape at full breath, as a share of its box: room to bulge out
 const SAG = 0.06;        // how far gravity pulls the bottom out (fraction of the radius)
@@ -44,6 +46,16 @@ export function sagFor(geometry, gravity, radiusPx) {
   return geometry.angles.map(a => -SAG * radiusPx * (Math.cos(a) * gravity.x + Math.sin(a) * gravity.y));
 }
 
+// Pure: the shape's scale for a breath scale, with the size range from Settings
+// (null = the technique's own end).
+export function sizeFor(scale, cfg, small, large) {
+  const span = cfg.maxScale - cfg.minScale;
+  const t = span > 0 ? Math.min(1, Math.max(0, (scale - cfg.minScale) / span)) : 1;
+  const from = small ?? cfg.minScale;
+  const to = large ?? cfg.maxScale;
+  return from + (to - from) * t;
+}
+
 export function createMembrane({ core, cfg }) {
   let sim = null;
   let geometry = null;
@@ -52,13 +64,17 @@ export function createMembrane({ core, cfg }) {
   let spinPhase = 0;
   let shownClip = '';
   let press = null;
+  let shownSize = '';
 
-  const useTilt = readSettings().fluidInput === 'tilt';
+  let tuning = readSettings();
+  const stopListening = onSettingsChange((next) => { tuning = next; });
+  const useTilt = tuning.fluidInput === 'tilt';
   const motion = useTilt ? createMotion({
     onShake: ({ strength, x, y }) => {
       if (!sim) return;
       // Jolt the whole edge: the side the phone moved towards dents in, the far side bulges.
-      geometry.angles.forEach((a, i) => { sim.v[i] += strength * radius * 3 * (Math.cos(a) * x + Math.sin(a) * y); });
+      const kick = strength * radius * 3 * tuning.membraneWobble;
+      geometry.angles.forEach((a, i) => { sim.v[i] += kick * (Math.cos(a) * x + Math.sin(a) * y); });
     },
   }) : null;
 
@@ -122,18 +138,37 @@ export function createMembrane({ core, cfg }) {
   document.addEventListener('pointercancel', up);
 
   return {
+    // A beat: the whole edge swells out and settles (heart rate, #103). strength 0–1.
+    pulse(strength = 1) {
+      if (!sim) return;
+      for (let i = 0; i < sim.count; i++) sim.v[i] -= strength * radius * 2.2;
+    },
+    // An uneven nudge somewhere on the edge, e.g. for a noisy signal. strength 0–1.
+    ripple(strength = 1) {
+      if (!sim) return;
+      sim.impulse(Math.random() * sim.width, radius * 0.4, (Math.random() - 0.5) * strength * radius * 4);
+    },
     update(snap, now = performance.now()) {
       ensure();
       const dt = Math.min(0.05, last ? (now - last) / 1000 : 1 / 60);
       last = now;
+      const wobble = tuning.membraneWobble;
       if (motion?.available) {
-        sim.setRest(sagFor(geometry, motion.gravity, radius));
+        sim.setRest(sagFor(geometry, motion.gravity, radius * wobble));
         // A twist: a push that travels round the edge at the turning speed.
         const spin = motion.spin;
         if (Math.abs(spin) > 5) {
           spinPhase += (spin * Math.PI / 180) * dt;
-          sim.impulse(arcAt(spinPhase), radius * 0.6, Math.min(Math.abs(spin), 360) * SPIN_GAIN * radius);
+          sim.impulse(arcAt(spinPhase), radius * 0.6, Math.min(Math.abs(spin), 360) * SPIN_GAIN * radius * wobble);
         }
+      }
+      // A size range from Settings replaces the technique's own.
+      const custom = tuning.membraneSmall != null || tuning.membraneLarge != null;
+      const size = custom ? `calc(${sizeFor(snap.scale, cfg, tuning.membraneSmall, tuning.membraneLarge).toFixed(4)} * (1 + var(--hum-jitter, 0)))` : '';
+      if (size !== shownSize) {
+        if (size) core.style.setProperty('--core-transform', size);
+        else core.style.removeProperty('--core-transform');
+        shownSize = size;
       }
       sim.step(dt);
       const clip = membraneClip(geometry, sim.h, radius);
@@ -148,8 +183,10 @@ export function createMembrane({ core, cfg }) {
       document.removeEventListener('pointerup', up);
       document.removeEventListener('pointercancel', up);
       if (press) clearTimeout(press.timer);
+      stopListening();
       motion?.destroy();
       core.style.clipPath = '';
+      core.style.removeProperty('--core-transform');
     },
   };
 }

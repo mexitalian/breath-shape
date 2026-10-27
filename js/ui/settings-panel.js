@@ -1,6 +1,6 @@
 import { el } from '../dom.js';
 import { icon } from './icons.js';
-import { readSettings, saveSettings } from '../settings.js';
+import { readSettings, saveSettings, TUNING_RANGES } from '../settings.js';
 import { canVibrate } from '../controls/vibration.js';
 import { nativePlugin, platform, VIBRATION_USAGES, vibrationUsage, setVibrationUsage } from '../native.js';
 import { readHistory, clearHistory } from '../history.js';
@@ -58,6 +58,67 @@ function colourRow(hue) {
   slider.addEventListener('input', () => hue.set(Number(slider.value)));
   row.append(slider);
   return row;
+}
+
+// A tuning slider (#102) for one numeric setting, with its value beside the label.
+// Optional: a fallback shown while the setting is null, and a Reset back to it.
+function tuningRow(label, key, settings, { step = 0.05, format = pct, fallback = null } = {}) {
+  const row = el('div', 'settings__row');
+  const id = `settings-label-${++panelId}`;
+  const head = el('div', 'settings__label settings__label--value', { id });
+  const name = el('span', '', { textContent: label });
+  const value = el('span', 'settings__value');
+  head.append(name, value);
+  const [min, max] = TUNING_RANGES[key];
+  const slider = el('input', 'settings__range', { type: 'range', min: String(min), max: String(max), step: String(step) });
+  slider.setAttribute('aria-labelledby', id);
+  let reset = null;
+  const show = (v) => {
+    slider.value = String(v ?? fallback);
+    value.textContent = v == null ? `${format(fallback)} (technique)` : format(v);
+    if (reset) reset.hidden = v == null;
+  };
+  if (fallback != null) {
+    reset = el('button', 'chip chip--link settings__reset', { type: 'button', textContent: 'Reset' });
+    reset.addEventListener('click', () => { saveSettings({ [key]: null }); show(null); });
+  }
+  slider.addEventListener('input', () => {
+    const v = Number(slider.value);
+    saveSettings({ [key]: v });
+    show(v);
+  });
+  row.append(head, slider);
+  if (reset) row.append(reset);
+  show(settings[key]);
+  return row;
+}
+const pct = (v) => `${Math.round(v * 100)}%`;
+
+// Fluid shapes (#94), with tuning sliders under the look that's picked (#102).
+// cfg (in a session): the technique, for the Membrane's own sizes.
+function fluidRows(settings, cfg) {
+  const vessel = [
+    tuningRow('Emptiest', 'vesselLow', settings),
+    tuningRow('Fullest', 'vesselHigh', settings),
+  ];
+  const membrane = [
+    tuningRow('Motion wobble', 'membraneWobble', settings, { step: 0.1 }),
+    tuningRow('Smallest', 'membraneSmall', settings, { fallback: cfg?.minScale ?? 0.6 }),
+    tuningRow('Largest', 'membraneLarge', settings, { fallback: cfg?.maxScale ?? 1 }),
+  ];
+  const tuning = el('div', 'settings__sub');
+  tuning.append(...vessel, ...membrane);
+  const showFor = (fluid) => {
+    for (const row of vessel) row.hidden = fluid !== 'vessel';
+    for (const row of membrane) row.hidden = fluid !== 'membrane';
+    tuning.hidden = fluid === 'off';
+  };
+  const pick = choiceRow('Fluid', [['off', 'Off'], ['vessel', 'Vessel'], ['membrane', 'Membrane']], settings.fluid, (fluid) => {
+    saveSettings({ fluid });
+    showFor(fluid);
+  });
+  showFor(settings.fluid);
+  return [pick, tuning];
 }
 
 // Android only: which kind of vibration sessions use. Some phones silence some
@@ -126,7 +187,7 @@ function dataRow() {
 
 // Pattern: the settings panel, opened from the gear. Uses the screen pattern so it
 // sits over the stage like the start and summary screens. Changes apply at once.
-export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'Standard'], ['off', 'Off']], hue = null } = {}) {
+export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'Standard'], ['off', 'Off']], hue = null, cfg = null } = {}) {
   const settings = readSettings();
   const titleId = `settings-title-${++panelId}`;
   const screen = el('div', 'screen settings');
@@ -139,7 +200,7 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   if (hue) panel.append(colourRow(hue));
   panel.append(choiceRow('Particles', particleOptions, settings.particles, particles => saveSettings({ particles })));
   // Fluid shapes (#94). Touch moves the liquid everywhere; the Android app can add tilt.
-  panel.append(choiceRow('Fluid', [['off', 'Off'], ['vessel', 'Vessel'], ['membrane', 'Membrane']], settings.fluid, fluid => saveSettings({ fluid })));
+  panel.append(...fluidRows(settings, cfg));
   if (platform === 'android') {
     panel.append(choiceRow('Fluid moves with', [['tilt', 'Tilt + touch'], ['touch', 'Touch']], settings.fluidInput, fluidInput => saveSettings({ fluidInput })));
   }
