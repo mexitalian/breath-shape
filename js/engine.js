@@ -100,6 +100,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       get: () => Number.parseFloat(getComputedStyle(root).getPropertyValue('--hue')) || cfg.hue,
       set: (deg) => root.style.setProperty('--hue', String(deg)),
     },
+    cfg,
   }));
   const awake = createKeepAwake();
   // Keep screen on (Settings): follows the setting live while a session runs.

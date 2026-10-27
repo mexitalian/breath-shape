@@ -105,6 +105,17 @@
   color: var(--color-dim);
   font-weight: var(--weight-medium);
 }
+.settings__label--value { display: flex; justify-content: space-between; gap: var(--space-sm); }
+.settings__value { font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: normal; }
+/* Fluid tuning (#102): the sliders for the picked look, set in under it. */
+.settings__sub {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-inline-start: var(--space-md);
+  border-inline-start: var(--border-hair) solid var(--color-line);
+}
+.settings__reset { align-self: flex-start; }
 .settings .screen__actions { justify-content: flex-start; }
 .settings__range { width: 100%; accent-color: var(--color-accent); margin-block-start: var(--space-xs); }
 .settings__range:disabled { opacity: 0.4; }

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ringGeometry, membraneClip, sagFor } from '../js/fluid/membrane.js';
+import { ringGeometry, membraneClip, sagFor, sizeFor } from '../js/fluid/membrane.js';
 
 test('a still circle draws as a circle a little inside its box', () => {
   const g = ringGeometry('circle', 8);
@@ -28,4 +28,12 @@ test('square and triangle edges follow their outlines', () => {
   assert.ok(Math.abs(box.radii[1] - Math.SQRT2) < 1e-9, 'corner direction reaches the corner');
   const tri = ringGeometry('triangle', 6);
   assert.ok(tri.outline.centre[1] < 0, 'triangle centred on its own middle');
+});
+
+test('the size follows the breath, within the technique\'s range or the one from Settings', () => {
+  const cfg = { minScale: 0.6, maxScale: 1 };
+  assert.equal(sizeFor(0.6, cfg, null, null), 0.6, 'technique: breathed out');
+  assert.equal(sizeFor(1, cfg, null, null), 1, 'technique: breathed in');
+  assert.equal(sizeFor(0.6, cfg, 0.2, null), 0.2, 'smaller when breathed out');
+  assert.ok(Math.abs(sizeFor(0.8, cfg, 0.2, 0.6) - 0.4) < 1e-9, 'halfway through the breath, halfway through the range');
 });

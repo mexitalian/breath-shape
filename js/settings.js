@@ -2,7 +2,8 @@
 // They apply straight away on every open page (the 'breathing:settings' event)
 // and before first paint on the next one (js/settings-boot.js reads the same key).
 export const SETTINGS_KEY = 'breathing:settings';
-export const DEFAULTS = { theme: 'system', particles: 'webgl', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps', fluid: 'off', fluidInput: 'tilt' };
+export const DEFAULTS = { theme: 'system', particles: 'webgl', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps', fluid: 'off', fluidInput: 'tilt',
+  vesselLow: 0, vesselHigh: 1, membraneWobble: 1, membraneSmall: null, membraneLarge: null };
 export const THEMES = ['system', 'light', 'dark'];
 // 'webgl' (the default) draws a richer particle layer on one canvas
 // (js/components/particles-gl.js); 'on' is the standard one, and the fallback
@@ -14,6 +15,17 @@ export const VIBRATION_STYLES = ['taps', 'continuous'];
 // moved by touch, or by tilt and touch where the phone's motion sensor reports.
 export const FLUIDS = ['off', 'vessel', 'membrane'];
 export const FLUID_INPUTS = ['tilt', 'touch'];
+// Fluid tuning (#102), for trying looks out: the Vessel's emptiest and fullest
+// levels (fractions of the height), how strongly motion moves the Membrane (1 =
+// normal), and the Membrane's smallest and largest sizes (fractions of full size;
+// null = the technique's own).
+export const TUNING_RANGES = {
+  vesselLow: [0, 0.5],
+  vesselHigh: [0.5, 1],
+  membraneWobble: [0, 3],
+  membraneSmall: [0.1, 1],
+  membraneLarge: [0.3, 1],
+};
 
 function defaultStorage() {
   try { return window.localStorage; } catch { return null; }
@@ -23,6 +35,10 @@ export function readSettings(storage = defaultStorage()) {
   let saved = {};
   try { saved = JSON.parse(storage?.getItem(SETTINGS_KEY) ?? '{}') ?? {}; } catch { /* defaults */ }
   const bool = (key) => (typeof saved[key] === 'boolean' ? saved[key] : DEFAULTS[key]);
+  const tuning = (key) => {
+    const [lo, hi] = TUNING_RANGES[key];
+    return Number.isFinite(saved[key]) ? Math.min(hi, Math.max(lo, saved[key])) : DEFAULTS[key];
+  };
   return {
     theme: THEMES.includes(saved.theme) ? saved.theme : DEFAULTS.theme,
     particles: PARTICLES.includes(saved.particles) ? saved.particles : DEFAULTS.particles,
@@ -33,6 +49,11 @@ export function readSettings(storage = defaultStorage()) {
     vibrationStyle: VIBRATION_STYLES.includes(saved.vibrationStyle) ? saved.vibrationStyle : DEFAULTS.vibrationStyle,
     fluid: FLUIDS.includes(saved.fluid) ? saved.fluid : DEFAULTS.fluid,
     fluidInput: FLUID_INPUTS.includes(saved.fluidInput) ? saved.fluidInput : DEFAULTS.fluidInput,
+    vesselLow: tuning('vesselLow'),
+    vesselHigh: tuning('vesselHigh'),
+    membraneWobble: tuning('membraneWobble'),
+    membraneSmall: tuning('membraneSmall'),
+    membraneLarge: tuning('membraneLarge'),
   };
 }
 

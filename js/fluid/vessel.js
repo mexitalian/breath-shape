@@ -1,6 +1,6 @@
 import { LiquidSim } from './liquid-sim.js';
 import { createMotion } from '../controls/motion.js';
-import { readSettings } from '../settings.js';
+import { readSettings, onSettingsChange } from '../settings.js';
 
 // Fluid shapes → Vessel (#94): the shape is a glass seen from the side and the
 // liquid level is the breath. Breathing in fills it, holds keep it level,
@@ -9,17 +9,17 @@ import { readSettings } from '../settings.js';
 // slosh it; touch anywhere on the screen moves it: tap = splash, drag = push,
 // press and hold = press down.
 
-const LOW = 0.12;        // fill at the emptiest point of the breath (fraction of height)
-const HIGH = 0.9;        // fill at the fullest
 const DRAG_PX = 6;
 const HOLD_MS = 280;
 const MAX_SLOPE = 1;
 
 // Pure: where the surface sits, as a fraction from the top, for a breath scale.
-export function levelFor(scale, minScale, maxScale) {
+// low / high: the fill at the emptiest and fullest points of the breath
+// (Settings → Fluid → Vessel; empty to full by default).
+export function levelFor(scale, minScale, maxScale, low = 0, high = 1) {
   const span = maxScale - minScale;
   const fill = span > 0 ? (scale - minScale) / span : 1;
-  return 1 - (LOW + (HIGH - LOW) * Math.min(1, Math.max(0, fill)));
+  return 1 - (low + (high - low) * Math.min(1, Math.max(0, fill)));
 }
 
 // Pure: the liquid's outline as a CSS clip-path, in % of the shape's box.
@@ -46,7 +46,10 @@ export function createVessel({ core, liquid, cfg }) {
   let shownClip = '';
   let press = null;
 
-  const useTilt = readSettings().fluidInput === 'tilt';
+  const settings = readSettings();
+  const useTilt = settings.fluidInput === 'tilt';
+  let range = [settings.vesselLow, settings.vesselHigh];
+  const stopListening = onSettingsChange((next) => { range = [next.vesselLow, next.vesselHigh]; });
   const motion = useTilt ? createMotion({
     onShake: ({ strength, x }) => sim?.shove(Math.sign(x) || 1, strength * size * 2.5),
   }) : null;
@@ -100,7 +103,7 @@ export function createVessel({ core, liquid, cfg }) {
       last = now;
       if (motion?.available) sim.setSlope(slopeFor(motion.gravity));
       sim.step(dt);
-      const levelPx = levelFor(snap.scale, cfg.minScale, cfg.maxScale) * size;
+      const levelPx = levelFor(snap.scale, cfg.minScale, cfg.maxScale, ...range) * size;
       const clip = surfaceClip(sim, levelPx, size);
       if (clip !== shownClip) {
         liquid.style.clipPath = clip;
@@ -113,6 +116,7 @@ export function createVessel({ core, liquid, cfg }) {
       document.removeEventListener('pointerup', up);
       document.removeEventListener('pointercancel', up);
       if (press) clearTimeout(press.timer);
+      stopListening();
       motion?.destroy();
       liquid.style.clipPath = '';
     },
