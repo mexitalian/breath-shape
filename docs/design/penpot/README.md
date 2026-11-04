@@ -2,8 +2,10 @@
 
 The home screen as the app draws it today, for rebuilding in Penpot (#107).
 Everything here is generated from the real pages in headless Chromium at Pixel 6a
-size (412 × 915 CSS px), drawn at 2× so text stays sharp. The font is Roboto, which
-is what Android shows for the app's system font stack.
+size (412 × 915 CSS px), drawn at 2× so text stays sharp. The font is forced to
+Roboto, which is what Android shows for the app's system font stack. Other
+machines substitute their own system font (a Mac shows San Francisco, for example),
+so lines wrap a little differently there.
 
 ## Files
 
