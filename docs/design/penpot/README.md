@@ -1,7 +1,8 @@
 # Penpot reference: home screen
 
-The home screen as the app draws it today, for rebuilding in Penpot (#107).
-Everything here is generated from the real pages in headless Chromium at Pixel 6a
+The home screen as the Android app draws it today, for rebuilding in Penpot (#107).
+Everything here is generated from the real pages in headless Chromium, set up to
+look like the Android app (so Settings shows its Android-only rows), at Pixel 6a
 size (412 × 915 CSS px), drawn at 2× so text stays sharp. The font is forced to
 Roboto, which is what Android shows for the app's system font stack. Other
 machines substitute their own system font (a Mac shows San Francisco, for example),
@@ -15,7 +16,7 @@ so lines wrap a little differently there.
 | `reference/home-*-full.webp` | The whole scrolling page |
 | `reference/home-*-filter-calm.webp` | With the **Calm & sleep** filter picked |
 | `reference/home-*-settings.webp` | Settings opened from the gear (first screen) |
-| `reference/home-*-settings-full.webp` | The whole Settings panel |
+| `reference/home-*-settings-full.webp` | The whole Settings panel (it scrolls on the phone) |
 | `tokens.json` | Every design token, resolved per theme. Colours are hex, for the home hue (220) and four technique hues |
 | `home-light-layout.json` | Every visible element on the light home page: tag, class, text, box (CSS px, page coordinates) and resolved style |
 
