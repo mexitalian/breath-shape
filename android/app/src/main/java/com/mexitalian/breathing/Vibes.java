@@ -54,6 +54,17 @@ final class Vibes {
         }
     }
 
+    // Any effect (a looping waveform, a composition of clicks), tagged with a usage.
+    // Android 8+.
+    static void playEffect(Vibrator vibrator, VibrationEffect effect, String usage) {
+        if (!vibrator.hasVibrator() || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            vibrator.vibrate(effect, new VibrationAttributes.Builder().setUsage(vibrationUsage(usage)).build());
+        } else {
+            vibrator.vibrate(effect, new AudioAttributes.Builder().setUsage(audioUsage(usage)).build());
+        }
+    }
+
     @SuppressWarnings("deprecation")
     private static void vibrateLegacy(Vibrator vibrator, long[] timings) {
         vibrator.vibrate(timings, -1);
