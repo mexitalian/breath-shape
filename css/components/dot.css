@@ -42,3 +42,33 @@
   mask-repeat: no-repeat;
   mask-composite: subtract;
 }
+
+/* Closure brackets (#148): hairlines at the shape's corners, only in the Fill layout
+   (css/components/session-layout.css). Each corner is its own box, placed in px by
+   js/components/brackets.js. */
+.brackets {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bracket {
+  position: absolute;
+  color: var(--color-accent);
+}
+
+.bracket svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.bracket polyline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--border-hair);
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
