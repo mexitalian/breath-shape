@@ -93,6 +93,6 @@
 /* Parts that only inherit their colour pick the flipped ink up here; parts with
    their own colour rule (dim hints, accent counts) keep it, through the tokens. */
 :where([data-session-layout="fill"] [data-on-fill]) { color: var(--color-ink); }
-[data-session-layout="fill"] :is(.topbar__back, .topbar__title, .topbar__actions > *, .shape-label, .cycles__count, .cycles__grid, .cycles__length, .labels, .hint, .stage__controls .button, .pace__value) {
+[data-session-layout="fill"] :is(.topbar__back, .topbar__title, .topbar__actions > *, .shape-label, .cycles__count, .cycles__grid, .length-toggle, .length-toggle__option, .cycles__total, .labels, .hint, .stage__controls .button, .pace__value) {
   transition: color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard);
 }
