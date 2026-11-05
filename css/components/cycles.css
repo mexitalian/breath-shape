@@ -71,3 +71,9 @@
 .cycle[data-state="active"] .cycle__fill { transform: scale(var(--cycle-scale, 1)); }
 .cycle[data-state="done"] .cycle__fill { transform: scale(1); }
 .cycle[data-state="done"] .cycle__outline { stroke: var(--color-accent-fill); }
+
+/* Session length (#116): a chip under the cycles; tap to change while breathing. */
+.cycles__length {
+  margin-top: var(--space-xs);
+  font-variant-numeric: tabular-nums;
+}

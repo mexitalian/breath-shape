@@ -19,6 +19,7 @@ import { readSettings, onSettingsChange } from './settings.js';
 import { initAppShell } from './app.js';
 import { isDesktopApp } from './native.js';
 import { saveSession, MIN_SESSION_MS } from './history.js';
+import { lengthOptions, loadLength, saveLength, nextLength, applyLength, lengthLabel } from './session-length.js';
 import { el } from './dom.js';
 
 const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
@@ -57,6 +58,33 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   const sessionMs = cfg.sessionMinutes ? cfg.sessionMinutes * 60_000 : null;
   let timeline = createTimeline(cfg.sequence, { sessionMs });
+
+  // Session length (#116): techniques that would otherwise run until you leave get a
+  // chip under the cycle counter. Tapping it steps through the lengths while the
+  // session runs; the choice is remembered for next time.
+  const lengths = lengthOptions(cfg.lengths);
+  let length = lengths ? loadLength(storage, cfg.id, lengths) : null;
+  let lengthChip = null;
+  let lengthText = '';
+  if (lengths) {
+    lengthChip = el('button', 'chip chip--link cycles__length', { type: 'button' });
+    cycles.root.append(lengthChip);
+    lengthChip.addEventListener('click', () => {
+      length = nextLength(lengths, length);
+      saveLength(storage, cfg.id, length);
+      applyLength(timeline, length);
+      cues?.sync(performance.now());
+      showLength(lastSnap);
+    });
+  }
+  function showLength(snap) {
+    if (!lengthChip) return;
+    const text = lengthLabel(length, snap);
+    if (text === lengthText) return;
+    lengthText = text;
+    lengthChip.textContent = text;
+    lengthChip.setAttribute('aria-label', `Session length: ${text}. Tap to change.`);
+  }
 
   let paceControl = null;
   let currentBpm = null;
@@ -139,6 +167,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       bpm: cfg.pace ? currentBpm : null,
       variant: variantLabel,
       sessionMinutes: chosenMinutes,
+      length: length?.key ?? null,
     });
   }
 
@@ -182,7 +211,9 @@ export function start(rawConfig, { mount = document.body } = {}) {
     }
     sound?.update(snap);
     cycles.update(snap);
-    ui.labels.update(snap);
+    showLength(snap);
+    // The length chip shows the time left, so the status line doesn't repeat it.
+    ui.labels.update(lengths ? { ...snap, sessionMs: null } : snap);
     ui.setHint((windingDown && cfg.windDown.prompt) || snap.phase.prompt || cfg.hint);
     holdButton.hidden = !snap.openEnded || snap.finished;
     if (!holdButton.hidden && holdButton.textContent !== snap.phase.action) {
@@ -223,6 +254,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       paceControl.unlock();
       applyPace(currentBpm, true);
     }
+    if (length) applyLength(timeline, length);
     timeline.start(performance.now());
     cycles.reset();
     lastSerial = -1;
@@ -328,6 +360,11 @@ export function start(rawConfig, { mount = document.body } = {}) {
       multiRound ? `Round ${r.round} · ${r.label}` : r.label,
       formatClock(r.ms),
     ]);
+    // Techniques with a length chip have no records of their own: show time and cycles.
+    if (lengths && !list.length) {
+      const done = snap.finished ? snap.round : snap.round - 1;
+      list.push(['Time', formatClock(snap.sessionElapsed)], ['Cycles', String(done)]);
+    }
     screen = showScreen(mount, {
       eyebrow: cfg.eyebrow,
       title: stopped ? 'Session stopped' : 'Session complete',
