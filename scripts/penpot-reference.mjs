@@ -159,7 +159,7 @@ async function main() {
   }
 
   if (want('nav')) {
-    const simple = [['start', 'resonance-breathing.html'], ['history', 'history.html'], ['privacy', 'privacy.html'], ['diagnostics', 'diagnostics.html'], ['styleguide', 'styleguide.html'], ['entrainment', 'entrainment.html'], ['safety', 'wim-hof.html']];
+    const simple = [['start', 'buteyko.html'], ['history', 'history.html'], ['privacy', 'privacy.html'], ['diagnostics', 'diagnostics.html'], ['styleguide', 'styleguide.html'], ['entrainment', 'entrainment.html'], ['safety', 'wim-hof.html']];
     for (const [name, file] of simple) {
       const p = await open(file);
       await shot(p, `nav/${name}`);
