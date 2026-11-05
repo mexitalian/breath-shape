@@ -49,12 +49,23 @@ test('volume is kept between 0 and 1', () => {
   assert.equal(readSettings(storage).volume, 0);
 });
 
-test('fluid shapes start off, moved by tilt where available', () => {
+test('fluid shapes start off; unknown looks fall back', () => {
   const storage = memoryStorage();
   assert.equal(readSettings(storage).fluid, 'off');
-  assert.equal(readSettings(storage).fluidInput, 'tilt');
-  saveSettings({ fluid: 'vessel', fluidInput: 'touch' }, storage);
+  saveSettings({ fluid: 'vessel' }, storage);
   assert.equal(readSettings(storage).fluid, 'vessel');
-  storage.setItem(SETTINGS_KEY, JSON.stringify({ fluid: 'lava', fluidInput: 'mind' }));
-  assert.deepEqual([readSettings(storage).fluid, readSettings(storage).fluidInput], ['off', 'tilt']);
+  storage.setItem(SETTINGS_KEY, JSON.stringify({ fluid: 'lava', fluidInput: 'touch' }));
+  assert.equal(readSettings(storage).fluid, 'off');
+  assert.equal('fluidInput' in readSettings(storage), false, 'Fluid moves with is retired');
+});
+
+test('Membrane defaults: wobble 300%, smallest 10%, largest 100%; applied once to older settings, then changes stick', () => {
+  const storage = memoryStorage();
+  assert.deepEqual([DEFAULTS.membraneWobble, DEFAULTS.membraneSmall, DEFAULTS.membraneLarge], [3, 0.1, 1]);
+  storage.setItem(SETTINGS_KEY, JSON.stringify({ theme: 'dark', membraneWobble: 1, membraneSmall: 0.5, membraneLarge: null }));
+  const old = readSettings(storage);
+  assert.deepEqual([old.theme, old.membraneWobble, old.membraneSmall, old.membraneLarge], ['dark', 3, 0.1, 1]);
+  saveSettings({ membraneWobble: 1.5 }, storage);
+  assert.equal(readSettings(storage).membraneWobble, 1.5, 'a change after the update sticks');
+  assert.equal(readSettings(storage).membraneSmall, 0.1);
 });

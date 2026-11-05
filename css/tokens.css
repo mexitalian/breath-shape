@@ -167,6 +167,7 @@
   --color-on-accent:    hsl(var(--hue) var(--sat-on)     var(--tone-on));
   --color-on-fill:      hsl(var(--hue) var(--sat-on)     var(--tone-on-fill));
   --color-accent-fill:  hsl(var(--hue) var(--sat-vivid)  var(--fill-l));
+  --color-bubble:       hsl(var(--hue) var(--sat-soft) 92% / 0.45);   /* bubbles in the Fill layout's liquid */
   --color-heat:         hsl(calc(var(--hue) + 20) 90% var(--tone-heat));
 
   --gradient-backdrop: radial-gradient(120% 120% at 50% 20%, var(--color-bg-raised) 0%, var(--color-bg) 65%);

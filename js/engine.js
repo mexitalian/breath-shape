@@ -408,9 +408,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   holdButton.addEventListener('click', advance);
 
-  // Tap anywhere continues a hold. With Fluid shapes on, touch moves the liquid and
-  // holds end with their button.
-  const taps = initTapControl({ onTap: advance, paused: () => readSettings().fluid !== 'off' });
+  // Tap anywhere continues a hold (touch no longer moves the fluid, #138).
+  const taps = initTapControl({ onTap: advance });
 
   const onKey = (e) => {
     if (e.target.closest?.('button, a')) return;

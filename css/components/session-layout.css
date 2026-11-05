@@ -1,6 +1,6 @@
 /* Session layouts (#128): Settings → Session layout sets data-session-layout on
    <html>; js/ui/session-layout.js keeps --shrink, --visual-height and
-   --breath-level up to date on the stage. */
+   --visual-height up to date, and draws the Fill liquid. */
 
 /* Shrink: the halo behind the shape, in its outline (circle, square or triangle):
    page colour with a soft edge, shown once the page scrolls, so text passing behind
@@ -39,10 +39,6 @@
   transform-origin: top center;
 }
 
-/* With Fluid shapes on, a drag on the shape moves the liquid instead of scrolling. */
-[data-fluid="vessel"] .stage .field,
-[data-fluid="membrane"] .stage .field { touch-action: none; }
-
 /* Fill: the whole screen is the breath. */
 .breath-fill { display: none; }
 [data-session-layout="fill"] .breath-fill {
@@ -51,11 +47,31 @@
   inset: 0;
   z-index: -1;
   background: var(--color-accent-fill);
-  transform: scaleY(var(--breath-level, 0));
-  transform-origin: bottom;
+  /* The liquid's surface is a clip-path from js/ui/session-layout.js. */
+  clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);
   pointer-events: none;
-  will-change: transform;
+  overflow: hidden;
 }
+
+/* Bubbles rising through the liquid (the particles, in Fill). */
+.bubble {
+  position: absolute;
+  left: var(--x);
+  bottom: calc(var(--size) * -2);
+  width: var(--size);
+  height: var(--size);
+  border-radius: var(--radius-round);
+  background: var(--color-bubble);
+  animation: bubble-rise var(--rise) linear var(--delay) infinite;
+  will-change: transform, opacity;
+}
+@keyframes bubble-rise {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { transform: translate(var(--sway), -50vh); }
+  100% { transform: translate(0, -105vh); opacity: 0.6; }
+}
+[data-particles="off"] .bubble { display: none; }
 [data-session-layout="fill"] .stage__visual { position: relative; }
 [data-session-layout="fill"] .field__halo { display: none; }
 /* The shape steps aside; its phase and count stay, centred where it was. */

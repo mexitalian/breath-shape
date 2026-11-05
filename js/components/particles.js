@@ -45,13 +45,7 @@ export function particles({ field, cfg }) {
   };
 
   function update(snap) {
-    // Fluid shapes replace the particles (#94).
-    const fluid = field.dataset.fluid;
-    if (fluid && fluid !== 'off') {
-      gl?.clear();
-      hideDom();
-      return;
-    }
+    // Particles stay on with the fluid looks, round the outside of the shape (#138).
     const mode = document.documentElement.dataset.particles ?? 'webgl';
     if (mode === 'webgl' && !glFailed) {
       try {
