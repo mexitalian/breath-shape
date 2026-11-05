@@ -5,7 +5,7 @@ const SVG = 'http://www.w3.org/2000/svg';
 // Which counter a snapshot gets. The timeline's `round` is the cycle number for every
 // technique: simple patterns loop one cycle per round, round-based ones count rounds.
 //   target — a set number of rounds (Wim Hof, Tummo…): outlines fill in left to right
-//   up     — no set end (box, resonance, timed sessions): counts up, newest first
+//   up     — no set end (box, resonance, timed sessions): counts up, left to right
 //   null   — a single round (Buteyko): nothing to count
 export function counterMode(snap) {
   if (!Number.isFinite(snap.rounds)) return { mode: 'up', total: null };
@@ -42,8 +42,24 @@ function miniShape(cfg) {
   return svg;
 }
 
-// Pattern: cycle counter between the shape and the text. Mini shapes, one per cycle;
-// the current one breathes with the main shape and finished ones are filled in.
+// Pure: the range of the breath scale over one cycle, from the config's phases.
+export function scaleRange(cfg) {
+  const scales = cfg.sequence.steps.flatMap(st => st.phases.map(ph => ph.scale)).filter(Number.isFinite);
+  return { lo: Math.min(...scales), hi: Math.max(...scales) };
+}
+
+// Pure: how full the current mini shape is (0–1). It fills as you breathe in and stays
+// full (#147): `peak` is the largest breath scale reached so far in this cycle.
+export function cycleFill(peak, { lo, hi }) {
+  if (!(hi > lo)) return 1;
+  return Math.min(1, Math.max(0, (peak - lo) / (hi - lo)));
+}
+
+// Pattern: cycle counter between the shape and the text. A status line (cycles and
+// time), then mini shapes, one per cycle.
+//   up     — each fills as you breathe in and stays full; the next waits for the next
+//            in-breath. With a session length (total) every outline shows up front.
+//   target — a set number of rounds: the current one breathes with the main shape.
 export function createCycleCounter(mount, cfg) {
   const root = el('div', 'cycles');
   root.hidden = true;
@@ -52,43 +68,68 @@ export function createCycleCounter(mount, cfg) {
   root.append(count, grid);
   mount.append(root);
 
+  const range = scaleRange(cfg);
   let mode = null;
   let items = [];      // in cycle order
   let lastText = '';
+  let peakRound = 0;
+  let peak = range.lo;
+  let lastActive = -1;
 
   function reset() {
     mode = null;
     items = [];
     grid.replaceChildren();
     root.hidden = true;
+    peakRound = 0;
+    lastActive = -1;
   }
 
+  // Exactly n mini shapes, left to right.
   function ensureItems(n) {
     while (items.length < n) {
       const item = miniShape(cfg);
       items.push(item);
-      // Count-up: the newest cycle goes first (top left) and pushes the rest along.
-      if (mode.mode === 'up') grid.prepend(item); else grid.append(item);
+      grid.append(item);
     }
+    while (items.length > n) items.pop().remove();
   }
 
-  function update(snap) {
+  // extra: { total, status } — total cycles when a length is picked, and the status
+  // line (cycles and time) from the engine.
+  function update(snap, { total = null, status = null } = {}) {
     if (!mode) {
       mode = counterMode(snap);
       if (!mode) return;
       root.hidden = false;
       root.dataset.mode = mode.mode;
     }
-    ensureItems(mode.mode === 'target' ? mode.total : snap.round);
+    const up = mode.mode === 'up';
+    ensureItems(up ? (total ?? snap.round) : mode.total);
+    root.toggleAttribute('data-total', up && total != null);
+
+    if (snap.round !== peakRound) { peakRound = snap.round; peak = snap.scale; }
+    peak = Math.max(peak, snap.scale);
+    const fill = up ? cycleFill(peak, range) : snap.scale;
 
     // Only the active cycle changes from frame to frame.
     items.forEach((item, i) => {
       const state = cycleState(i, snap);
       if (item.dataset.state !== state) item.dataset.state = state;
-      if (state === 'active') item.style.setProperty('--cycle-scale', snap.scale.toFixed(4));
+      if (state === 'active') item.style.setProperty('--cycle-scale', fill.toFixed(4));
     });
 
-    const text = mode.mode === 'up' ? `Cycle ${snap.round}` : '';
+    // Keep the cycle under way in view when the outlines scroll.
+    const active = Math.min(snap.round, items.length) - 1;
+    if (up && active !== lastActive && items[active]) {
+      lastActive = active;
+      const it = items[active];
+      if (it.offsetTop + it.offsetHeight > grid.scrollTop + grid.clientHeight || it.offsetTop < grid.scrollTop) {
+        grid.scrollTop = it.offsetTop;
+      }
+    }
+
+    const text = up ? (status ?? `Cycle ${snap.round}`) : '';
     if (text !== lastText) {
       lastText = text;
       count.textContent = text;
