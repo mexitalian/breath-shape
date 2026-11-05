@@ -20,7 +20,8 @@ export function core({ field, cfg }) {
   liquid.append(dark);
   fill.append(liquid);
   field.append(light, fill);
-  if (cfg.coreClip) fill.style.setProperty('--core-clip', cfg.coreClip);
+  // On the field, so the glow (and anything else in the shape's outline) shares it.
+  if (cfg.coreClip) field.style.setProperty('--core-clip', cfg.coreClip);
 
   const layers = [light, dark].map((root) => {
     const phase = el('div', 'shape-label__phase');

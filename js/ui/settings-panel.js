@@ -189,13 +189,19 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   const panel = el('div', 'screen__panel');
   panel.append(el('h1', 'screen__title', { id: titleId, textContent: 'Settings' }));
   panel.append(choiceRow('Theme', [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']], settings.theme, theme => saveSettings({ theme })));
-  panel.append(choiceRow('Session layout', [['sticky', 'Sticky'], ['shrink', 'Shrink'], ['fill', 'Fill']], settings.sessionLayout, sessionLayout => saveSettings({ sessionLayout })));
+  // Fluid looks only apply when a shape is shown: in Fill the fill itself is the
+  // liquid, so the Fluid rows hide while Fill is chosen (#138).
+  const fluid = el('div', 'settings__group');
+  fluid.append(...fluidRows(settings, cfg));
+  const showFluid = (layout) => { fluid.hidden = layout === 'fill'; };
+  panel.append(choiceRow('Session layout', [['shrink', 'Shrink'], ['fill', 'Fill']], settings.sessionLayout, (sessionLayout) => {
+    saveSettings({ sessionLayout });
+    showFluid(sessionLayout);
+  }));
   panel.append(choiceRow('Particles', particleOptions, settings.particles, particles => saveSettings({ particles })));
-  // Fluid shapes (#94). Touch moves the liquid everywhere; the Android app can add tilt.
-  panel.append(...fluidRows(settings, cfg));
-  if (platform === 'android') {
-    panel.append(choiceRow('Fluid moves with', [['tilt', 'Tilt + touch'], ['touch', 'Touch']], settings.fluidInput, fluidInput => saveSettings({ fluidInput })));
-  }
+  // Fluid shapes (#94), moved by tilt (on a computer, the mouse; #138).
+  panel.append(fluid);
+  showFluid(settings.sessionLayout);
   if (window.AudioContext || window.webkitAudioContext) panel.append(soundRow(settings));
   panel.append(choiceRow('Keep screen on', ON_OFF, settings.keepAwake, keepAwake => saveSettings({ keepAwake })));
   if (canVibrate()) {

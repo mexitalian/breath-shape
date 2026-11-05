@@ -6,6 +6,8 @@
    Shapes are token presets selected with data-shape. It is a size container so
    the text inside the shape scales with it. */
 .field {
+  /* The shape's drawn size: the breath, or the Membrane's own range (membrane.js). */
+  --shape-scale: var(--breath-scale, 1);
   position: relative;
   width: var(--field-size);
   height: var(--field-size);
@@ -34,18 +36,33 @@
   border-radius: var(--field-radius);
 }
 
+/* The glow: a soft halo in the shape's own outline, the shape's size, just behind
+   it (#137). It used to be a fixed round disc, which showed as a stray circle behind
+   squares, triangles and any shape smaller than full size. */
 .glow {
   position: absolute;
   inset: 0;
-  border-radius: var(--field-radius);
-  background: radial-gradient(closest-side, var(--color-accent-soft), transparent 70%);
+  margin: auto;
+  width: var(--core-size);
+  height: var(--core-size);
   opacity: var(--breath-glow, 1);
-  will-change: opacity;
+  transform: scale(calc(var(--shape-scale) * var(--glow-spread)));
+  filter: blur(var(--glow-blur));
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--core-radius);
+  clip-path: var(--core-clip, none);
+  background: var(--color-accent-soft);
 }
 
 /* The breathing shape: solid, and exactly fills the outline at scale 1. */
 .core {
-  --core-transform: calc(var(--breath-scale, 1) * (1 + var(--hum-jitter, 0)));
+  --core-transform: calc(var(--shape-scale) * (1 + var(--hum-jitter, 0)));
   position: relative;
   width: var(--core-size);
   height: var(--core-size);
@@ -68,6 +85,7 @@
 
 /* Fluid → Vessel: the shape stays full size as a faint glass; the breath is the
    liquid level inside it. */
+.field[data-fluid="vessel"] { --shape-scale: 1; }
 .field[data-fluid="vessel"] .core {
   --core-transform: 1;
   background: color-mix(in srgb, var(--color-accent-fill) 14%, transparent);
@@ -80,9 +98,13 @@
 }
 .field[data-fluid="vessel"] .dot { mask: none; }
 
-/* Fluid → Membrane: the fill's edge is drawn by membrane.js as a clip-path, a
-   little inside the box so it has room to bulge out. */
+/* Fluid → Membrane: the fill's edge is drawn by membrane.js as a clip-path inside a
+   box larger than the shape (by 1 / --membrane-room), so sag and waves have room to
+   bulge out without being sliced flat by the box (#137). */
 .field[data-fluid="membrane"] .core {
+  width: calc(var(--core-size) / var(--membrane-room));
+  height: calc(var(--core-size) / var(--membrane-room));
+  flex-shrink: 0;
   border-radius: 0;
   mask: none;
 }

@@ -1,33 +1,31 @@
 /* Session layouts (#128): Settings → Session layout sets data-session-layout on
    <html>; js/ui/session-layout.js keeps --shrink, --visual-height and
-   --breath-level up to date on the stage. */
+   --visual-height up to date, and draws the Fill liquid. */
 
-/* Behind the shape while the page is scrolled, so the text passes under it. It
-   paints the same backdrop as the page, sized to the screen, and fades out below. */
-.stage__backdrop {
+/* Shrink: the halo behind the shape, in its outline (circle, square or triangle):
+   page colour with a soft edge, shown once the page scrolls, so text passing behind
+   the shrunk shape fades out round it. No band across the screen (#137). */
+.field__halo {
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: 100vw;
-  height: calc(var(--topbar-height) + var(--safe-top) + var(--visual-height, 0px) * var(--shrink, 1));
-  transform: translateX(-50%);
-  background: var(--gradient-backdrop);
-  background-size: 100vw 100vh;
-  pointer-events: none;
+  inset: calc(var(--space-md) * -1);
+  filter: blur(var(--space-sm));
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-standard);
+  pointer-events: none;
   z-index: -1;
 }
-.stage__backdrop::after {
+.field__halo::before {
   content: "";
   position: absolute;
-  inset: 100% 0 auto;
-  height: var(--space-lg);
-  background: linear-gradient(var(--color-bg), transparent);
+  inset: var(--space-md);
+  border-radius: var(--field-radius);
+  clip-path: var(--core-clip, none);
+  background: var(--color-bg);
+  transform: scale(1.06);
 }
-.stage[data-scrolled] .stage__backdrop { opacity: 1; }
+.stage[data-scrolled] .field__halo { opacity: 1; }
 
-/* Sticky and Shrink: the shape stays at the top while the rest scrolls under it. */
+/* Shrink: the shape stays at the top while the rest scrolls. */
 .stage__visual {
   position: sticky;
   top: 0;
@@ -41,10 +39,6 @@
   transform-origin: top center;
 }
 
-/* With Fluid shapes on, a drag on the shape moves the liquid instead of scrolling. */
-[data-fluid="vessel"] .stage .field,
-[data-fluid="membrane"] .stage .field { touch-action: none; }
-
 /* Fill: the whole screen is the breath. */
 .breath-fill { display: none; }
 [data-session-layout="fill"] .breath-fill {
@@ -53,13 +47,33 @@
   inset: 0;
   z-index: -1;
   background: var(--color-accent-fill);
-  transform: scaleY(var(--breath-level, 0));
-  transform-origin: bottom;
+  /* The liquid's surface is a clip-path from js/ui/session-layout.js. */
+  clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);
   pointer-events: none;
-  will-change: transform;
+  overflow: hidden;
 }
+
+/* Bubbles rising through the liquid (the particles, in Fill). */
+.bubble {
+  position: absolute;
+  left: var(--x);
+  bottom: calc(var(--size) * -2);
+  width: var(--size);
+  height: var(--size);
+  border-radius: var(--radius-round);
+  background: var(--color-bubble);
+  animation: bubble-rise var(--rise) linear var(--delay) infinite;
+  will-change: transform, opacity;
+}
+@keyframes bubble-rise {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { transform: translate(var(--sway), -50vh); }
+  100% { transform: translate(0, -105vh); opacity: 0.6; }
+}
+[data-particles="off"] .bubble { display: none; }
 [data-session-layout="fill"] .stage__visual { position: relative; }
-[data-session-layout="fill"] .stage__backdrop { display: none; }
+[data-session-layout="fill"] .field__halo { display: none; }
 /* The shape steps aside; its phase and count stay, centred where it was. */
 [data-session-layout="fill"] .field > :not(.shape-label) { visibility: hidden; }
 [data-session-layout="fill"] .split__half[data-active] { background: none; }

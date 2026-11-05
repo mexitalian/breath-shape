@@ -2,8 +2,11 @@
 // They apply straight away on every open page (the 'breathing:settings' event)
 // and before first paint on the next one (js/settings-boot.js reads the same key).
 export const SETTINGS_KEY = 'breathing:settings';
-export const DEFAULTS = { theme: 'system', particles: 'webgl', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps', fluid: 'off', fluidInput: 'tilt',
-  vesselLow: 0, vesselHigh: 1, membraneWobble: 1, membraneSmall: null, membraneLarge: null, sessionLayout: 'sticky' };
+export const DEFAULTS = { theme: 'system', particles: 'webgl', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps', fluid: 'off',
+  vesselLow: 0, vesselHigh: 1, membraneWobble: 3, membraneSmall: 0.1, membraneLarge: 1, sessionLayout: 'shrink', version: 2 };
+// Version 2 (#138): new Membrane defaults (wobble 300%, smallest 10%, largest 100%),
+// applied once to settings saved before it; after that, changes stick.
+const MIGRATIONS = { 2: (saved) => ({ ...saved, membraneWobble: 3, membraneSmall: 0.1, membraneLarge: 1 }) };
 export const THEMES = ['system', 'light', 'dark'];
 // 'webgl' (the default) draws a richer particle layer on one canvas
 // (js/components/particles-gl.js); 'on' is the standard one, and the fallback
@@ -12,12 +15,11 @@ export const PARTICLES = ['on', 'off', 'webgl'];
 // Continuous: inhale ramps soft to strong, exhale strong to soft (Android app only).
 export const VIBRATION_STYLES = ['taps', 'continuous'];
 // Fluid shapes (#94): the shape as a vessel of liquid, or a rippling membrane;
-// moved by touch, or by tilt and touch where the phone's motion sensor reports.
+// moved by tilt only (touch was retired in #138; on a computer the mouse stands in).
 export const FLUIDS = ['off', 'vessel', 'membrane'];
-export const FLUID_INPUTS = ['tilt', 'touch'];
 // Session layouts (#128): how the text under the shape behaves when it doesn't fit
 // (js/ui/session-layout.js). The shape itself is never squashed.
-export const SESSION_LAYOUTS = ['sticky', 'shrink', 'fill'];
+export const SESSION_LAYOUTS = ['shrink', 'fill'];  // 'sticky' retired in #137; it reads as shrink
 // Fluid tuning (#102), for trying looks out: the Vessel's emptiest and fullest
 // levels (fractions of the height), how strongly motion moves the Membrane (1 =
 // normal), and the Membrane's smallest and largest sizes (fractions of full size;
@@ -37,6 +39,9 @@ function defaultStorage() {
 export function readSettings(storage = defaultStorage()) {
   let saved = {};
   try { saved = JSON.parse(storage?.getItem(SETTINGS_KEY) ?? '{}') ?? {}; } catch { /* defaults */ }
+  if (Object.keys(saved).length) {
+    for (const [v, migrate] of Object.entries(MIGRATIONS)) if (!(saved.version >= Number(v))) saved = migrate(saved);
+  }
   const bool = (key) => (typeof saved[key] === 'boolean' ? saved[key] : DEFAULTS[key]);
   const tuning = (key) => {
     const [lo, hi] = TUNING_RANGES[key];
@@ -51,13 +56,13 @@ export function readSettings(storage = defaultStorage()) {
     vibration: bool('vibration'),
     vibrationStyle: VIBRATION_STYLES.includes(saved.vibrationStyle) ? saved.vibrationStyle : DEFAULTS.vibrationStyle,
     fluid: FLUIDS.includes(saved.fluid) ? saved.fluid : DEFAULTS.fluid,
-    fluidInput: FLUID_INPUTS.includes(saved.fluidInput) ? saved.fluidInput : DEFAULTS.fluidInput,
     vesselLow: tuning('vesselLow'),
     vesselHigh: tuning('vesselHigh'),
     membraneWobble: tuning('membraneWobble'),
     membraneSmall: tuning('membraneSmall'),
     membraneLarge: tuning('membraneLarge'),
     sessionLayout: SESSION_LAYOUTS.includes(saved.sessionLayout) ? saved.sessionLayout : DEFAULTS.sessionLayout,
+    version: DEFAULTS.version,
   };
 }
 

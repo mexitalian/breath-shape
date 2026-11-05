@@ -1,18 +1,16 @@
 // Tap anywhere to continue a hold (tap-to-continue phases). A press that moves past
 // DRAG_THRESHOLD is a drag or a scroll, not a tap, and does nothing here.
-// While `paused()` is true (Fluid shapes on: the liquid takes the touch) presses are
-// ignored; holds then end with their on-screen button.
 // Dragging to change the colour was retired in #130 (docs/DECISIONS.md).
 const DRAG_THRESHOLD = 6;
 
-export function initTapControl({ target = document, onTap, paused = () => false } = {}) {
+export function initTapControl({ target = document, onTap } = {}) {
   let start = null;
   let moved = false;
 
   const ignored = (e) => e.target.closest?.('button, a, input, .screen, .cycles');
 
   const down = (e) => {
-    if (ignored(e) || paused()) return;
+    if (ignored(e)) return;
     start = { x: e.clientX, y: e.clientY };
     moved = false;
   };

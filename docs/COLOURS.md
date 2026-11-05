@@ -15,6 +15,10 @@ These are best guesses (#132), meant to be tried on the phone and adjusted.
 
 The chakra link is a loose borrowing that fits the warm-to-cool scale; it isn't a claim about chakras. The main reason is simpler: cool means slow down, warm means wake up, and almost everyone reads it that way without being told.
 
+## Home's filter pills
+
+Each group's pill on Home wears its group's colour: Calm & sleep 240 (blue-violet), Focus & balance 145 (green), Energise 30 (orange), Measure & train 330 (rose). The hues sit in the middle of each group's range. All stays in the page's own colour.
+
 ## Each technique
 
 ### Calm & sleep: blue to violet, gentlest to strongest
