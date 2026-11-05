@@ -3,7 +3,7 @@ export default {
   rate: '3 × 30 pumps',
   hint: 'Snap your belly in to push the air out sharply through your nose. Let the in-breath happen on its own. About one pump a second.',
 
-  hue: 105,
+  hue: 52,
   shape: 'circle',
   opacity: { min: 0.35, max: 1 },
 

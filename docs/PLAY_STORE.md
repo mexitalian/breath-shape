@@ -166,7 +166,6 @@ Lock your phone and keep going. Gentle vibration marks each breath, and the hum 
 
 MADE TO BE CALM
 • One shape, one colour per technique, light and dark themes
-• Drag anywhere to change the colour
 • Sound, vibration and keep-screen-on settings
 • Safety notes before the stronger techniques
 

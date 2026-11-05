@@ -5,7 +5,7 @@ export default {
   // Session length chip (#116): No limit, then these.
   lengths: { minutes: [3, 5, 10] },
 
-  hue: 185,
+  hue: 165,
   shape: 'box',
   opacity: { min: 0.5, max: 1 },
 

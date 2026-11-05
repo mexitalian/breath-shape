@@ -14,7 +14,7 @@ export default {
   rate: 'measure · breathe less · measure',
   hint: 'Breathe quietly through your nose, a little less than you want to. A mild air hunger is the goal.',
 
-  hue: 170,
+  hue: 180,
   shape: 'circle',
   opacity: { min: 0.3, max: 0.75 },
 

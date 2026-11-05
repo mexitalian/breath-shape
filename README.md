@@ -1,6 +1,6 @@
 # Breath Shape
 
-Guided breathing animations (the repo started as "Breathing Animations") built on one shared engine and design system. Each technique is a small config file; the engine handles timing, visuals, counters, screens, vibration and the colour drag control.
+Guided breathing animations (the repo started as "Breathing Animations") built on one shared engine and design system. Each technique is a small config file; the engine handles timing, visuals, counters, screens, vibration and tap-to-continue.
 
 Live at **https://mexitalian.github.io/breath-shape/** (served by GitHub Pages from `main`). The [style guide](https://mexitalian.github.io/breath-shape/styleguide.html) shows every token and component.
 
@@ -75,7 +75,7 @@ js/
   easing.js           CSS-equivalent easing curves
   components/         field parts: ring, track, outline, glow, hum, heat, core, particles, dot, ripple
   ui/                 stage layout, labels, screen pattern
-  controls/           hue drag (and tap), vibration, hum sound
+  controls/           tap-to-continue, vibration, hum sound
 configs/*.js          one config per technique
 *.html                thin wrappers: load a config, call start()
 ```

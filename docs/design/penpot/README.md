@@ -34,7 +34,7 @@ The images are 824 px wide (2×). In Penpot, place them at **412 px wide** on a
 Units: 1rem = 16 px. Sizes in `tokens.json` are in rem; multiply by 16.
 
 **Colours follow a hue.** Every page sets one hue (home is 220, each technique has
-its own, and dragging on a session changes it). The roles below are formulas of that
+its own). The roles below are formulas of that
 hue, not fixed colours. In Penpot, make one colour library for the home hue in each
 theme. Name colours after the roles so changes map back to the code:
 

@@ -1,0 +1,84 @@
+/* Session layouts (#128): Settings → Session layout sets data-session-layout on
+   <html>; js/ui/session-layout.js keeps --shrink, --visual-height and
+   --breath-level up to date on the stage. */
+
+/* Behind the shape while the page is scrolled, so the text passes under it. It
+   paints the same backdrop as the page, sized to the screen, and fades out below. */
+.stage__backdrop {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  height: calc(var(--topbar-height) + var(--safe-top) + var(--visual-height, 0px) * var(--shrink, 1));
+  transform: translateX(-50%);
+  background: var(--gradient-backdrop);
+  background-size: 100vw 100vh;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+  z-index: -1;
+}
+.stage__backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 100% 0 auto;
+  height: var(--space-lg);
+  background: linear-gradient(var(--color-bg), transparent);
+}
+.stage[data-scrolled] .stage__backdrop { opacity: 1; }
+
+/* Sticky and Shrink: the shape stays at the top while the rest scrolls under it. */
+.stage__visual {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Shrink: the shape scales down from its top edge as the page scrolls. */
+[data-session-layout="shrink"] .stage__visual > .field,
+[data-session-layout="shrink"] .stage__visual > .split {
+  transform: scale(var(--shrink, 1));
+  transform-origin: top center;
+}
+
+/* With Fluid shapes on, a drag on the shape moves the liquid instead of scrolling. */
+[data-fluid="vessel"] .stage .field,
+[data-fluid="membrane"] .stage .field { touch-action: none; }
+
+/* Fill: the whole screen is the breath. */
+.breath-fill { display: none; }
+[data-session-layout="fill"] .breath-fill {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-accent-fill);
+  transform: scaleY(var(--breath-level, 0));
+  transform-origin: bottom;
+  pointer-events: none;
+  will-change: transform;
+}
+[data-session-layout="fill"] .stage__visual { position: relative; }
+[data-session-layout="fill"] .stage__backdrop { display: none; }
+/* The shape steps aside; its phase and count stay, centred where it was. */
+[data-session-layout="fill"] .field > :not(.shape-label) { visibility: hidden; }
+[data-session-layout="fill"] .split__half[data-active] { background: none; }
+
+/* Anything the fill covers flips to the on-fill colour, block by block. */
+/* The fill colour itself, kept before the flip below swaps it for the on-fill one. */
+[data-session-layout="fill"] .stage { --breath-fill-colour: var(--color-accent-fill); }
+[data-session-layout="fill"] [data-on-fill] {
+  --color-ink: var(--color-on-fill);
+  --color-accent-fill: var(--color-on-fill);
+  --color-accent-edge: color-mix(in srgb, var(--color-on-fill) 55%, transparent);
+  --color-dim: color-mix(in srgb, var(--color-on-fill) 78%, transparent);
+  --color-accent: var(--color-on-fill);
+  --color-line: color-mix(in srgb, var(--color-on-fill) 40%, transparent);
+  --color-on-accent: var(--breath-fill-colour);
+}
+/* Parts that only inherit their colour pick the flipped ink up here; parts with
+   their own colour rule (dim hints, accent counts) keep it, through the tokens. */
+:where([data-session-layout="fill"] [data-on-fill]) { color: var(--color-ink); }
+[data-session-layout="fill"] :is(.topbar__back, .topbar__title, .topbar__actions > *, .shape-label, .cycles__count, .cycles__grid, .cycles__length, .labels, .hint, .stage__controls .button, .pace__value) {
+  transition: color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard);
+}
