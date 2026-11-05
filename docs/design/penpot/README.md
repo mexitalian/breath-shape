@@ -1,6 +1,8 @@
-# Penpot reference: home screen
+# Penpot reference
 
-The home screen as the Android app draws it today, for rebuilding in Penpot (#107).
+The app as the Android app draws it today, for rebuilding in Penpot (#107): the
+home screen, Settings, and a session for each breathing shape (circle, alternate
+nostril, triangle, box).
 Everything here is generated from the real pages in headless Chromium, set up to
 look like the Android app (so Settings shows its Android-only rows), at Pixel 6a
 size (412 × 915 CSS px), drawn at 2× so text stays sharp. The font is forced to
@@ -17,6 +19,8 @@ so lines wrap a little differently there.
 | `reference/home-*-filter-calm.webp` | With the **Calm & sleep** filter picked |
 | `reference/home-*-settings.webp` | Settings opened from the gear (first screen) |
 | `reference/home-*-settings-full.webp` | The whole Settings panel (it scrolls on the phone) |
+| `reference/sessions/<shape>-<theme>-start.webp` | A session's start screen: circle (Resonance), nostril (Alternate Nostril), triangle, box |
+| `reference/sessions/<shape>-<theme>-session.webp` | The same session a few seconds in |
 | `tokens.json` | Every design token, resolved per theme. Colours are hex, for the home hue (220) and four technique hues |
 | `home-light-layout.json` | Every visible element on the light home page: tag, class, text, box (CSS px, page coordinates) and resolved style |
 
@@ -73,10 +77,33 @@ ghost button (pill, 44 px high), settings row (label and chips; with slider).
 pace, and the filter bar sticks to the top on scroll. Describe changes to these in
 words on the ticket.
 
+## Design tokens (#112)
+
+The Penpot file holds design tokens named after `css/tokens.css`: `space.md` is
+`--space-md`, `color.accent` is `--color-accent`, `size.orb` is `--orb-size`.
+Penpot works in px; the CSS mostly in rem (16 px = 1 rem).
+
+- **Sets:** `core` (space, radius, size, border, opacity, type, shadows), `palette`
+  (every colour role for each hue, light and dark), `technique/<page>` (which hue is
+  current), `mode/light` and `mode/dark` (the `color.*` roles, each technique's row
+  colours, and the surfaces: page, raised, overlay).
+- **Themes** (Tokens panel, top): **Mode** switches Light and Dark, **Technique**
+  switches the hue. Both apply to the whole file.
+- **Colours go one way, code to Penpot.** The CSS works each colour out from the
+  page's hue, which Penpot can't express, so Penpot holds the results. Change colours
+  in the CSS formula.
+- **Everything else goes both ways.** Export the tokens from Penpot (Tokens panel,
+  export as a single JSON file), then:
+
+  ```bash
+  node scripts/penpot-tokens.mjs check penpot-tokens.json          # list differences
+  node scripts/penpot-tokens.mjs check penpot-tokens.json --write  # update tokens.css
+  ```
+
 ## Bringing changes back
 
 Edit in Penpot, then either:
-- in a Claude session on the Mac with the Penpot MCP plugin connected, ask for the
+- in a Claude session with the Penpot MCP plugin connected, ask for the
   changed boards to be read and turned into a ticket and PR; or
 - export the changed boards as PNG and attach them to a ticket, with exact values
   where they matter.
