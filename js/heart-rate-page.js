@@ -1,5 +1,7 @@
 import { fingerPresent, pulseWave, findBeats, estimateBpm, estimateHrv } from './heart-rate.js';
-import { saveSession, HEART_RATE } from './history.js';
+import { saveSession, readHistory, HEART_RATE } from './history.js';
+import { returnTarget, readingBefore, changeText } from './heart-rate-return.js';
+import { el } from './dom.js';
 import { createMembrane } from './fluid/membrane.js';
 
 const SETTLE_S = 4;        // auto-exposure settles before samples count
@@ -28,6 +30,14 @@ export function initHeartRate() {
   const statusEl = document.getElementById('status');
   const progressEl = document.getElementById('progress');
   const doneLink = document.getElementById('done');
+  // Opened from a session summary (#118): a way back to that technique, and the
+  // reading from just before the session to compare with.
+  const from = returnTarget(location.search);
+  const before = from ? readingBefore(readHistory(), from.since) : null;
+  if (from) {
+    const back = el('a', 'button button--primary', { href: from.page, textContent: `Back to ${from.title}` });
+    doneLink.before(back);
+  }
   const trace = document.getElementById('trace');
   const sampler = document.createElement('canvas');
   sampler.width = sampler.height = SAMPLE_SIZE;
@@ -216,6 +226,7 @@ export function initHeartRate() {
     } else {
       status(`Heart rate ${bpm} bpm, saved. The signal wasn't steady enough for HRV: rest your hand on a table, press lightly and breathe normally.`);
     }
+    if (before) status(`${statusEl.textContent} ${changeText(before, { heartRate: bpm, hrv })}.`);
     saveSession({
       id: `hr-${startedAt}`,
       kind: HEART_RATE,

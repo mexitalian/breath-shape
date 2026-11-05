@@ -1,3 +1,7 @@
+import { el } from './dom.js';
+import { icon } from './ui/icons.js';
+import { readResume, clearResume, resumeSummary } from './resume.js';
+
 // Technique list: group filter chips, and the filter + scroll position remembered
 // for this visit so coming back from a practice page lands where you left off.
 const KEY = 'breathing:home';
@@ -22,8 +26,33 @@ export function saveHomeState(state, storage = defaultStorage()) {
   try { storage?.setItem(KEY, JSON.stringify(state)); } catch { /* best-effort */ }
 }
 
+// "Jump back in" (#117): the session you left, at the top of Home, one tap to carry on.
+export function showResumeCard(before, rec = readResume()) {
+  if (!rec) return null;
+  const card = el('div', 'resume');
+  const link = el('a', 'resume__link', { href: `${rec.page}?resume=1` });
+  link.dataset.hue = '';
+  link.style.setProperty('--hue', String(rec.hue));
+  const text = el('div', 'resume__text');
+  text.append(
+    el('span', 'resume__eyebrow', { textContent: 'Jump back in' }),
+    el('strong', 'resume__title', { textContent: rec.title }),
+    el('span', 'resume__meta', { textContent: resumeSummary(rec) }),
+  );
+  link.append(el('span', 'resume__dot'), text, el('span', 'resume__arrow', { textContent: '→' }));
+  link.querySelector('.resume__arrow').setAttribute('aria-hidden', 'true');
+  const close = el('button', 'icon-button resume__close', { type: 'button' });
+  close.setAttribute('aria-label', 'Dismiss');
+  close.append(icon('close'));
+  close.addEventListener('click', () => { clearResume(); card.remove(); });
+  card.append(link, close);
+  before.before(card);
+  return card;
+}
+
 export function initHome() {
   const nav = document.querySelector('.group-nav');
+  showResumeCard(nav);
   const chips = [...nav.querySelectorAll('[data-filter]')];
   const groups = [...document.querySelectorAll('[data-group]')];
   let filter = 'all';

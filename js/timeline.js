@@ -36,17 +36,19 @@ export function createTimeline(sequence, { sessionMs = null, sessionCycles = nul
     }
   }
 
-  function start(now) {
+  // from: continue a session (#117) at the start of `round` (0-based), with `elapsedMs`
+  // of it already behind you and the records kept so far.
+  function start(now, from = null) {
     applyPendingScale();
     s = {
-      round: 0, step: 0, rep: 0, phase: 0,
+      round: from?.round ?? 0, step: 0, rep: 0, phase: 0,
       phaseStart: now,
-      startedAt: now,
+      startedAt: now - (from?.elapsedMs ?? 0),
       fromScale: sequence.initialScale,
       serial: 0,
       finished: false,
       finishedAt: null,
-      records: [],
+      records: from?.records ? from.records.slice() : [],
     };
   }
 

@@ -20,6 +20,8 @@ import { initAppShell } from './app.js';
 import { isDesktopApp } from './native.js';
 import { saveSession, MIN_SESSION_MS } from './history.js';
 import { lengthOptions, loadLength, saveLength, nextLength, applyLength, lengthLabel } from './session-length.js';
+import { saveResume, readResume, clearResume } from './resume.js';
+import { heartRateLink } from './heart-rate-return.js';
 import { el } from './dom.js';
 
 const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
@@ -141,13 +143,15 @@ export function start(rawConfig, { mount = document.body } = {}) {
   // Session history: saved while running and again when the session ends.
   let session = null;
   let lastSnap = null;
+  let endedSessionStart = null;   // for the summary's "Check heart rate" (#118)
   let variantLabel = cfg.variants ? cfg.variants[0].label : null;
   let chosenMinutes = cfg.sessionMinutes;
 
   function saveProgress() {
     if (!session || !lastSnap) return;
     const now = Date.now();
-    const durationMs = now - session.startedAt;
+    // Time away between leaving and jumping back in (#117) doesn't count.
+    const durationMs = now - session.startedAt - (session.awayMs ?? 0);
     if (!lastSnap.finished && durationMs < MIN_SESSION_MS) return;
     saveSession({
       id: session.id,
@@ -174,8 +178,24 @@ export function start(rawConfig, { mount = document.body } = {}) {
   const onHide = () => {
     if (running && document.visibilityState === 'hidden') saveProgress();
   };
+  // Leaving a running session (back, Android back, a link) stays instant; Home then
+  // offers one tap back into it (#117).
+  const page = location.pathname.split('/').pop() || 'index.html';
+  let cycleStart = { round: 0, elapsedMs: 0 };
+  function noteResume() {
+    if (!running || !session || !lastSnap || lastSnap.finished) return;
+    const activeMs = Date.now() - session.startedAt - (session.awayMs ?? 0);
+    if (activeMs < 10_000) return;
+    saveResume({
+      page, techniqueId: cfg.id, title: cfg.title, hue: cfg.hue, shape: cfg.shape,
+      sessionId: session.id, startedAt: session.startedAt, awayMs: session.awayMs ?? 0, savedAt: Date.now(),
+      round: cycleStart.round, elapsedMs: cycleStart.elapsedMs, records: lastSnap.records,
+      cycles: lastSnap.round - 1, activeMs,
+      length: length?.key ?? null, variant: variantLabel,
+    });
+  }
   const onPageHide = () => {
-    if (running) saveProgress();
+    if (running) { saveProgress(); noteResume(); }
     cues?.stop();
   };
   document.addEventListener('visibilitychange', onHide);
@@ -225,6 +245,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
     const workStart = performance.now();
     const snap = timeline.tick(now);
     lastSnap = snap;
+    // Where the cycle under way began, so jumping back in restarts it from its first breath.
+    if (snap.round - 1 !== cycleStart.round) cycleStart = { round: snap.round - 1, elapsedMs: snap.sessionElapsed - snap.elapsed };
     windDown(snap);
     if (snap.serial !== lastSerial) {
       lastSerial = snap.serial;
@@ -238,6 +260,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
       cues?.stop();
       awake.release();
       saveProgress();
+      clearResume();
+      endedSessionStart = session.startedAt;
       session = null;
       showSummary(snap);
       return;
@@ -245,7 +269,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
     raf = requestAnimationFrame(frame);
   }
 
-  function begin() {
+  // resume: a record from Home's "Jump back in" card (#117), to carry on that session.
+  function begin({ resume = null } = {}) {
     screen?.close();
     screen = null;
     cancelAnimationFrame(raf);
@@ -255,12 +280,17 @@ export function start(rawConfig, { mount = document.body } = {}) {
       applyPace(currentBpm, true);
     }
     if (length) applyLength(timeline, length);
-    timeline.start(performance.now());
+    timeline.start(performance.now(), resume && { round: resume.round, elapsedMs: resume.elapsedMs, records: resume.records });
+    cycleStart = resume ? { round: resume.round, elapsedMs: resume.elapsedMs } : { round: 0, elapsedMs: 0 };
     cycles.reset();
     lastSerial = -1;
     running = true;
     if (readSettings().keepAwake) awake.acquire();
-    session = { id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, startedAt: Date.now() };
+    session = resume
+      ? { id: resume.sessionId, startedAt: resume.startedAt, awayMs: resume.awayMs + Math.max(0, Date.now() - resume.savedAt) }
+      : { id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, startedAt: Date.now() };
+    // Starting a session (or carrying one on) replaces any offer to jump back in.
+    clearResume();
     lastSnap = null;
     cues?.start(performance.now());
     raf = requestAnimationFrame(frame);
@@ -274,6 +304,8 @@ export function start(rawConfig, { mount = document.body } = {}) {
     awake.release();
     lastSnap = timeline.tick(performance.now());
     saveProgress();
+    clearResume();
+    endedSessionStart = session?.startedAt ?? Date.now();
     session = null;
     showSummary(lastSnap, { stopped: true });
   }
@@ -372,7 +404,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       list,
       actions: [
         { label: 'Go again', primary: true, onClick: begin },
-        ...(isDesktopApp ? [] : [{ label: 'Check heart rate', href: 'heart-rate.html' }]),
+        ...(isDesktopApp ? [] : [{ label: 'Check heart rate', href: heartRateLink({ page, title: cfg.title, startedAt: endedSessionStart ?? Date.now() }) }]),
         { label: 'All techniques', href: './' },
       ],
     });
@@ -393,7 +425,17 @@ export function start(rawConfig, { mount = document.body } = {}) {
   };
   document.addEventListener('keydown', onKey);
 
-  if (cfg.safety && !hasAcknowledged(storage, cfg.id)) showSafety();
+  const resumeRecord = new URLSearchParams(location.search).has('resume') ? readResume() : null;
+  if (resumeRecord?.page === page) {
+    history.replaceState(null, '', location.pathname);
+    const variant = cfg.variants?.find(v => v.label === resumeRecord.variant);
+    if (variant) {
+      variantLabel = variant.label;
+      timeline = createTimeline(variant.sequence, { sessionMs });
+    }
+    length = lengths?.find(o => o.key === resumeRecord.length) ?? length;
+    begin({ resume: resumeRecord });
+  } else if (cfg.safety && !hasAcknowledged(storage, cfg.id)) showSafety();
   else afterSafety();
 
   return {
