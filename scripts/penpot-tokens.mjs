@@ -88,14 +88,14 @@ function same(a, b) {
 
 // Pure: the differences between an export and the CSS. Tokens with no CSS
 // counterpart (colours, composite type styles, shadows, values the CSS works out
-// with min() or clamp()) are listed as skipped.
+// with min() or clamp(), percentages such as --radius-round: 50%) are listed as skipped.
 export function compare(tokens, css) {
   const changes = [];
   const skipped = [];
   for (const [name, value] of Object.entries(tokens)) {
     const target = cssFor(name, value);
     const current = target && cssValue(css, target.prop);
-    if (!target || current == null || /[(]/.test(current)) { skipped.push(name); continue; }
+    if (!target || current == null || /[(%]/.test(current)) { skipped.push(name); continue; }
     if (!same(current, target.value)) changes.push({ name, prop: target.prop, from: current, to: target.value });
   }
   return { changes, skipped };

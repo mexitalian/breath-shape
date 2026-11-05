@@ -1,0 +1,725 @@
+{
+ "core": {
+  "space": {
+   "3xs": {
+    "$value": "3.2",
+    "$type": "spacing"
+   },
+   "2xs": {
+    "$value": "4.8",
+    "$type": "spacing"
+   },
+   "xs": {
+    "$value": "6.4",
+    "$type": "spacing"
+   },
+   "sm": {
+    "$value": "11.2",
+    "$type": "spacing"
+   },
+   "md": {
+    "$value": "16",
+    "$type": "spacing"
+   },
+   "lg": {
+    "$value": "24",
+    "$type": "spacing"
+   },
+   "xl": {
+    "$value": "35.2",
+    "$type": "spacing"
+   },
+   "2xl": {
+    "$value": "48",
+    "$type": "spacing"
+   },
+   "3xl": {
+    "$value": "72",
+    "$type": "spacing"
+   }
+  },
+  "radius": {
+   "sm": {
+    "$value": "5",
+    "$type": "borderRadius"
+   },
+   "md": {
+    "$value": "14",
+    "$type": "borderRadius"
+   },
+   "lg": {
+    "$value": "18",
+    "$type": "borderRadius"
+   },
+   "xl": {
+    "$value": "22",
+    "$type": "borderRadius"
+   },
+   "pill": {
+    "$value": "999",
+    "$type": "borderRadius"
+   },
+   "round": {
+    "$value": "999",
+    "$type": "borderRadius"
+   }
+  },
+  "border": {
+   "hair": {
+    "$value": "1",
+    "$type": "borderWidth"
+   }
+  },
+  "alpha": {
+   "hover": {
+    "$value": "0.07",
+    "$type": "opacity"
+   },
+   "faint": {
+    "$value": "0.1",
+    "$type": "opacity"
+   },
+   "soft": {
+    "$value": "0.18",
+    "$type": "opacity"
+   },
+   "glow": {
+    "$value": "0.2",
+    "$type": "opacity"
+   },
+   "edge": {
+    "$value": "0.35",
+    "$type": "opacity"
+   },
+   "strong": {
+    "$value": "0.6",
+    "$type": "opacity"
+   },
+   "glass": {
+    "$value": "0.82",
+    "$type": "opacity"
+   }
+  },
+  "opacity": {
+   "disabled": {
+    "$value": "0.7",
+    "$type": "opacity"
+   }
+  },
+  "text": {
+   "2xs": {
+    "$value": "11.2",
+    "$type": "fontSizes"
+   },
+   "xs": {
+    "$value": "11.52",
+    "$type": "fontSizes"
+   },
+   "sm": {
+    "$value": "12.8",
+    "$type": "fontSizes"
+   },
+   "md": {
+    "$value": "13.6",
+    "$type": "fontSizes"
+   },
+   "base": {
+    "$value": "15.2",
+    "$type": "fontSizes"
+   },
+   "lg": {
+    "$value": "16.8",
+    "$type": "fontSizes"
+   },
+   "xl": {
+    "$value": "22.4",
+    "$type": "fontSizes"
+   },
+   "2xl": {
+    "$value": "35.2",
+    "$type": "fontSizes"
+   },
+   "display": {
+    "$value": "32",
+    "$type": "fontSizes"
+   }
+  },
+  "weight": {
+   "light": {
+    "$value": "300",
+    "$type": "fontWeights"
+   },
+   "regular": {
+    "$value": "400",
+    "$type": "fontWeights"
+   },
+   "medium": {
+    "$value": "500",
+    "$type": "fontWeights"
+   },
+   "semibold": {
+    "$value": "600",
+    "$type": "fontWeights"
+   }
+  },
+  "font": {
+   "sans": {
+    "$value": [
+     "Roboto"
+    ],
+    "$type": "fontFamilies"
+   }
+  },
+  "leading": {
+   "tight": {
+    "$value": "1.1",
+    "$type": "number"
+   },
+   "normal": {
+    "$value": "1.5",
+    "$type": "number"
+   },
+   "relaxed": {
+    "$value": "1.6",
+    "$type": "number"
+   }
+  },
+  "tracking": {
+   "tight": {
+    "$value": "-0.01",
+    "$type": "number"
+   },
+   "normal": {
+    "$value": "0.02",
+    "$type": "number"
+   },
+   "phase": {
+    "$value": "0.04",
+    "$type": "number"
+   },
+   "label": {
+    "$value": "0.07",
+    "$type": "number"
+   },
+   "eyebrow": {
+    "$value": "0.28",
+    "$type": "number"
+   }
+  },
+  "size": {
+   "icon-button": {
+    "$value": "44",
+    "$type": "sizing"
+   },
+   "icon": {
+    "$value": "21.6",
+    "$type": "sizing"
+   },
+   "orb": {
+    "$value": "52",
+    "$type": "sizing"
+   },
+   "cycle": {
+    "$value": "16.8",
+    "$type": "sizing"
+   },
+   "dot": {
+    "$value": "18",
+    "$type": "sizing"
+   },
+   "check": {
+    "$value": "17.6",
+    "$type": "sizing"
+   },
+   "step-button": {
+    "$value": "44",
+    "$type": "sizing"
+   },
+   "thumb": {
+    "$value": "68",
+    "$type": "sizing"
+   },
+   "hr-dial": {
+    "$value": "224",
+    "$type": "sizing"
+   },
+   "hr-trace-height": {
+    "$value": "72",
+    "$type": "sizing"
+   },
+   "topbar-height": {
+    "$value": "56",
+    "$type": "sizing"
+   },
+   "width-panel": {
+    "$value": "384",
+    "$type": "sizing"
+   },
+   "width-page": {
+    "$value": "544",
+    "$type": "sizing"
+   }
+  },
+  "type": {
+   "eyebrow": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.xs}",
+     "fontWeight": "{weight.medium}",
+     "letterSpacing": "3.23",
+     "lineHeight": "1.2",
+     "textCase": "uppercase",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "title": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.display}",
+     "fontWeight": "{weight.light}",
+     "letterSpacing": "-0.32",
+     "lineHeight": "{leading.tight}",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "lede": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.base}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0",
+     "lineHeight": "{leading.relaxed}",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "chip": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.2xs}",
+     "fontWeight": "{weight.medium}",
+     "letterSpacing": "0.78",
+     "lineHeight": "1.2",
+     "textCase": "uppercase",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "technique-name": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.lg}",
+     "fontWeight": "{weight.medium}",
+     "letterSpacing": "0",
+     "lineHeight": "1.2",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "pattern": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.sm}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0.26",
+     "lineHeight": "1.2",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "body-small": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.sm}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0",
+     "lineHeight": "{leading.normal}",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "button": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.md}",
+     "fontWeight": "{weight.semibold}",
+     "letterSpacing": "0.27",
+     "lineHeight": "1.2",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "settings-label": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.xs}",
+     "fontWeight": "{weight.medium}",
+     "letterSpacing": "0.81",
+     "lineHeight": "1.2",
+     "textCase": "uppercase",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "footer": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.xs}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0",
+     "lineHeight": "{leading.normal}",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "phase": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "37.08",
+     "fontWeight": "{weight.light}",
+     "letterSpacing": "1.48",
+     "lineHeight": "{leading.tight}",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "count": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "20.6",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0",
+     "lineHeight": "1.2",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "phase-small": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "16",
+     "fontWeight": "{weight.light}",
+     "letterSpacing": "0.64",
+     "lineHeight": "{leading.tight}",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "count-small": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "12.8",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0",
+     "lineHeight": "1.2",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "caption": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.xs}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0.81",
+     "lineHeight": "1.2",
+     "textCase": "uppercase",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "split-caption": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.xs}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "3.23",
+     "lineHeight": "1.2",
+     "textCase": "uppercase",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "hint": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.xs}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0",
+     "lineHeight": "{leading.normal}",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "pace-value": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.md}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0",
+     "lineHeight": "1.2",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   },
+   "step": {
+    "$value": {
+     "fontFamily": [
+      "{font.sans}"
+     ],
+     "fontSize": "{text.lg}",
+     "fontWeight": "{weight.regular}",
+     "letterSpacing": "0.34",
+     "lineHeight": "1.2",
+     "textCase": "none",
+     "textDecoration": "none"
+    },
+    "$type": "typography"
+   }
+  },
+  "shadow": {
+   "glow-sm": {
+    "$value": [
+     {
+      "offsetX": "0",
+      "offsetY": "0",
+      "blur": "6",
+      "spread": "1",
+      "color": "{color.accent-soft}",
+      "inset": false
+     }
+    ],
+    "$type": "shadow"
+   },
+   "glow-lg": {
+    "$value": [
+     {
+      "offsetX": "0",
+      "offsetY": "0",
+      "blur": "18",
+      "spread": "4",
+      "color": "{color.accent-soft}",
+      "inset": false
+     }
+    ],
+    "$type": "shadow"
+   }
+  }
+ },
+ "$themes": [
+  {
+   "group": "Mode",
+   "name": "Light",
+   "selectedTokenSets": {
+    "core": "enabled",
+    "palette": "enabled",
+    "mode/light": "enabled"
+   }
+  },
+  {
+   "group": "Mode",
+   "name": "Dark",
+   "selectedTokenSets": {
+    "core": "enabled",
+    "palette": "enabled",
+    "mode/dark": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "home",
+   "selectedTokenSets": {
+    "technique/home": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "heart-rate",
+   "selectedTokenSets": {
+    "technique/heart-rate": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "buteyko",
+   "selectedTokenSets": {
+    "technique/buteyko": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "resonance-breathing",
+   "selectedTokenSets": {
+    "technique/resonance-breathing": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "breathing-478",
+   "selectedTokenSets": {
+    "technique/breathing-478": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "extended-exhale",
+   "selectedTokenSets": {
+    "technique/extended-exhale": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "physiological-sigh",
+   "selectedTokenSets": {
+    "technique/physiological-sigh": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "bhramari",
+   "selectedTokenSets": {
+    "technique/bhramari": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "pursed-lip-breathing",
+   "selectedTokenSets": {
+    "technique/pursed-lip-breathing": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "box-breathing",
+   "selectedTokenSets": {
+    "technique/box-breathing": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "triangle-breathing",
+   "selectedTokenSets": {
+    "technique/triangle-breathing": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "alternate-nostril",
+   "selectedTokenSets": {
+    "technique/alternate-nostril": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "bhastrika",
+   "selectedTokenSets": {
+    "technique/bhastrika": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "kapalabhati",
+   "selectedTokenSets": {
+    "technique/kapalabhati": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "wim-hof",
+   "selectedTokenSets": {
+    "technique/wim-hof": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "tummo",
+   "selectedTokenSets": {
+    "technique/tummo": "enabled"
+   }
+  },
+  {
+   "group": "Technique",
+   "name": "connected-breathing",
+   "selectedTokenSets": {
+    "technique/connected-breathing": "enabled"
+   }
+  }
+ ],
+ "$metadata": {
+  "tokenSetOrder": [
+   "core",
+   "palette",
+   "technique/home",
+   "technique/heart-rate",
+   "technique/buteyko",
+   "technique/resonance-breathing",
+   "technique/breathing-478",
+   "technique/extended-exhale",
+   "technique/physiological-sigh",
+   "technique/bhramari",
+   "technique/pursed-lip-breathing",
+   "technique/box-breathing",
+   "technique/triangle-breathing",
+   "technique/alternate-nostril",
+   "technique/bhastrika",
+   "technique/kapalabhati",
+   "technique/wim-hof",
+   "technique/tummo",
+   "technique/connected-breathing",
+   "mode/light",
+   "mode/dark"
+  ],
+  "note": "The core set as built in the Breath Shape Penpot file (#112). Colour sets are generated from css/tokens.css and not stored here."
+ }
+}

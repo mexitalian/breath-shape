@@ -28,6 +28,11 @@ test('the tokens as built in Penpot match tokens.css', () => {
   assert.deepEqual(compare(tokens, css).changes, []);
 });
 
+test('the whole core set from the Penpot file matches tokens.css', () => {
+  const json = JSON.parse(readFileSync(new URL('../docs/design/penpot/tokens-core.penpot.json', import.meta.url), 'utf8'));
+  assert.deepEqual(compare(flattenExport(json), css).changes, []);
+});
+
 test('a changed token is reported and written into tokens.css', () => {
   const { changes } = compare({ 'space.md': '18', 'text.display': '32' }, css);
   assert.deepEqual(changes, [{ name: 'space.md', prop: '--space-md', from: '1rem', to: '1.125rem' }]);
