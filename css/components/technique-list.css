@@ -79,6 +79,12 @@ html { scroll-behavior: smooth; }
 .group-nav--sticky[data-stuck] { background: var(--color-bg); }
 .group-nav--sticky::-webkit-scrollbar { display: none; }
 .group-nav--sticky .chip { flex: none; }
+/* Each group's pill wears its outcome colour (docs/COLOURS.md, #139): tinted when
+   not picked, filled when picked. "All" stays in the page's own colour. */
+.group-nav .chip[data-hue]:not([aria-pressed="true"]) {
+  border-color: var(--color-accent-edge);
+  color: var(--color-accent);
+}
 
 .history-link { justify-content: space-between; }
 
