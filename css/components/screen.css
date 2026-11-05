@@ -121,3 +121,16 @@
 .settings__range:disabled { opacity: 0.4; }
 .settings__buttons { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
 .settings__note { min-height: 1.4em; margin: 0; color: var(--color-dim); font-size: var(--text-sm); }
+
+/* Close (#131): stays where the gear that opened Settings was, over the scrolling
+   panel. Without an opener it sits top right. */
+.settings__close {
+  position: fixed;
+  top: calc(var(--space-xs) + var(--safe-top));
+  right: calc(var(--space-sm) + var(--safe-right));
+  z-index: 11;
+  color: var(--color-ink);
+  background: var(--color-glass);
+  border-radius: var(--radius-round);
+}
+.settings__close[style*="left"] { right: auto; }
