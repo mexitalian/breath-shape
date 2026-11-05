@@ -4,6 +4,14 @@ What was decided or retired, and why, so it isn't re-added by accident or argued
 
 To add one: a dated heading, then **Decision**, **Why**, and **Instead** (what replaces it, if anything). Reversing a decision is fine. Add a new entry that says so; don't edit the old one.
 
+## 2026-11-05 · Fill: Box and Triangle are implied by their corners (#148)
+
+**Decision:** in the Fill layout, Box and Triangle are drawn only as hairline brackets at their corners, with the marker riding the invisible edges between them. The shape spans the back chevron's tip to the settings cog's edge. The marker and brackets are flat (no glow), don't change when the marker arrives, and flip colour with the liquid. Shrink keeps the filled shapes.
+
+**Why:** with the liquid filling the screen, a second filled shape competed with it. Gestalt closure lets the corners alone carry the shape and keeps the screen calm.
+
+**Instead:** each bracket's arms are as long as the marker's edges, so at a corner the bracket and marker make one complete small shape.
+
 ## 2026-11-05 · Retired: touch moving the fluid; "Fluid moves with" (#138)
 
 **Decision:** touch no longer moves Vessel, Membrane or the Fill liquid. Only tilt does. On a computer with no tilt sensor, the mouse position stands in for tilt. The "Fluid moves with" setting is gone.
