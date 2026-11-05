@@ -3,7 +3,7 @@ export default {
   eyebrow: 'Holotropic-style',
   hint: 'Breathe deeper and faster than usual, in through the mouth, with no pause at the top or bottom. Keep the breath circular and connected.',
 
-  hue: 255,
+  hue: 0,
   shape: 'circle',
   opacity: { min: 0.35, max: 1 },
 

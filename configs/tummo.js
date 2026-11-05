@@ -3,7 +3,7 @@ export default {
   rate: '5 rounds',
   hint: 'Deep, full breaths: belly, then chest. Let each one go without pushing.',
 
-  hue: 28,
+  hue: 10,
   shape: 'circle',
   opacity: { min: 0.25, max: 1 },
 
