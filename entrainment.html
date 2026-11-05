@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Entrainment lab</title>
+  <link rel="icon" href="icons/icon-96.webp" type="image/webp">
+  <script src="js/settings-boot.js"></script>
+  <link rel="stylesheet" href="css/system.css">
+  <style>
+    .lab-row { display: flex; flex-direction: column; gap: var(--space-xs); }
+    .lab-row__label { display: flex; justify-content: space-between; gap: var(--space-sm); font-size: var(--text-sm); color: var(--color-dim); }
+    .lab-row__value { color: var(--color-accent); font-variant-numeric: tabular-nums; }
+    .lab-row input[type="range"] { width: 100%; accent-color: var(--color-accent); }
+    .lab-start { align-self: flex-start; }
+    .diag-out {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      padding: var(--space-md);
+      border: var(--border-hair) solid var(--color-line);
+      border-radius: var(--radius-md);
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .lab-note { color: var(--color-dim); font-size: var(--text-sm); line-height: var(--leading-relaxed); max-width: var(--measure-text); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="page__main">
+      <header class="page__header">
+        <div class="eyebrow"><a href="diagnostics.html" style="color: inherit">← Diagnostics</a></div>
+        <h1 class="page__title">Entrainment lab</h1>
+        <p class="page__lede">Try beats of sound and vibration at brainwave rates, and see how steady each way of timing them is. Experimental: for testing, not part of the sessions yet.</p>
+      </header>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">Beat</h2>
+        <div class="group-nav" id="presets" role="group" aria-label="Presets"></div>
+        <div class="lab-row">
+          <label class="lab-row__label" for="hz"><span>Rate</span><span class="lab-row__value" id="hz-value"></span></label>
+          <input type="range" id="hz" min="0.5" max="40" step="0.5">
+        </div>
+      </section>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">Sound · isochronic</h2>
+        <div class="group-nav" id="sound" role="group" aria-label="Sound"></div>
+        <div class="lab-row">
+          <label class="lab-row__label" for="tone"><span>Tone pitch</span><span class="lab-row__value" id="tone-value"></span></label>
+          <input type="range" id="tone" min="100" max="600" step="10">
+        </div>
+        <div class="lab-row">
+          <label class="lab-row__label" for="volume"><span>Volume</span><span class="lab-row__value" id="volume-value"></span></label>
+          <input type="range" id="volume" min="0.05" max="1" step="0.05">
+        </div>
+        <div class="lab-row">
+          <label class="lab-row__label" for="duty"><span>Pulse length (share of each beat)</span><span class="lab-row__value" id="duty-value"></span></label>
+          <input type="range" id="duty" min="0.2" max="0.8" step="0.05">
+        </div>
+      </section>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">Vibration</h2>
+        <div class="group-nav" id="haptic" role="group" aria-label="Vibration"></div>
+        <div class="lab-row">
+          <label class="lab-row__label" for="strength"><span>Strength (app only)</span><span class="lab-row__value" id="strength-value"></span></label>
+          <input type="range" id="strength" min="0.1" max="1" step="0.05">
+        </div>
+      </section>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">Timing engine</h2>
+        <div class="group-nav" id="engine" role="group" aria-label="Timing engine"></div>
+        <p class="lab-note" id="engine-note"></p>
+        <button class="button button--primary lab-start" type="button" id="start">Start</button>
+      </section>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">Timing check</h2>
+        <div class="diag-out" id="stats">Not running.</div>
+      </section>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">This phone's motor</h2>
+        <div class="diag-out" id="motor">Reading…</div>
+      </section>
+
+      <section class="technique-group">
+        <h2 class="technique-group__title">Good to know</h2>
+        <p class="lab-note">No flashing light, on purpose: light flickering at 3 to 30 times a second can trigger seizures in people with photosensitive epilepsy. Sound and vibration only.</p>
+        <p class="lab-note">The research on brainwave entrainment is mixed. Pulsed sound has some modest findings, mostly for relaxation; vibration has very little. Treat this as an experiment, and stop if anything feels unpleasant.</p>
+        <p class="lab-note">The vibration motor blurs beats together above about 10 a second, and becomes a steady buzz above about 15. Faster bands work as sound only.</p>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="js/entrainment-page.js"></script>
+</body>
+</html>

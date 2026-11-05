@@ -33,6 +33,7 @@ flowchart LR
   index_html["Home"]
   exit((Leaves the app))
   diagnostics_html["Diagnostics"]
+  entrainment_html["Entrainment lab"]
   heart_rate_html["Heart Rate & HRV"]
   history_html["History"]
   privacy_html["Privacy policy"]
@@ -46,7 +47,10 @@ flowchart LR
   index_html -->|"tap a technique"| T
   index_html -->|"Android back"| exit
   diagnostics_html -.->|"← All techniques"| index_html
+  diagnostics_html -->|"Open the entrainment lab →"| entrainment_html
   diagnostics_html -.->|"Android back"| index_html
+  entrainment_html -->|"← Diagnostics"| diagnostics_html
+  entrainment_html -.->|"Android back"| index_html
   heart_rate_html -.->|"← All techniques"| index_html
   heart_rate_html -.->|"All techniques"| index_html
   heart_rate_html -.->|"Android back"| index_html
@@ -175,7 +179,10 @@ Solid arrows go forward, dotted ones go back or close.
 | Connected Breathing · Session | Back (top bar) / Android back: kept for Jump back in | Home | back |
 | Connected Breathing · Summary | Back (top bar) / Android back | Home | back |
 | Diagnostics | ← All techniques | Home | back |
+| Diagnostics | Open the entrainment lab → | Entrainment lab | forward |
 | Diagnostics | Android back | Home | back |
+| Entrainment lab | ← Diagnostics | Diagnostics | forward |
+| Entrainment lab | Android back | Home | back |
 | Extended Exhale · Session | Length chip (No limit, minutes or cycles) | Extended Exhale · Session | self |
 | Extended Exhale | Opens on | Extended Exhale · Session | forward |
 | Extended Exhale · Session | Session ends (a length is set) | Extended Exhale · Summary | forward |

@@ -64,6 +64,13 @@
       </section>
 
       <section class="technique-group">
+        <h2 class="technique-group__title">Entrainment lab</h2>
+        <div class="diag-actions">
+          <a class="button button--ghost" href="entrainment.html">Open the entrainment lab →</a>
+        </div>
+      </section>
+
+      <section class="technique-group">
         <h2 class="technique-group__title">Motion sensor</h2>
         <p class="page__lede">What the fluid shapes and particles will read: which way is down on the screen, how fast the phone turns, and shakes. Tilt, turn and shake the phone to see it change.</p>
         <div class="diag-out" id="motion">Waiting for the motion sensor…</div>
@@ -232,7 +239,7 @@
         }
         requestAnimationFrame(show);
       };
-      setTimeout(() => { if (!motion.available) out.textContent = 'No motion sensor reported (desktop, or iPhone Safari without permission). Fluid shapes will use touch here.'; }, 3000);
+      setTimeout(() => { if (!motion.available) out.textContent = 'No motion sensor reported (desktop, or iPhone Safari without permission). On a computer, the mouse stands in for tilt.'; }, 3000);
       requestAnimationFrame(show);
     }
 
