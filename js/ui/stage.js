@@ -63,11 +63,16 @@ export function buildStage(cfg, mount) {
   const hint = el('div', 'hint', { textContent: cfg.hint });
   const controls = el('div', 'stage__controls');
 
-  stage.append(topbar, toast, visual, cycles, labels.root, hint, controls);
+  // The shape sits in its own wrapper so the session layouts can keep it at the top
+  // or shrink it while the rest scrolls (js/ui/session-layout.js).
+  const visualWrap = el('div', 'stage__visual');
+  visualWrap.append(visual);
+  stage.append(topbar, toast, visualWrap, cycles, labels.root, hint, controls);
   mount.append(stage);
 
   return {
     stage,
+    visual: visualWrap,
     sides,
     cycles,
     labels,

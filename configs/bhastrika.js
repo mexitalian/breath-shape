@@ -3,7 +3,7 @@ export default {
   rate: '3 × 20 breaths',
   hint: 'Breathe in and out forcefully through your nose, like a bellows, using your belly. Equal in and out.',
 
-  hue: 350,
+  hue: 34,
   shape: 'circle',
   opacity: { min: 0.3, max: 1 },
 

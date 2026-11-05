@@ -53,7 +53,7 @@
       if (entry.kind === HEART_RATE) {
         const heart = el('div', 'thumb thumb--heart', { textContent: '♥' });
         heart.dataset.hue = '';
-        heart.style.setProperty('--hue', 352);
+        heart.style.setProperty('--hue', 330);
         return heart;
       }
       const cfg = await loadConfig(entry.page);

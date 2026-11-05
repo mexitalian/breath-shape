@@ -1,20 +1,41 @@
-/* Pattern: single-field practice layout. */
+/* Pattern: single-field practice layout.
+   The stage scrolls when its content doesn't fit; the shape never shrinks to make
+   room (#128). How the shape behaves while scrolling is the session layout
+   (css/components/session-layout.css). The top bar's room is the shape wrapper's
+   top padding, so a sticky shape covers the top bar's strip as well. */
 .stage {
   position: relative;
+  isolation: isolate;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: safe center;
   gap: var(--space-xl);
-  padding: calc(var(--topbar-height) + var(--safe-top)) calc(var(--space-md) + var(--safe-right)) calc(var(--space-lg) + var(--safe-bottom)) calc(var(--space-md) + var(--safe-left));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+  padding: 0 calc(var(--space-md) + var(--safe-right)) calc(var(--space-lg) + var(--safe-bottom)) calc(var(--space-md) + var(--safe-left));
 }
+.stage::-webkit-scrollbar { display: none; }
+
+.stage > * { flex-shrink: 0; }
+
+.stage__visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: calc(var(--topbar-height) + var(--safe-top));
+}
+.stage__visual > * { flex-shrink: 0; }
 
 /* Short screens (phones in landscape): tighter rhythm so everything fits. */
 @media (max-height: 520px) {
   .stage {
     gap: var(--space-sm);
-    padding: calc(var(--topbar-height) + var(--safe-top)) calc(var(--space-lg) + var(--safe-right)) calc(var(--space-sm) + var(--safe-bottom)) calc(var(--space-lg) + var(--safe-left));
+    padding: 0 calc(var(--space-lg) + var(--safe-right)) calc(var(--space-sm) + var(--safe-bottom)) calc(var(--space-lg) + var(--safe-left));
   }
   .stage .hint { display: none; }
 }

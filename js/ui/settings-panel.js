@@ -5,6 +5,7 @@ import { canVibrate } from '../controls/vibration.js';
 import { nativePlugin, platform, VIBRATION_USAGES, vibrationUsage, setVibrationUsage } from '../native.js';
 import { readHistory, clearHistory } from '../history.js';
 import { exportHistory } from '../export.js';
+import { onBack } from '../app.js';
 
 let panelId = 0;
 
@@ -173,8 +174,12 @@ function dataRow() {
 }
 
 // Pattern: the settings panel, opened from the gear. Uses the screen pattern so it
-// sits over the stage like the start and summary screens. Changes apply at once.
-export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'Standard'], ['off', 'Off']], cfg = null } = {}) {
+// sits over the stage like the start and summary screens.
+// Every control applies its change the moment it's used (#131). Done, the close
+// button (where the gear was, staying put while the panel scrolls), Escape, a tap
+// outside and Android back all just close it.
+// opener: the gear button, so the close button takes its place.
+export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'Standard'], ['off', 'Off']], cfg = null, opener = null } = {}) {
   const settings = readSettings();
   const titleId = `settings-title-${++panelId}`;
   const screen = el('div', 'screen settings');
@@ -184,6 +189,7 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   const panel = el('div', 'screen__panel');
   panel.append(el('h1', 'screen__title', { id: titleId, textContent: 'Settings' }));
   panel.append(choiceRow('Theme', [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']], settings.theme, theme => saveSettings({ theme })));
+  panel.append(choiceRow('Session layout', [['sticky', 'Sticky'], ['shrink', 'Shrink'], ['fill', 'Fill']], settings.sessionLayout, sessionLayout => saveSettings({ sessionLayout })));
   panel.append(choiceRow('Particles', particleOptions, settings.particles, particles => saveSettings({ particles })));
   // Fluid shapes (#94). Touch moves the liquid everywhere; the Android app can add tilt.
   panel.append(...fluidRows(settings, cfg));
@@ -206,20 +212,37 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   const actions = el('div', 'screen__actions');
   actions.append(done);
   panel.append(actions);
+  const closeButton = el('button', 'icon-button settings__close', { type: 'button' });
+  closeButton.setAttribute('aria-label', 'Close settings');
+  closeButton.title = 'Close';
+  closeButton.append(icon('close'));
+  const spot = opener?.getBoundingClientRect();
+  if (spot?.width) {
+    closeButton.style.top = `${spot.top}px`;
+    closeButton.style.left = `${spot.left}px`;
+  }
   screen.append(panel);
   const previous = document.activeElement;
-  document.body.append(screen);
+  // On body, not in the screen: the screen's backdrop blur would make a fixed child
+  // scroll with the panel.
+  document.body.append(screen, closeButton);
   // Focus Done for the keyboard, but open at the top: on a phone the panel is taller
   // than the screen, and a plain focus() scrolls it to the bottom (#110).
   done.focus({ preventScroll: true });
 
+  let removeBack = null;
   function close() {
+    if (!screen.isConnected) return;
     screen.remove();
+    closeButton.remove();
     document.removeEventListener('keydown', onKey);
+    removeBack?.();
     previous?.focus?.();
   }
+  removeBack = onBack(close);
   const onKey = (e) => { if (e.key === 'Escape') close(); };
   done.addEventListener('click', close);
+  closeButton.addEventListener('click', close);
   screen.addEventListener('click', (e) => { if (e.target === screen) close(); });
   document.addEventListener('keydown', onKey);
   return { close };
@@ -231,6 +254,6 @@ export function createSettingsButton(options) {
   button.setAttribute('aria-label', 'Settings');
   button.title = 'Settings';
   button.append(icon('settings'));
-  button.addEventListener('click', () => openSettings(options));
+  button.addEventListener('click', () => openSettings({ ...options, opener: button }));
   return button;
 }

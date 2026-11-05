@@ -1,6 +1,7 @@
 /* Pattern: practice page top bar — back · title · icon toggles. */
 .topbar {
-  position: absolute;
+  /* Fixed: stays put while the stage scrolls (#128). */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -82,7 +83,7 @@
 
 /* Short confirmation under the top bar ("Vibration on"). */
 .toast {
-  position: absolute;
+  position: fixed;
   top: calc(var(--topbar-height) + var(--safe-top));
   left: 50%;
   transform: translateX(-50%);
