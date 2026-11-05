@@ -8,5 +8,6 @@
     if (s.theme === 'light' || s.theme === 'dark') root.setAttribute('data-theme', s.theme);
     root.setAttribute('data-particles', s.particles === 'off' || s.particles === 'on' ? s.particles : 'webgl');
     root.setAttribute('data-fluid', s.fluid === 'vessel' || s.fluid === 'membrane' ? s.fluid : 'off');
+    root.setAttribute('data-session-layout', s.sessionLayout === 'shrink' || s.sessionLayout === 'fill' ? s.sessionLayout : 'sticky');
   } catch (e) { /* defaults */ }
 })();

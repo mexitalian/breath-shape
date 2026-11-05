@@ -7,7 +7,7 @@ import alternate from '../configs/alternate-nostril.js';
 test('alternate nostril: split layout with two variants', () => {
   const cfg = normalize(alternate);
   assert.equal(cfg.layout, 'split');
-  assert.deepEqual(cfg.split, { hueOffset: 25, labels: ['Left', 'Right'] });
+  assert.deepEqual(cfg.split, { hueOffset: 18, labels: ['Left', 'Right'] });
   assert.deepEqual(cfg.variants.map(v => v.label), ['Without holds', 'With holds']);
   assert.equal(cfg.sequence, cfg.variants[0].sequence, 'first variant is the default');
 });

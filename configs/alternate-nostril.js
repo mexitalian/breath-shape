@@ -26,10 +26,10 @@ export default {
   // Session length chip (#116): No limit, then these.
   lengths: { minutes: [5, 10] },
 
-  hue: 45,
+  hue: 125,
   shape: 'circle',
   layout: 'split',
-  split: { hueOffset: 25, labels: ['Left', 'Right'] },
+  split: { hueOffset: 18, labels: ['Left', 'Right'] },
   opacity: { min: 0.35, max: 0.9 },
 
   startScreen: true,

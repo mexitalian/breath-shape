@@ -189,6 +189,7 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   const panel = el('div', 'screen__panel');
   panel.append(el('h1', 'screen__title', { id: titleId, textContent: 'Settings' }));
   panel.append(choiceRow('Theme', [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']], settings.theme, theme => saveSettings({ theme })));
+  panel.append(choiceRow('Session layout', [['sticky', 'Sticky'], ['shrink', 'Shrink'], ['fill', 'Fill']], settings.sessionLayout, sessionLayout => saveSettings({ sessionLayout })));
   panel.append(choiceRow('Particles', particleOptions, settings.particles, particles => saveSettings({ particles })));
   // Fluid shapes (#94). Touch moves the liquid everywhere; the Android app can add tilt.
   panel.append(...fluidRows(settings, cfg));

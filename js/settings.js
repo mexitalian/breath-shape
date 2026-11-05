@@ -3,7 +3,7 @@
 // and before first paint on the next one (js/settings-boot.js reads the same key).
 export const SETTINGS_KEY = 'breathing:settings';
 export const DEFAULTS = { theme: 'system', particles: 'webgl', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps', fluid: 'off', fluidInput: 'tilt',
-  vesselLow: 0, vesselHigh: 1, membraneWobble: 1, membraneSmall: null, membraneLarge: null };
+  vesselLow: 0, vesselHigh: 1, membraneWobble: 1, membraneSmall: null, membraneLarge: null, sessionLayout: 'sticky' };
 export const THEMES = ['system', 'light', 'dark'];
 // 'webgl' (the default) draws a richer particle layer on one canvas
 // (js/components/particles-gl.js); 'on' is the standard one, and the fallback
@@ -15,6 +15,9 @@ export const VIBRATION_STYLES = ['taps', 'continuous'];
 // moved by touch, or by tilt and touch where the phone's motion sensor reports.
 export const FLUIDS = ['off', 'vessel', 'membrane'];
 export const FLUID_INPUTS = ['tilt', 'touch'];
+// Session layouts (#128): how the text under the shape behaves when it doesn't fit
+// (js/ui/session-layout.js). The shape itself is never squashed.
+export const SESSION_LAYOUTS = ['sticky', 'shrink', 'fill'];
 // Fluid tuning (#102), for trying looks out: the Vessel's emptiest and fullest
 // levels (fractions of the height), how strongly motion moves the Membrane (1 =
 // normal), and the Membrane's smallest and largest sizes (fractions of full size;
@@ -54,6 +57,7 @@ export function readSettings(storage = defaultStorage()) {
     membraneWobble: tuning('membraneWobble'),
     membraneSmall: tuning('membraneSmall'),
     membraneLarge: tuning('membraneLarge'),
+    sessionLayout: SESSION_LAYOUTS.includes(saved.sessionLayout) ? saved.sessionLayout : DEFAULTS.sessionLayout,
   };
 }
 
@@ -63,6 +67,7 @@ export function applySettings(settings, root = document.documentElement) {
   else root.dataset.theme = settings.theme;
   root.dataset.particles = settings.particles;
   root.dataset.fluid = settings.fluid;
+  root.dataset.sessionLayout = settings.sessionLayout;
 }
 
 export function saveSettings(changes, storage = defaultStorage()) {

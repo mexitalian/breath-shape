@@ -3,7 +3,7 @@ export default {
   rate: '3 rounds',
   hint: 'Breathe in deeply through the nose or mouth, let go without forcing it out. Fully in, let go.',
 
-  hue: 200,
+  hue: 22,
   shape: 'circle',
   opacity: { min: 0.2, max: 1 },
 

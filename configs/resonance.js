@@ -7,7 +7,7 @@ export default {
   // 6s in + 6s out = 5 breaths/min at the default pace.
   pace: { min: 4.5, max: 6.5, step: 0.5, default: 5 },
 
-  hue: 262,
+  hue: 238,
   shape: 'circle',
   opacity: { min: 0.35, max: 0.9 },
 

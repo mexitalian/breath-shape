@@ -4,6 +4,14 @@ What was decided or retired, and why, so it isn't re-added by accident or argued
 
 To add one: a dated heading, then **Decision**, **Why**, and **Instead** (what replaces it, if anything). Reversing a decision is fine. Add a new entry that says so; don't edit the old one.
 
+## 2026-11-05 · Technique colours say what the breathing is for (#132)
+
+**Decision:** each technique's hue now follows its purpose. Calm and sleep techniques are blue to violet. Focus and balance techniques are greens. Energising techniques are yellow to red. Measuring tools have their own colours. The reasoning for every hue is in `docs/COLOURS.md`.
+
+**Why:** colour is the biggest cue on the screen. Before this, hues were picked one at a time to look different from each other: 4-7-8, a sleep breath, was orange, and Wim Hof was blue. Now the colour tells you at a glance what kind of breathing you're doing and why.
+
+**Instead of:** one arbitrary hue per technique, and a colour you could change by dragging (retired below).
+
 ## 2026-11-05 · Retired: dragging to change the colour (#130)
 
 **Decision:** dragging on a session no longer changes the colour. The Colour slider in Settings is gone too.
