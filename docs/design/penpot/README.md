@@ -21,6 +21,7 @@ so lines wrap a little differently there.
 | `reference/home-*-settings-full.webp` | The whole Settings panel (it scrolls on the phone) |
 | `reference/sessions/<shape>-<theme>-start.webp` | A session's start screen: circle (Resonance), nostril (Alternate Nostril), triangle, box |
 | `reference/sessions/<shape>-<theme>-session.webp` | The same session a few seconds in |
+| `reference/nav/*.webp` | Dark, Android: one per screen on the Navigation map and the Prototype. `home.webp` and `home-full.webp` show the Jump back in card, `session.webp` the length chip, `heart-rate.webp` the Back to the technique button |
 | `tokens.json` | Every design token, resolved per theme. Colours are hex, for the home hue (220) and four technique hues |
 | `tokens-core.penpot.json` | The Penpot file's core token set (space, radius, size, type, opacity, shadows), as a baseline for the round trip |
 | `home-light-layout.json` | Every visible element on the light home page: tag, class, text, box (CSS px, page coordinates) and resolved style |

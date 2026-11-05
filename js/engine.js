@@ -21,6 +21,7 @@ import { isDesktopApp } from './native.js';
 import { saveSession, MIN_SESSION_MS } from './history.js';
 import { lengthOptions, loadLength, saveLength, nextLength, applyLength, lengthLabel } from './session-length.js';
 import { saveResume, readResume, clearResume } from './resume.js';
+import { heartRateLink } from './heart-rate-return.js';
 import { el } from './dom.js';
 
 const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
@@ -142,6 +143,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
   // Session history: saved while running and again when the session ends.
   let session = null;
   let lastSnap = null;
+  let endedSessionStart = null;   // for the summary's "Check heart rate" (#118)
   let variantLabel = cfg.variants ? cfg.variants[0].label : null;
   let chosenMinutes = cfg.sessionMinutes;
 
@@ -259,6 +261,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       awake.release();
       saveProgress();
       clearResume();
+      endedSessionStart = session.startedAt;
       session = null;
       showSummary(snap);
       return;
@@ -302,6 +305,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
     lastSnap = timeline.tick(performance.now());
     saveProgress();
     clearResume();
+    endedSessionStart = session?.startedAt ?? Date.now();
     session = null;
     showSummary(lastSnap, { stopped: true });
   }
@@ -400,7 +404,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       list,
       actions: [
         { label: 'Go again', primary: true, onClick: begin },
-        ...(isDesktopApp ? [] : [{ label: 'Check heart rate', href: 'heart-rate.html' }]),
+        ...(isDesktopApp ? [] : [{ label: 'Check heart rate', href: heartRateLink({ page, title: cfg.title, startedAt: endedSessionStart ?? Date.now() }) }]),
         { label: 'All techniques', href: './' },
       ],
     });
