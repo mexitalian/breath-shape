@@ -2,7 +2,7 @@
 // the Penpot file can be checked against what the code really draws (#145).
 //
 //   node scripts/penpot-reference.mjs            # everything
-//   node scripts/penpot-reference.mjs home nav   # just some groups: home, sessions, nav, text, tokens
+//   node scripts/penpot-reference.mjs home nav   # just some groups: home, sessions, fill, nav, text, tokens
 //
 // Pages are drawn as the Android app draws them: Pixel 6a size (412 × 915 CSS px) at 2×,
 // with Capacitor faked as Android (so Android-only rows show) and the font forced to
@@ -88,8 +88,8 @@ async function main() {
   const text = {};
   const pngs = [];
 
-  async function open(file, { theme = 'dark', storage = {}, clock = false, scale = 2 } = {}) {
-    const p = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: scale, colorScheme: theme });
+  async function open(file, { theme = 'dark', storage = {}, clock = false, scale = 2, reducedMotion = 'no-preference' } = {}) {
+    const p = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: scale, colorScheme: theme, reducedMotion });
     p.on('pageerror', e => console.warn(`  ${file}: ${e.message}`));
     await p.route('**/__fonts/*', r => r.fulfill({ body: fs.readFileSync(path.join(fonts, r.request().url().split('/').pop())), contentType: 'font/woff2' }));
     await p.addInitScript((storage) => {
@@ -158,6 +158,24 @@ async function main() {
     }
   }
 
+  if (want('fill')) {
+    // The Fill layout (#128, #138) with the closure shapes (#148): Box and Triangle
+    // breathing in, and at the corner where the hold begins. Reduced motion keeps the
+    // liquid flat and leaves out the bubbles, so the pictures are the same every run.
+    const settings = JSON.stringify({ sound: false, sessionLayout: 'fill' });
+    for (const theme of ['dark', 'light']) for (const [name, file] of [['box', 'box-breathing.html'], ['triangle', 'triangle-breathing.html']]) {
+      const p = await open(file, { theme, clock: true, reducedMotion: 'reduce', storage: { 'breathing:settings': settings, [`breathing:length:${file.replace('.html', '')}`]: '3m' } });
+      await startSession(p);
+      await p.clock.runFor(1200);
+      await shot(p, `sessions/${name}-${theme}-fill-in`);
+      // The marker reaches the corner just before the in-breath ends (dot.js ARRIVE_AT).
+      await p.clock.runFor(1500);
+      await shot(p, `sessions/${name}-${theme}-fill-hold`);
+      if (theme === 'dark') text[`fill-${name}`] = await p.evaluate(visibleText, 'body');
+      await p.close();
+    }
+  }
+
   if (want('nav')) {
     const simple = [['start', 'buteyko.html'], ['history', 'history.html'], ['privacy', 'privacy.html'], ['diagnostics', 'diagnostics.html'], ['styleguide', 'styleguide.html'], ['entrainment', 'entrainment.html'], ['safety', 'wim-hof.html']];
     for (const [name, file] of simple) {
@@ -202,7 +220,7 @@ async function main() {
     }
   }
 
-  if (want('text') || want('home') || want('nav') || want('sessions')) {
+  if (want('text') || want('home') || want('nav') || want('sessions') || want('fill')) {
     const file = path.join(ROOT, 'docs/design/penpot/app-text.json');
     const old = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
     fs.writeFileSync(file, JSON.stringify({ ...old, ...text }, null, 1) + '\n');

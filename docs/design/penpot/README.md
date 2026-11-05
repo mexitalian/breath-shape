@@ -22,6 +22,7 @@ so lines wrap a little differently there.
 | `reference/home-*-settings-full.webp` | The whole Settings panel (it scrolls on the phone) |
 | `reference/sessions/<shape>-<theme>-start.webp` | A session's start screen: circle (Resonance), nostril (Alternate Nostril), triangle, box |
 | `reference/sessions/<shape>-<theme>-session.webp` | The same session a few seconds in |
+| `reference/sessions/<box\|triangle>-<theme>-fill-in.webp`, `-fill-hold.webp` | The Fill layout with the closure shapes (#148), 3 min picked: breathing in, and the marker in the corner as the hold begins. Taken with reduced motion, so the liquid is flat and has no bubbles |
 | `reference/nav/*.webp` | Dark, Android: one per screen on the Navigation map and the Prototype. `home.webp` and `home-full.webp` show the Jump back in card, `session.webp` the length chip, `settings.webp` the close button, `heart-rate.webp` the Back to the technique button, `entrainment.webp` the Entrainment lab |
 | `app-text.json` | Every string the app shows, per screen (dark, Android), for checking the words on the boards |
 | `tokens.json` | Every design token, resolved per theme: the home hue and the four purpose hues (calm 240, focus 145, energise 30, measure 330; docs/COLOURS.md) |
@@ -114,7 +115,7 @@ the new screenshots:
 
 ```bash
 node scripts/penpot-reference.mjs                # everything (about 4 minutes)
-node scripts/penpot-reference.mjs home nav       # only some: home, sessions, nav, text, tokens
+node scripts/penpot-reference.mjs home nav       # only some: home, sessions, fill, nav, text, tokens
 ```
 
 It serves the repo itself, fakes Capacitor as Android, forces Roboto (fetched once
