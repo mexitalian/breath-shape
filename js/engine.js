@@ -9,7 +9,7 @@ import { createPaceControl } from './ui/pace-control.js';
 import { createCycleCounter } from './ui/cycle-counter.js';
 import { createPerfOverlay } from './ui/perf-overlay.js';
 import { durationScaleFor, loadPace, savePace } from './pace.js';
-import { initHueControl } from './controls/hue.js';
+import { initTapControl } from './controls/tap.js';
 import { initVibration, canVibrate } from './controls/vibration.js';
 import { createSettingsButton } from './ui/settings-panel.js';
 import { initSound } from './controls/sound.js';
@@ -124,14 +124,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
   const cues = createSessionCues({ cfg, getTimeline: () => timeline, onStoppedFromNotification: stoppedFromNotification });
   const sound = cfg.sound ? initSound(ui.actions, ui.notify, { ...cfg.sound, silent: !!cues }) : null;
   const vibration = !cues && cfg.vibration && canVibrate() ? initVibration(ui.notify) : null;
-  const root = document.documentElement;
-  ui.actions.append(createSettingsButton({
-    hue: {
-      get: () => Number.parseFloat(getComputedStyle(root).getPropertyValue('--hue')) || cfg.hue,
-      set: (deg) => root.style.setProperty('--hue', String(deg)),
-    },
-    cfg,
-  }));
+  ui.actions.append(createSettingsButton({ cfg }));
   const awake = createKeepAwake();
   // Keep screen on (Settings): follows the setting live while a session runs.
   const stopAwakeSetting = onSettingsChange((settings) => {
@@ -412,9 +405,9 @@ export function start(rawConfig, { mount = document.body } = {}) {
 
   holdButton.addEventListener('click', advance);
 
-  // With Fluid shapes on, touch moves the liquid; colour is set in Settings and holds
-  // end with their button.
-  const hue = initHueControl({ onTap: advance, paused: () => readSettings().fluid !== 'off' });
+  // Tap anywhere continues a hold. With Fluid shapes on, touch moves the liquid and
+  // holds end with their button.
+  const taps = initTapControl({ onTap: advance, paused: () => readSettings().fluid !== 'off' });
 
   const onKey = (e) => {
     if (e.target.closest?.('button, a')) return;
@@ -447,7 +440,7 @@ export function start(rawConfig, { mount = document.body } = {}) {
       document.removeEventListener('visibilitychange', onHide);
       window.removeEventListener('pagehide', onPageHide);
       cancelAnimationFrame(raf);
-      hue.destroy();
+      taps.destroy();
       document.removeEventListener('keydown', onKey);
       vibration?.destroy();
       cues?.destroy();

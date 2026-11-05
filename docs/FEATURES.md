@@ -51,7 +51,7 @@ A session is one full-screen shape that grows on the in-breath and shrinks on th
 - **Cycle counter:** cycles done. In open-ended techniques each finished cycle adds a mark top left, plus a number.
 - **Pace control:** for Resonance, Extended Exhale and Connected Breathing, breaths per minute can change during the session.
 - **Safety screen:** before the five Energise techniques, with "don't show this again" per technique.
-- **Top bar:** back, colour (hue drag), sound, settings gear.
+- **Top bar:** back, sound, settings gear.
 - **Feedback:** vibration on each phase change (taps or continuous ramps) and a hum on hum phases (Bhramari).
 - **Locked phone (Android app):** vibration and hum keep playing with the screen off. A notification shows the technique and phase, with a Stop button.
 - **Summary:** the result (rounds, best hold, control pauses), then Go again, All techniques or Check heart rate.

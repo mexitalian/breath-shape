@@ -47,19 +47,6 @@ function soundRow(settings) {
   return row;
 }
 
-// In a session: the colour, also set by dragging on the screen while Fluid is off.
-// hue = { get(): degrees, set(degrees) }; it lasts for this session, like the drag.
-function colourRow(hue) {
-  const row = el('div', 'settings__row');
-  const id = `settings-label-${++panelId}`;
-  row.append(el('div', 'settings__label', { id, textContent: 'Colour' }));
-  const slider = el('input', 'settings__range settings__range--hue', { type: 'range', min: '0', max: '360', step: '1', value: String(Math.round(hue.get())) });
-  slider.setAttribute('aria-labelledby', id);
-  slider.addEventListener('input', () => hue.set(Number(slider.value)));
-  row.append(slider);
-  return row;
-}
-
 // A tuning slider (#102) for one numeric setting, with its value beside the label.
 // Optional: a fallback shown while the setting is null, and a Reset back to it.
 function tuningRow(label, key, settings, { step = 0.05, format = pct, fallback = null } = {}) {
@@ -187,7 +174,7 @@ function dataRow() {
 
 // Pattern: the settings panel, opened from the gear. Uses the screen pattern so it
 // sits over the stage like the start and summary screens. Changes apply at once.
-export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'Standard'], ['off', 'Off']], hue = null, cfg = null } = {}) {
+export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'Standard'], ['off', 'Off']], cfg = null } = {}) {
   const settings = readSettings();
   const titleId = `settings-title-${++panelId}`;
   const screen = el('div', 'screen settings');
@@ -197,7 +184,6 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   const panel = el('div', 'screen__panel');
   panel.append(el('h1', 'screen__title', { id: titleId, textContent: 'Settings' }));
   panel.append(choiceRow('Theme', [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']], settings.theme, theme => saveSettings({ theme })));
-  if (hue) panel.append(colourRow(hue));
   panel.append(choiceRow('Particles', particleOptions, settings.particles, particles => saveSettings({ particles })));
   // Fluid shapes (#94). Touch moves the liquid everywhere; the Android app can add tilt.
   panel.append(...fluidRows(settings, cfg));

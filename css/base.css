@@ -12,7 +12,7 @@ body {
   overflow-x: clip;
 }
 
-/* Full-screen practice pages: no scrolling, drag gestures belong to the page. */
+/* Full-screen practice pages: no scrolling, touch belongs to the page (taps, fluid). */
 /* No grey flash on tap, no long-press callouts, no rubber-band bounce. */
 html {
   -webkit-tap-highlight-color: transparent;

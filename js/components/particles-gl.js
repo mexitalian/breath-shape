@@ -122,7 +122,7 @@ export function createGlParticles({ field, layer, cfg }) {
   let color = null;
   let colorAt = 0;
   // Custom properties read back unresolved; the canvas's own CSS colour resolves the
-  // accent (theme and hue drag included), re-read at most twice a second.
+  // accent (theme included), re-read at most twice a second.
   canvas.style.color = 'var(--color-accent)';
 
   function resize() {
