@@ -22,6 +22,7 @@ so lines wrap a little differently there.
 | `reference/sessions/<shape>-<theme>-start.webp` | A session's start screen: circle (Resonance), nostril (Alternate Nostril), triangle, box |
 | `reference/sessions/<shape>-<theme>-session.webp` | The same session a few seconds in |
 | `tokens.json` | Every design token, resolved per theme. Colours are hex, for the home hue (220) and four technique hues |
+| `tokens-core.penpot.json` | The Penpot file's core token set (space, radius, size, type, opacity, shadows), as a baseline for the round trip |
 | `home-light-layout.json` | Every visible element on the light home page: tag, class, text, box (CSS px, page coordinates) and resolved style |
 
 The images are 824 px wide (2×). In Penpot, place them at **412 px wide** on a
