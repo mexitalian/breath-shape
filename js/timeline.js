@@ -20,6 +20,20 @@ export function createTimeline(sequence, { sessionMs = null, sessionCycles = nul
 
   const durMsOf = (ph) => (ph.dur == null ? null : ph.dur * 1000 * durScale);
 
+  // One whole cycle (every step, every repeat) at the current pace, or null when the
+  // cycle has an open-ended hold.
+  function cycleMsNow() {
+    let total = 0;
+    for (const st of steps) {
+      for (const ph of st.phases) {
+        const d = durMsOf(ph);
+        if (d == null) return null;
+        total += d * st.repeat;
+      }
+    }
+    return total;
+  }
+
   function applyPendingScale() {
     if (pendingScale == null) return;
     durScale = pendingScale;
@@ -141,6 +155,7 @@ export function createTimeline(sequence, { sessionMs = null, sessionCycles = nul
       sessionElapsed: t - s.startedAt,
       sessionMs,
       sessionCycles,
+      cycleMs: cycleMsNow(),
       finished: s.finished,
       records: s.records.slice(),
     };

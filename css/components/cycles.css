@@ -1,7 +1,8 @@
 /* Pattern: cycle counter (js/ui/cycle-counter.js), between the shape and the text.
-   One mini shape per cycle: outlined until it starts, breathing while it runs,
-   filled once it's done. The area keeps a fixed height and scrolls on its own, so
-   the main shape never moves as cycles are added. */
+   A status line (cycles and time), then one mini shape per cycle: outlined until it
+   starts, filling as you breathe in, then full (#147). Everything is centred. The
+   outlines keep a fixed height and scroll on their own, so the main shape never
+   moves as cycles are added. */
 .stage__cycles {
   width: 100%;
   display: flex;
@@ -32,13 +33,12 @@
   gap: var(--cycle-gap);
 }
 
-/* Set number of rounds: one centred row. */
-.cycles[data-mode="target"] .cycles__grid { justify-content: center; }
+/* Centred rows, in cycle order. */
+.cycles__grid { justify-content: center; }
 
-/* Counting up: newest top left, older ones wrap into rows you can scroll. */
-.cycles[data-mode="up"] { align-items: flex-start; }
-
+/* Counting up: rows wrap and scroll, keeping the cycle under way in view. */
 .cycles[data-mode="up"] .cycles__grid {
+  position: relative;
   height: calc(var(--cycles-rows) * var(--cycle-size) + (var(--cycles-rows) - 1) * var(--cycle-gap));
   overflow-y: auto;
   scrollbar-width: none;
@@ -72,8 +72,42 @@
 .cycle[data-state="done"] .cycle__fill { transform: scale(1); }
 .cycle[data-state="done"] .cycle__outline { stroke: var(--color-accent-fill); }
 
-/* Session length (#116): a chip under the cycles; tap to change while breathing. */
-.cycles__length {
+/* Session length (#116, #147): every option side by side, under the cycles. Usable
+   any time; the picked one says how many cycles it holds. */
+.length-toggle {
+  display: inline-flex;
   margin-top: var(--space-xs);
+  padding: var(--space-3xs);
+  border: var(--border-hair) solid var(--color-line);
+  border-radius: var(--radius-pill);
+}
+
+.length-toggle__option {
+  min-height: calc(var(--icon-button-size) - 2 * var(--space-3xs));
+  padding: 0 var(--space-sm);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
+}
+
+.length-toggle__option:hover { background: var(--color-accent-hover); }
+
+.length-toggle__option[aria-checked="true"] {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.cycles__total {
+  font-size: var(--text-2xs);
+  color: var(--color-dim);
   font-variant-numeric: tabular-nums;
 }

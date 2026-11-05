@@ -2,8 +2,8 @@ export default {
   title: '4-7-8 Breathing',
   rate: 'in 4 · hold 7 · out 8',
   hint: 'In through the nose for 4, hold for 7, out through the mouth for 8. The long exhale is what does the work.',
-  // Session length chip (#116): No limit, then these.
-  lengths: { cycles: [4, 8] },
+  // Session length toggle (#116, #147): No limit, then these minutes.
+  lengths: { minutes: [3, 5, 10] },
 
   hue: 270,
   shape: 'circle',

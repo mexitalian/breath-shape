@@ -11,6 +11,13 @@ To add one: a dated heading, then **Decision**, **Why**, and **Instead** (what r
 **Why:** with the liquid filling the screen, a second filled shape competed with it. Gestalt closure lets the corners alone carry the shape and keeps the screen calm.
 
 **Instead:** each bracket's arms are as long as the marker's edges, so at a corner the bracket and marker make one complete small shape.
+## 2026-11-05 · Session lengths are time only, picked from a toggle (#147)
+
+**Decision:** every length is in minutes (No limit, then e.g. 3, 5, 10 min). Physiological Sigh, 4-7-8 and Bhramari no longer offer cycle counts. The tap-through length chip is replaced by a toggle that shows every option side by side and works any time. The counter always shows cycles and time together, and the picked length says how many cycles it holds.
+
+**Why:** cycle counts like 1 or 3 were too short to be useful, and tapping one chip to step through hidden options was awkward. Time was only shown when a length was picked.
+
+**Instead:** "Cycle 4 · 0:41" with No limit, and "Cycle 4 of 25 · 4:19 left" with a length. The mini shapes fill as you breathe in and stay full; with a length, every outline shows up front.
 
 ## 2026-11-05 · Retired: touch moving the fluid; "Fluid moves with" (#138)
 

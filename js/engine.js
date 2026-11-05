@@ -20,7 +20,7 @@ import { readSettings, onSettingsChange } from './settings.js';
 import { initAppShell } from './app.js';
 import { isDesktopApp } from './native.js';
 import { saveSession, MIN_SESSION_MS } from './history.js';
-import { lengthOptions, loadLength, saveLength, nextLength, applyLength, lengthLabel } from './session-length.js';
+import { lengthOptions, loadLength, saveLength, applyLength, totalCycles, cycleStatus } from './session-length.js';
 import { saveResume, readResume, clearResume } from './resume.js';
 import { heartRateLink } from './heart-rate-return.js';
 import { el } from './dom.js';
@@ -63,31 +63,52 @@ export function start(rawConfig, { mount = document.body } = {}) {
   const sessionMs = cfg.sessionMinutes ? cfg.sessionMinutes * 60_000 : null;
   let timeline = createTimeline(cfg.sequence, { sessionMs });
 
-  // Session length (#116): techniques that would otherwise run until you leave get a
-  // chip under the cycle counter. Tapping it steps through the lengths while the
-  // session runs; the choice is remembered for next time.
+  // Session length (#116, #147): techniques that would otherwise run until you leave
+  // get a toggle under the cycle counter with every length side by side. It works any
+  // time, even mid-session; the picked length says how many cycles it holds, and the
+  // choice is remembered for next time.
   const lengths = lengthOptions(cfg.lengths);
   let length = lengths ? loadLength(storage, cfg.id, lengths) : null;
-  let lengthChip = null;
-  let lengthText = '';
+  let lengthButtons = [];
+  let lengthCaption = null;
+  let captionText = '';
   if (lengths) {
-    lengthChip = el('button', 'chip chip--link cycles__length', { type: 'button' });
-    cycles.root.append(lengthChip);
-    lengthChip.addEventListener('click', () => {
-      length = nextLength(lengths, length);
-      saveLength(storage, cfg.id, length);
-      applyLength(timeline, length);
-      cues?.sync(performance.now());
-      showLength(lastSnap);
+    const toggle = el('div', 'length-toggle');
+    toggle.setAttribute('role', 'radiogroup');
+    toggle.setAttribute('aria-label', 'Session length');
+    lengthButtons = lengths.map((option) => {
+      const b = el('button', 'length-toggle__option', { type: 'button' });
+      b.setAttribute('role', 'radio');
+      b.textContent = option.label;
+      b.addEventListener('click', () => {
+        if (option === length) return;
+        length = option;
+        saveLength(storage, cfg.id, length);
+        applyLength(timeline, length);
+        cues?.sync(performance.now());
+        markLength();
+        if (lastSnap) render(lastSnap);
+      });
+      toggle.append(b);
+      return b;
     });
+    lengthCaption = el('div', 'cycles__total');
+    cycles.root.append(toggle, lengthCaption);
+    markLength();
   }
-  function showLength(snap) {
-    if (!lengthChip) return;
-    const text = lengthLabel(length, snap);
-    if (text === lengthText) return;
-    lengthText = text;
-    lengthChip.textContent = text;
-    lengthChip.setAttribute('aria-label', `Session length: ${text}. Tap to change.`);
+  function markLength() {
+    lengthButtons.forEach((b, i) => b.setAttribute('aria-checked', String(lengths[i] === length)));
+  }
+  // Cycles in the picked length, at the current pace, from where this cycle began.
+  function lengthTotal(snap) {
+    if (!length?.minutes || !snap) return null;
+    return totalCycles({
+      sessionMs: length.minutes * 60_000,
+      cycleMs: snap.cycleMs,
+      round: snap.round,
+      cycleStartMs: snap.round - 1 === cycleStart.round ? cycleStart.elapsedMs : snap.sessionElapsed - snap.elapsed,
+      finished: snap.finished,
+    });
   }
 
   let paceControl = null;
@@ -226,9 +247,18 @@ export function start(rawConfig, { mount = document.body } = {}) {
     }
     sound?.update(snap);
     layout.update(snap);
-    cycles.update(snap);
-    showLength(snap);
-    // The length chip shows the time left, so the status line doesn't repeat it.
+    // Cycles and time together (#147). Time is shown here unless the labels already
+    // count down a fixed session.
+    const total = lengthTotal(snap);
+    const status = lengths || snap.sessionMs == null
+      ? cycleStatus({ ...snap, sessionMs: length?.minutes ? length.minutes * 60_000 : snap.sessionMs }, total)
+      : `Cycle ${snap.round}`;
+    cycles.update(snap, { total, status });
+    if (lengthCaption) {
+      const text = total != null ? `${total} cycles` : '';
+      if (text !== captionText) { captionText = text; lengthCaption.textContent = text; lengthCaption.hidden = !text; }
+    }
+    // The counter shows the time left, so the status line doesn't repeat it.
     ui.labels.update(lengths ? { ...snap, sessionMs: null } : snap);
     ui.setHint((windingDown && cfg.windDown.prompt) || snap.phase.prompt || cfg.hint);
     holdButton.hidden = !snap.openEnded || snap.finished;
