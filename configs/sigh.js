@@ -1,9 +1,9 @@
 export default {
   title: 'Physiological Sigh',
   rate: 'in 2 · sip 1 · out 5',
-  hint: 'Inhale through the nose, then sip in a little more on top. Let it all go on one long, slow exhale through the mouth. One to three rounds is usually enough.',
-  // Session length chip (#116): No limit, then these.
-  lengths: { cycles: [1, 3] },
+  hint: 'Inhale through the nose, then sip in a little more on top. Let it all go on one long, slow exhale through the mouth. A few minutes is usually enough.',
+  // Session length toggle (#116, #147): No limit, then these minutes.
+  lengths: { minutes: [3, 5, 10] },
 
   hue: 210,
   shape: 'circle',

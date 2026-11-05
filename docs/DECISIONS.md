@@ -4,6 +4,14 @@ What was decided or retired, and why, so it isn't re-added by accident or argued
 
 To add one: a dated heading, then **Decision**, **Why**, and **Instead** (what replaces it, if anything). Reversing a decision is fine. Add a new entry that says so; don't edit the old one.
 
+## 2026-11-05 · Session lengths are time only, picked from a toggle (#147)
+
+**Decision:** every length is in minutes (No limit, then e.g. 3, 5, 10 min). Physiological Sigh, 4-7-8 and Bhramari no longer offer cycle counts. The tap-through length chip is replaced by a toggle that shows every option side by side and works any time. The counter always shows cycles and time together, and the picked length says how many cycles it holds.
+
+**Why:** cycle counts like 1 or 3 were too short to be useful, and tapping one chip to step through hidden options was awkward. Time was only shown when a length was picked.
+
+**Instead:** "Cycle 4 · 0:41" with No limit, and "Cycle 4 of 25 · 4:19 left" with a length. The mini shapes fill as you breathe in and stay full; with a length, every outline shows up front.
+
 ## 2026-11-05 · Retired: touch moving the fluid; "Fluid moves with" (#138)
 
 **Decision:** touch no longer moves Vessel, Membrane or the Fill liquid. Only tilt does. On a computer with no tilt sensor, the mouse position stands in for tilt. The "Fluid moves with" setting is gone.

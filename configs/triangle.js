@@ -2,7 +2,7 @@ export default {
   title: 'Triangle Breathing',
   rate: 'in 4 · hold 4 · out 4',
   hint: 'Follow the marker: up the side as you breathe in, across the top as you hold, down to the point as you breathe out.',
-  // Session length chip (#116): No limit, then these.
+  // Session length toggle (#116, #147): No limit, then these minutes.
   lengths: { minutes: [3, 5, 10] },
 
   hue: 145,

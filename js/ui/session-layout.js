@@ -62,7 +62,7 @@ const BUBBLES = 18;
 const FLIP = [
   '.topbar__back', '.topbar__title', '.topbar__actions > *',
   '.shape-label:not(.shape-label--on-fill)',
-  '.cycles__count', '.cycles__grid', '.cycles__length',
+  '.cycles__count', '.cycles__grid', '.length-toggle', '.cycles__total',
   '.labels', '.hint', '.stage__controls .button', '.pace__value',
 ].join(', ');
 const REMEASURE_MS = 500;
