@@ -64,7 +64,10 @@ const FLIP = [
   '.shape-label:not(.shape-label--on-fill)',
   '.cycles__count', '.cycles__grid', '.cycles__length',
   '.labels', '.hint', '.stage__controls .button', '.pace__value',
+  '.bracket',
 ].join(', ');
+// Parts that move every frame, so they're measured every frame: the closure marker.
+const MOVERS = '.field[data-marker] .dot';
 const REMEASURE_MS = 500;
 
 // stage: the .stage element; visual: the .stage__visual wrapper round the field(s).
@@ -124,6 +127,7 @@ export function createSessionLayout({ stage, visual, cfg }) {
   let visualHeight = 0;
   let items = [];
   let rects = [];
+  let movers = [];
   let measuredAt = -Infinity;
 
   // The shape's own height, without the Shrink transform.
@@ -134,6 +138,7 @@ export function createSessionLayout({ stage, visual, cfg }) {
   };
   const measureItems = (now) => {
     items = [...stage.querySelectorAll(FLIP)];
+    movers = [...stage.querySelectorAll(MOVERS)];
     rects = items.map(e => e.getBoundingClientRect());
     measuredAt = now;
   };
@@ -189,6 +194,11 @@ export function createSessionLayout({ stage, visual, cfg }) {
         const covered = isCovered(r, levelY + surfaceAt(sim, (r.left + r.right) / 2));
         if (covered !== item.hasAttribute('data-on-fill')) item.toggleAttribute('data-on-fill', covered);
       });
+      for (const item of movers) {
+        const r = item.getBoundingClientRect();
+        const covered = isCovered(r, levelY + surfaceAt(sim, (r.left + r.right) / 2));
+        if (covered !== item.hasAttribute('data-on-fill')) item.toggleAttribute('data-on-fill', covered);
+      }
     },
     destroy() {
       stage.removeEventListener('scroll', onScroll);

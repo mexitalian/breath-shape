@@ -76,6 +76,28 @@
 [data-session-layout="fill"] .field__halo { display: none; }
 /* The shape steps aside; its phase and count stay, centred where it was. */
 [data-session-layout="fill"] .field > :not(.shape-label) { visibility: hidden; }
+
+/* Closure (#148): Box and Triangle stay as corner brackets with the marker riding
+   between them (js/components/brackets.js). The shape runs from the back chevron's
+   tip to the settings cog's right edge: the 8 and 2.75 are where those glyphs start
+   inside their 24-unit icons. Flat colour, no glow; both flip with the liquid. */
+[data-session-layout="fill"] .field[data-marker] {
+  --closure-left: calc(var(--safe-left) + var(--space-sm) + (var(--icon-button-size) - var(--icon-size)) / 2 + var(--icon-size) * 8 / 24);
+  --closure-right: calc(var(--safe-right) + var(--space-sm) + (var(--icon-button-size) - var(--icon-size)) / 2 + var(--icon-size) * 2.75 / 24);
+  --closure-size: min(calc(100vw - var(--closure-left) - var(--closure-right)), var(--field-size));
+  width: var(--closure-size);
+  height: var(--closure-size);
+  translate: calc((var(--closure-left) - var(--closure-right)) / 2) 0;
+}
+[data-session-layout="fill"] .field > :is(.brackets, .dot) { visibility: visible; }
+[data-session-layout="fill"] .brackets { display: block; }
+[data-session-layout="fill"] .field[data-marker] .dot {
+  background: var(--color-accent);
+  mask-image: var(--shape-mask);
+  mask-size: 100% 100%;
+  mask-position: 0 0;
+  mask-composite: add;
+}
 [data-session-layout="fill"] .split__half[data-active] { background: none; }
 
 /* Anything the fill covers flips to the on-fill colour, block by block. */
