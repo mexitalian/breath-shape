@@ -1,6 +1,8 @@
 export default {
   title: 'Extended Exhale',
   hint: 'Breathe out for twice as long as you breathe in. The long, slow exhale tells your body it is safe to slow down.',
+  // Session length chip (#116): No limit, then these.
+  lengths: { minutes: [5, 10] },
 
   hue: 228,
   shape: 'circle',

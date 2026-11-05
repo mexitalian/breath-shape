@@ -2,6 +2,8 @@ export default {
   title: 'Pursed-Lip Breathing',
   rate: 'in 2 · out 4',
   hint: 'Breathe in gently through your nose. Breathe out slowly through pursed lips, as if cooling soup or blowing out a candle.',
+  // Session length chip (#116): No limit, then these.
+  lengths: { minutes: [2, 5] },
 
   hue: 300,
   shape: 'circle',
