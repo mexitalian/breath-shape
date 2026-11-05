@@ -23,6 +23,8 @@ export default {
   eyebrow: 'Nadi Shodhana',
   rate: 'in 4 · out 4 · switch',
   hint: 'Use your right thumb and ring finger to close one nostril at a time. Follow the side that is lit.',
+  // Session length chip (#116): No limit, then these.
+  lengths: { minutes: [5, 10] },
 
   hue: 45,
   shape: 'circle',

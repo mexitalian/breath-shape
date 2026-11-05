@@ -17,11 +17,14 @@ const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
 const HOME = 'index.html';
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&rarr;/g, '→').replace(/&larr;/g, '←');
 const pageName = (href) => (href === './' || href === '' ? HOME : href);
+// Pages you visit to read something and go back: leading only home is what they should do.
+export const INFO_PAGES = new Set(['privacy.html', 'diagnostics.html', 'styleguide.html']);
 
 // Pure: a technique config's navigation facts.
 export function techniqueFacts(cfg) {
-  const ends = !!(cfg.sessionMinutes || cfg.sessionChoices || cfg.sequence || cfg.variants?.some(v => v.sequence));
-  return { safety: !!cfg.safety, start: !!cfg.startScreen, ends };
+  const always = !!(cfg.sessionMinutes || cfg.sessionChoices || cfg.sequence || cfg.variants?.some(v => v.sequence));
+  const lengths = !always && !!cfg.lengths;
+  return { safety: !!cfg.safety, start: !!cfg.startScreen, ends: always || lengths, lengths };
 }
 
 // Pure: links in a page's HTML, as [{ to, label }]. Only links to the app's own pages.
@@ -48,6 +51,7 @@ export function buildGraph(pages) {
   node(HOME, 'Home', 'hub');
   node('exit', 'Leaves the app', 'exit');
   edge(HOME, 'exit', 'Android back', 'leave');
+  edge(HOME, 'technique', 'Jump back in (a session left in the last 30 min)', 'forward');
   node(`${HOME}#settings`, 'Settings', 'overlay');
   edge(HOME, `${HOME}#settings`, 'Gear', 'overlay');
   edge(`${HOME}#settings`, HOME, 'Done / tap outside / Esc', 'close');
@@ -58,9 +62,10 @@ export function buildGraph(pages) {
       continue;
     }
     if (!cfg) {
-      node(file, title, 'page');
+      node(file, title, INFO_PAGES.has(file) ? 'info' : 'page');
       for (const l of htmlLinks(html)) edge(file, l.to, l.label, l.to === HOME ? 'back' : 'forward');
       if (file === 'history.html') edge(file, 'technique', 'A saved session (opens its technique)', 'forward');
+      if (file === 'heart-rate.html') edge(file, 'technique', 'Back to the technique (opened from a summary)', 'forward');
       edge(file, HOME, 'Android back', 'back');
       continue;
     }
@@ -70,6 +75,7 @@ export function buildGraph(pages) {
     const s = (id) => `${file}#${id}`;
     node(s('session'), 'Session', 'screen');
     let entry = s('session');
+    if (f.lengths) edge(s('session'), s('session'), 'Length chip (No limit, minutes or cycles)', 'self');
     if (f.start) { node(s('start'), 'Start screen', 'screen'); entry = s('start'); edge(s('start'), s('session'), cfg.variants ? 'A variant' : cfg.sessionChoices ? 'A length' : 'Start', 'forward'); }
     if (f.safety) {
       node(s('safety'), 'Safety screen (until "don\'t show again")', 'screen');
@@ -80,7 +86,7 @@ export function buildGraph(pages) {
     edge(file, entry, f.safety ? 'Opens on (once acknowledged)' : 'Opens on', 'forward');
     if (f.ends) {
       node(s('summary'), 'Summary', 'screen');
-      edge(s('session'), s('summary'), 'Session ends', 'forward');
+      edge(s('session'), s('summary'), f.lengths ? 'Session ends (a length is set)' : 'Session ends', 'forward');
       edge(s('summary'), s('session'), 'Go again', 'forward');
       edge(s('summary'), 'heart-rate.html', 'Check heart rate', 'forward');
       edge(s('summary'), HOME, 'All techniques', 'back');
@@ -89,7 +95,7 @@ export function buildGraph(pages) {
     node(s('settings'), 'Settings', 'overlay');
     edge(s('settings'), s('session'), 'Done / tap outside / Esc', 'close');
     for (const screen of new Set([entry, s('session'), ...(f.ends ? [s('summary')] : [])])) {
-      edge(screen, HOME, 'Back (top bar) / Android back', screen === s('session') ? 'loses' : 'back');
+      edge(screen, HOME, screen === s('session') ? 'Back (top bar) / Android back: kept for Jump back in' : 'Back (top bar) / Android back', 'back');
     }
   }
   return { nodes: [...nodes.values()], edges };
@@ -125,22 +131,23 @@ export function renderDoc(graph, problems, techniques) {
   lines.push('Generated from the code by `node scripts/nav-map.mjs --write` (#114). Do not edit by hand: change the code, then regenerate. A test fails when this file is out of date.', '');
   lines.push('## Problems', '');
   for (const p of problems) lines.push(`- **${p.kind}** · ${p.note}`);
+  if (!problems.length) lines.push('None found. Info pages (Privacy, Diagnostics, Style guide) lead only to Home by design.');
   lines.push('', '## The shape of the app', '');
   lines.push('Home is the only hub. Technique pages follow one of these patterns:', '');
   lines.push('| Technique | Safety screen | Start screen | Ends with a summary |', '|---|---|---|---|');
-  for (const t of techniques) lines.push(`| ${t.title} (\`${t.file}\`) | ${t.safety ? 'yes, until acknowledged' : '·'} | ${t.start ? 'yes' : '·'} | ${t.ends ? 'yes' : 'no, runs until you leave'} |`);
+  for (const t of techniques) lines.push(`| ${t.title} (\`${t.file}\`) | ${t.safety ? 'yes, until acknowledged' : '·'} | ${t.start ? 'yes' : '·'} | ${t.lengths ? 'when a length is set (No limit runs until you leave)' : t.ends ? 'yes' : 'no, runs until you leave'} |`);
   lines.push('', '```mermaid', 'flowchart LR');
   const pageNodes = graph.nodes.filter(n => !n.id.includes('#') && n.kind !== 'technique');
   const id = (s) => s.replace(/[^a-z0-9]/gi, '_');
   for (const n of pageNodes) lines.push(`  ${id(n.id)}${n.kind === 'exit' ? `((${n.label}))` : `["${n.label}"]`}`);
-  lines.push('  T["Technique page"]', '  T_safety["Safety screen<br/>(energise, first visits)"]', '  T_start["Start screen"]', '  T_session["Session"]', '  T_summary["Summary<br/>(sessions that end)"]', '  SET{{"Settings overlay"}}');
+  lines.push('  T["Technique page"]', '  T_safety["Safety screen<br/>(energise, first visits)"]', '  T_start["Start screen"]', '  T_session["Session"]', '  T_summary["Summary<br/>(sessions that end or have a length)"]', '  SET{{"Settings overlay"}}');
   lines.push(`  ${id(HOME)} -->|"tap a technique"| T`);
   for (const e of graph.edges.filter(e => !e.from.includes('#') && !e.to.includes('#') && graph.nodes.find(n => n.id === e.from)?.kind !== 'technique' && graph.nodes.find(n => n.id === e.to)?.kind !== 'technique' && e.to !== 'technique')) {
     const arrow = e.kind === 'back' || e.kind === 'close' ? '-.->' : '-->';
     lines.push(`  ${id(e.from)} ${arrow}|"${e.label.replace(/"/g, "'")}"| ${id(e.to)}`);
   }
   lines.push(`  ${id('history.html')} -->|"a saved session"| T`);
-  lines.push('  T -->|"first visits"| T_safety', '  T_safety -->|"I understand"| T_start', '  T_safety -.->|"All techniques"| index_html', '  T -->|"opens on"| T_start', '  T -->|"looping techniques"| T_session', '  T_start -->|"Start / variant / length"| T_session', '  T_session -->|"ends"| T_summary', '  T_summary -->|"Go again"| T_session', '  T_summary -->|"Check heart rate"| heart_rate_html', '  T_summary -.->|"All techniques"| index_html', '  T_session -. "Back / Android back: session lost" .-> index_html', '  T_session -->|"gear"| SET', `  ${id(HOME)} -->|"gear"| SET`, '  SET -.->|"Done"| T_session');
+  lines.push('  T -->|"first visits"| T_safety', '  T_safety -->|"I understand"| T_start', '  T_safety -.->|"All techniques"| index_html', '  T -->|"opens on"| T_start', '  T -->|"looping techniques"| T_session', '  T_start -->|"Start / variant / length"| T_session', '  T_session -->|"ends"| T_summary', '  T_summary -->|"Go again"| T_session', '  T_summary -->|"Check heart rate"| heart_rate_html', '  T_summary -.->|"All techniques"| index_html', '  T_session -. "Back / Android back: kept 30 min" .-> index_html', '  index_html -->|"Jump back in"| T_session', '  heart_rate_html -->|"Back to the technique"| T', '  T_session -->|"length chip"| T_session', '  T_session -->|"gear"| SET', `  ${id(HOME)} -->|"gear"| SET`, '  SET -.->|"Done"| T_session');
   lines.push('```', '');
   lines.push('Solid arrows go forward, dotted ones go back or close.', '');
   lines.push('## Every way between screens', '');

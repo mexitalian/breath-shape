@@ -5,6 +5,8 @@ export default {
   title: 'Bhramari',
   rate: 'in 4 · hum 8',
   hint: 'Breathe in through your nose. With your mouth closed, breathe out on a low, steady "mmm", like a bee. Feel the hum in your face and chest.',
+  // Session length chip (#116): No limit, then these.
+  lengths: { cycles: [5, 10] },
 
   hue: 75,
   shape: 'circle',
