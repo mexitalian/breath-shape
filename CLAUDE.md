@@ -22,6 +22,7 @@ npm run serve    # local server; pages use ES modules so file:// won't work
 - The engine writes state as CSS variables (`--breath-scale`, `--breath-glow`, …); styling stays in CSS, never in JS.
 - New visuals go in as components (`js/components/` + `css/components/`), new layouts and screens as patterns (`js/ui/`).
 - When adding a technique, also add it to `index.html` and the README table.
+- The breathing shape is as large as possible across the width: the screen width minus the side gutters, capped only by the shape's maximum size. It always keeps its proportions (a circle stays round, a box stays square). When the content under it doesn't fit, that content scrolls, shrinks or moves; the shape is never squashed to make room (#128).
 
 ## Penpot
 
