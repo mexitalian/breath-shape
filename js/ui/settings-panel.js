@@ -223,7 +223,9 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   screen.append(panel);
   const previous = document.activeElement;
   document.body.append(screen);
-  done.focus();
+  // Focus Done for the keyboard, but open at the top: on a phone the panel is taller
+  // than the screen, and a plain focus() scrolls it to the bottom (#110).
+  done.focus({ preventScroll: true });
 
   function close() {
     screen.remove();
