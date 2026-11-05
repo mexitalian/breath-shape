@@ -165,3 +165,25 @@ test('forecast follows a pace change waiting for the next breath', () => {
   const { phases } = tl.forecast(1000, { horizonMs: 30_000 });
   assert.deepEqual(phases.slice(0, 6).map(p => p.durMs), [4000, 4000, 4000, 4000, 2000, 2000]);
 });
+
+test('a cycle limit ends the session after that many cycles (4-7-8: 19 s each)', () => {
+  const { tl } = run(fourSevenEight, { sessionCycles: 4 });
+  assert.equal(tl.tick(4 * 19_000 - 1).finished, false);
+  const end = tl.tick(4 * 19_000);
+  assert.equal(end.finished, true);
+  assert.equal(end.round, 4, 'four cycles done');
+  assert.equal(end.sessionCycles, 4);
+});
+
+test('the length can change while the session runs, and No limit runs on', () => {
+  const { tl } = run(box);
+  tl.tick(20_000);
+  tl.setSessionMs(30_000);            // 5 min chip, say, shortened mid-session
+  assert.equal(tl.tick(31_000).finished, false, 'finishes the breath under way');
+  assert.equal(tl.tick(32_000).finished, true);
+
+  const open = run(box).tl;
+  open.setSessionCycles(2);
+  open.setSessionCycles(null);        // back to No limit
+  assert.equal(open.tick(10 * 16_000).finished, false);
+});

@@ -105,6 +105,7 @@ export function normalize(cfg) {
     pace: normalizePace(cfg.pace, steps),
     sessionMinutes: cfg.sessionMinutes ?? null,
     sessionChoices: cfg.sessionChoices ?? null,
+    lengths: cfg.lengths ?? null,
     windDown: cfg.windDown ?? null,
     summaryNote: cfg.summaryNote ?? null,
     layout,

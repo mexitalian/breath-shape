@@ -5,7 +5,9 @@ const SETTLE_MS = 1500;
 
 // Pure phase clock. All times are milliseconds on the caller's clock (performance.now()).
 // sequence: { rounds, initialScale, steps: [{ repeat, counter, phases: [phase] }] }
-export function createTimeline(sequence, { sessionMs = null } = {}) {
+// sessionMs / sessionCycles: optional session length, by time or by completed cycles
+// (rounds). Either is checked at the end of a cycle, so a session never stops mid-breath.
+export function createTimeline(sequence, { sessionMs = null, sessionCycles = null } = {}) {
   const { steps, rounds } = sequence;
   let s = null;
   // Multiplier on every timed phase (adjustable pace). Changes wait for the next breath.
@@ -68,7 +70,7 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
         if (step >= steps.length) {
           step = 0;
           round++;
-          if (round >= rounds) return finish(t, ph);
+          if (round >= rounds || (sessionCycles != null && round >= sessionCycles)) return finish(t, ph);
         }
       }
     }
@@ -136,14 +138,20 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
       serial: s.serial,
       sessionElapsed: t - s.startedAt,
       sessionMs,
+      sessionCycles,
       finished: s.finished,
       records: s.records.slice(),
     };
   }
 
-  // Session length can be chosen after the timeline is built (e.g. on the start screen).
+  // Session length can be chosen after the timeline is built (on the start screen, or
+  // from the length chip while it runs). null = no limit.
   function setSessionMs(ms) {
     sessionMs = ms;
+  }
+
+  function setSessionCycles(n) {
+    sessionCycles = n;
   }
 
   // The phases ahead from now, as the clock would run them (pending pace changes
@@ -178,5 +186,5 @@ export function createTimeline(sequence, { sessionMs = null } = {}) {
     return { phases, ends };
   }
 
-  return { start, tick, advance, setDurationScale, setSessionMs, forecast };
+  return { start, tick, advance, setDurationScale, setSessionMs, setSessionCycles, forecast };
 }
