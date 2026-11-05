@@ -5,16 +5,27 @@ import { ringGeometry, membraneClip, sagFor, sizeFor } from '../js/fluid/membran
 test('a still circle draws as a circle a little inside its box', () => {
   const g = ringGeometry('circle', 8);
   const clip = membraneClip(g, new Array(8).fill(0), 100);
-  // First point straight up: 50% across, 50 − 45 = 5% down.
-  assert.ok(clip.startsWith('polygon(50.00% 5.00%,'), clip);
+  // First point straight up: 50% across, 50 − 36 = 14% down (the shape is 72% of its box).
+  assert.ok(clip.startsWith('polygon(50.00% 14.00%,'), clip);
 });
 
 test('pushing in moves the edge towards the centre; bulging out moves it away', () => {
   const g = ringGeometry('circle', 4); // up, right, down, left
   const clip = membraneClip(g, [10, 0, -10, 0], 100);
   const [top, , bottom] = clip.slice(8, -1).split(',');
-  assert.equal(top, '50.00% 9.50%', 'top pressed in by 10%');
-  assert.equal(bottom, '50.00% 99.50%', 'bottom bulging out');
+  assert.equal(top, '50.00% 17.60%', 'top pressed in by 10%');
+  assert.equal(bottom, '50.00% 89.60%', 'bottom bulging out');
+});
+
+test('a sag at full wobble fits in the box, and even a wild bulge is pulled back inside it, never cut flat', () => {
+  const g = ringGeometry('circle', 4);
+  const sag = sagFor(g, { x: 0, y: 1 }, 100 * 3); // upright, 300% wobble
+  const fit = membraneClip(g, sag, 100);
+  const wild = membraneClip(g, [0, 0, -200, 0], 100);
+  for (const clip of [fit, wild]) {
+    for (const v of clip.match(/-?[\d.]+(?=%)/g).map(Number)) assert.ok(v >= 0 && v <= 100, clip);
+  }
+  assert.equal(fit.slice(8, -1).split(',')[2], '50.00% 92.48%', 'the sag (18% of the radius) stays well inside');
 });
 
 test('upright, gravity bulges the bottom and lifts the top', () => {

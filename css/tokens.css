@@ -194,6 +194,10 @@
   --field-radius: var(--radius-round);
 
   --core-size:   100%;
+  --glow-blur:   1.5rem;   /* soft halo behind the shape */
+  --glow-spread: 1.08;     /* the halo, a little larger than the shape */
+  /* Membrane: the drawn shape as a share of its box; keep equal to ROOM in js/fluid/membrane.js. */
+  --membrane-room: 0.72;
   --core-radius: var(--radius-round);
 
   /* Cycle counter: mini shapes, and how many rows show before it scrolls. */

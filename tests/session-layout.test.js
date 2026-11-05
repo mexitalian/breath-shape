@@ -26,8 +26,9 @@ test('Fill: a part flips once the fill passes its middle', () => {
   assert.equal(isCovered({ top: 500, bottom: 540 }, 520), true);
 });
 
-test('Session layout setting: Sticky by default, unknown values fall back', () => {
-  assert.equal(readSettings(store({})).sessionLayout, 'sticky');
+test('Session layout setting: Shrink by default; the retired Sticky and unknown values read as Shrink', () => {
+  assert.equal(readSettings(store({})).sessionLayout, 'shrink');
   assert.equal(readSettings(store({ sessionLayout: 'fill' })).sessionLayout, 'fill');
-  assert.equal(readSettings(store({ sessionLayout: 'squash' })).sessionLayout, 'sticky');
+  assert.equal(readSettings(store({ sessionLayout: 'sticky' })).sessionLayout, 'shrink');
+  assert.equal(readSettings(store({ sessionLayout: 'squash' })).sessionLayout, 'shrink');
 });

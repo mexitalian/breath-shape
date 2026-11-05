@@ -34,7 +34,9 @@
   background: radial-gradient(circle at 50% 45%,
     color-mix(in srgb, var(--color-accent-fill) 70%, transparent) 0%,
     color-mix(in srgb, var(--color-accent-fill) 45%, transparent) 72%);
-  transform: scale(var(--hr-scale, 0.8));
+  /* membrane.js draws the circle at --membrane-room of this box; this keeps it the
+     size it was (0.9 of the box) after the room grew in #137. */
+  transform: scale(calc(var(--hr-scale, 0.8) * 0.9 / var(--membrane-room)));
   will-change: transform, clip-path;
 }
 @media (prefers-reduced-motion: reduce) {

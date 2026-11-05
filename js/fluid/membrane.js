@@ -13,7 +13,11 @@ import { outlineFor, outlineRadius } from '../particle-outline.js';
 // Settings → Fluid → Membrane can turn the motion up or down, and set how small and
 // how large the shape gets in place of the technique's own sizes (#102).
 
-const SHRINK = 0.9;      // the shape at full breath, as a share of its box: room to bulge out
+// The shape at full breath as a share of its box: the rest is room to bulge out.
+// Enough for the strongest sag and waves at the highest wobble (#137); the box is
+// drawn larger by the same factor (--membrane-room in css/tokens.css), so the shape
+// itself stays the size of the other looks.
+export const ROOM = 0.72;
 const SAG = 0.06;        // how far gravity pulls the bottom out (fraction of the radius)
 const SPIN_GAIN = 0.002; // how hard a twist (deg/s) pushes the circling bulge
 const DRAG_PX = 6;
@@ -31,11 +35,17 @@ export function ringGeometry(shape, count) {
 // (negative = bulging out); radiusPx: the shape's half-width at full size.
 export function membraneClip(geometry, heights, radiusPx) {
   const [cx, cy] = geometry.outline?.centre ?? [0, 0];
-  const pct = (v) => `${(50 + v * 50 * SHRINK).toFixed(2)}%`;
+  const pct = (v) => `${(50 + v).toFixed(2)}%`;
   let points = '';
   geometry.angles.forEach((a, i) => {
     const r = geometry.radii[i] - heights[i] / radiusPx;
-    points += `${pct(cx + Math.cos(a) * r)} ${pct(cy + Math.sin(a) * r)},`;
+    // Offsets from the box's centre in %, pulled back along their ray if a wild
+    // bulge would still pass the box's edge, so it is never cut flat.
+    let dx = (cx + Math.cos(a) * r) * 50 * ROOM;
+    let dy = (cy + Math.sin(a) * r) * 50 * ROOM;
+    const over = Math.max(Math.abs(dx), Math.abs(dy)) / 50;
+    if (over > 1) { dx /= over; dy /= over; }
+    points += `${pct(dx)} ${pct(dy)},`;
   });
   return `polygon(${points.slice(0, -1)})`;
 }
@@ -57,6 +67,7 @@ export function sizeFor(scale, cfg, small, large) {
 }
 
 export function createMembrane({ core, cfg }) {
+  const field = core.parentElement;
   let sim = null;
   let geometry = null;
   let radius = 0;
@@ -82,10 +93,10 @@ export function createMembrane({ core, cfg }) {
     const size = core.offsetWidth;
     if (sim && size / 2 === radius) return;
     radius = size / 2;
-    const loop = Math.PI * size * SHRINK;
+    const loop = Math.PI * size * ROOM;
     sim = new LiquidSim(loop, {
       waveSpeed: size * 1.6, friction: 1.6, settlePull: 10,
-      maxRise: radius * (1 - SHRINK) * 0.9, maxDepth: radius * 0.2,
+      maxRise: radius * (1 - ROOM) * 0.9, maxDepth: radius * 0.2,
     }, { ring: true });
     geometry = ringGeometry(cfg.shape, sim.count);
   }
@@ -97,7 +108,7 @@ export function createMembrane({ core, cfg }) {
   // inside (+) or outside (−) the edge, px at the shape's current size.
   function locate(e) {
     const rect = core.getBoundingClientRect();
-    const half = (rect.width / 2) * SHRINK;
+    const half = (rect.width / 2) * ROOM;
     const [cx, cy] = geometry.outline?.centre ?? [0, 0];
     const dx = e.clientX - (rect.left + rect.width / 2 + cx * half);
     const dy = e.clientY - (rect.top + rect.height / 2 + cy * half);
@@ -164,10 +175,11 @@ export function createMembrane({ core, cfg }) {
       }
       // A size range from Settings replaces the technique's own.
       const custom = tuning.membraneSmall != null || tuning.membraneLarge != null;
-      const size = custom ? `calc(${sizeFor(snap.scale, cfg, tuning.membraneSmall, tuning.membraneLarge).toFixed(4)} * (1 + var(--hum-jitter, 0)))` : '';
+      // On the field, so the glow follows the same size.
+      const size = custom ? sizeFor(snap.scale, cfg, tuning.membraneSmall, tuning.membraneLarge).toFixed(4) : '';
       if (size !== shownSize) {
-        if (size) core.style.setProperty('--core-transform', size);
-        else core.style.removeProperty('--core-transform');
+        if (size) field.style.setProperty('--shape-scale', size);
+        else field.style.removeProperty('--shape-scale');
         shownSize = size;
       }
       sim.step(dt);
@@ -186,7 +198,7 @@ export function createMembrane({ core, cfg }) {
       stopListening();
       motion?.destroy();
       core.style.clipPath = '';
-      core.style.removeProperty('--core-transform');
+      field.style.removeProperty('--shape-scale');
     },
   };
 }

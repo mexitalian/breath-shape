@@ -1,16 +1,16 @@
 import { el } from '../dom.js';
 import { readSettings, onSettingsChange } from '../settings.js';
 
-// Session layouts (#128), chosen in Settings → Session layout. In all three the
-// shape keeps its full size and proportions (it is never squashed); what changes is
-// how the text and controls under it behave when they don't fit:
-//   sticky  the shape stays at the top like a sticky header; the rest scrolls under it
-//   shrink  scrolling down shrinks the shape in proportion, so it stays on screen;
-//           back at the top it is full size again
+// Session layouts (#128, #137), chosen in Settings → Session layout. The shape keeps
+// its full size and proportions (it is never squashed); what changes is how the text
+// and controls under it behave when they don't fit:
+//   shrink  (default) the shape stays at the top; scrolling down shrinks it in
+//           proportion, down to SHRINK_MIN, and the text rises with its bottom edge.
+//           Past that, the text passes behind it through a soft fade in the shape's
+//           own outline (the halo). Back at the top it is full size again.
 //   fill    the whole screen fills and empties with the breath; anything the fill
 //           covers flips to the on-fill colour so it stays readable
-// Dragging scrolls everywhere except on the shape while Fluid shapes are on (the
-// liquid takes that touch).
+// ('sticky', full size with the text sliding under it, was retired in #137.)
 
 export const SHRINK_MIN = 0.35;
 
@@ -46,10 +46,15 @@ const REMEASURE_MS = 500;
 export function createSessionLayout({ stage, visual, cfg }) {
   const fill = el('div', 'breath-fill');
   fill.setAttribute('aria-hidden', 'true');
-  const backdrop = el('div', 'stage__backdrop');
-  backdrop.setAttribute('aria-hidden', 'true');
   stage.prepend(fill);
-  visual.prepend(backdrop);
+  // A halo behind each shape, in its outline: page colour with a soft edge, so text
+  // scrolling behind the shrunk shape fades out round it instead of under a band.
+  const halos = [...visual.querySelectorAll('.field')].map((field) => {
+    const halo = el('div', 'field__halo');
+    halo.setAttribute('aria-hidden', 'true');
+    field.prepend(halo);
+    return halo;
+  });
 
   let mode = readSettings().sessionLayout;
   let visualHeight = 0;
@@ -116,7 +121,7 @@ export function createSessionLayout({ stage, visual, cfg }) {
       window.removeEventListener('resize', onResize);
       stopListening();
       fill.remove();
-      backdrop.remove();
+      for (const halo of halos) halo.remove();
     },
   };
 }
