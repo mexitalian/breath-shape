@@ -52,5 +52,16 @@
       "Bash(git push*--force*)",
       "Bash(git push -f*)"
     ]
+  },
+  "extraKnownMarketplaces": {
+    "mexitalian-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "mexitalian/claude-code-plugins"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "penpot@mexitalian-plugins": true
   }
 }
