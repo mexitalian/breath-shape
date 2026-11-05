@@ -134,3 +134,6 @@
   border-radius: var(--radius-round);
 }
 .settings__close[style*="left"] { right: auto; }
+
+/* A set of rows that shows or hides together; lays out as if its rows were the panel's own. */
+.settings__group:not([hidden]) { display: contents; }

@@ -4,6 +4,14 @@ What was decided or retired, and why, so it isn't re-added by accident or argued
 
 To add one: a dated heading, then **Decision**, **Why**, and **Instead** (what replaces it, if anything). Reversing a decision is fine. Add a new entry that says so; don't edit the old one.
 
+## 2026-11-05 · Retired: touch moving the fluid; "Fluid moves with" (#138)
+
+**Decision:** touch no longer moves Vessel, Membrane or the Fill liquid. Only tilt does. On a computer with no tilt sensor, the mouse position stands in for tilt. The "Fluid moves with" setting is gone.
+
+**Why:** touch now has other jobs. Dragging scrolls the session layouts, and a tap continues a hold. Splitting touch between those and the liquid made both unreliable.
+
+**Instead:** tilt and shakes on the phone; the mouse and fast flicks on a computer. Particles stay on with the fluid looks (they used to switch off), and in Fill they become bubbles rising through the liquid.
+
 ## 2026-11-05 · Retired: the Sticky session layout (#137)
 
 **Decision:** Settings → Session layout offers Shrink (the default) and Fill. Sticky is gone; a saved Sticky reads as Shrink.

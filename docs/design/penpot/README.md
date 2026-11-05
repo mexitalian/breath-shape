@@ -23,6 +23,7 @@ so lines wrap a little differently there.
 | `reference/sessions/<shape>-<theme>-session.webp` | The same session a few seconds in |
 | `reference/nav/*.webp` | Dark, Android: one per screen on the Navigation map and the Prototype. `home.webp` and `home-full.webp` show the Jump back in card, `session.webp` the length chip, `heart-rate.webp` the Back to the technique button |
 | `tokens.json` | Every design token, resolved per theme. Colours are hex, for the home hue (220) and four technique hues |
+| `palette.json` | The Penpot `palette` token set: every colour role for each technique's hue (docs/COLOURS.md), light and dark, as hex with alpha. Penpot's palette is refreshed from it when hues change |
 | `tokens-core.penpot.json` | The Penpot file's core token set (space, radius, size, type, opacity, shadows), as a baseline for the round trip |
 | `home-light-layout.json` | Every visible element on the light home page: tag, class, text, box (CSS px, page coordinates) and resolved style |
 
