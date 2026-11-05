@@ -1,7 +1,7 @@
 export default {
   title: 'Resonance Breathing',
   hint: 'Equal time in and out, no holds. Adjust the pace until it feels easy; most people settle between 4.5 and 6.5 breaths a minute.',
-  // Session length chip (#116): No limit, then these.
+  // Session length toggle (#116, #147): No limit, then these minutes.
   lengths: { minutes: [5, 10, 20] },
 
   // 6s in + 6s out = 5 breaths/min at the default pace.
