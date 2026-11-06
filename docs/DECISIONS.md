@@ -4,6 +4,14 @@ What was decided or retired, and why, so it isn't re-added by accident or argued
 
 To add one: a dated heading, then **Decision**, **Why**, and **Instead** (what replaces it, if anything). Reversing a decision is fine. Add a new entry that says so; don't edit the old one.
 
+## 2026-11-06 · Every breath gets its own shape (#159)
+
+**Decision:** techniques are drawn as their own shape, not all as circles. Calm and focus patterns get one side per phase, each as long as its phase. 4-7-8 is a true 4 : 7 : 8 triangle, deliberately lopsided. Physiological Sigh is two steps up and a long way down. Extended Exhale is an egg, Bhramari the same egg with a humming edge, and Pursed-Lip a teardrop. Energise techniques get a picture: Kapalabhati spikes, Bhastrika bellows, a Wim Hof charge ring, a Tummo flame and a Connected wave. Buteyko gets a dotted ring. Resonance stays a circle, and Box, Triangle and Alternate Nostril are unchanged. The shapes appear in sessions, the cycle counter, Home's list, history and the pickers.
+
+**Why:** eleven of fifteen techniques looked the same, so 4-7-8 and Resonance were indistinguishable. The colour says what a breath is for; the shape now says how it goes.
+
+**Instead:** Settings → Breath shapes keeps the originals one tap away. "Shapes + count" is a second option for the Energise pictures: they count through each round (a spike per pump, a segment per power breath, a flame that grows), where "Shapes" just breathes. Which one stays is still to decide.
+
 ## 2026-11-05 · Fill: Box and Triangle are implied by their corners (#148)
 
 **Decision:** in the Fill layout, Box and Triangle are drawn only as hairline brackets at their corners, with the marker riding the invisible edges between them. The shape spans the back chevron's tip to the settings cog's edge. The marker and brackets are flat (no glow), don't change when the marker arrives, and flip colour with the liquid. Shrink keeps the filled shapes.

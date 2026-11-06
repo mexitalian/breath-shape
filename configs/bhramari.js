@@ -10,6 +10,7 @@ export default {
 
   hue: 222,
   shape: 'circle',
+  form: 'hum',   // its own shape (#159, js/forms.js)
   opacity: { min: 0.35, max: 0.9 },
 
   sound: { tone: 130 },

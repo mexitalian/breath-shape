@@ -111,3 +111,7 @@
   color: var(--color-dim);
   font-variant-numeric: tabular-nums;
 }
+
+/* A technique's own shape (#159): groups of shapes, coloured through currentColor. */
+.cycle--form .cycle__fill { color: var(--color-accent-fill); }
+.cycle--form .cycle__outline { color: var(--color-accent-edge); stroke: currentColor; }

@@ -200,6 +200,9 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
   }));
   // Ways to pick a breath on Home (#151), for trying out. Not shown in a session.
   if (!cfg) panel.append(choiceRow('Choose a breath (testing)', [['list', 'List'], ['swipe', 'Swipe'], ['questions', 'Questions'], ['spectrum', 'Spectrum']], settings.picker, picker => saveSettings({ picker })));
+  // Breath shapes (#159): each technique's own shape, or the originals. A session
+  // picks it up the next time it opens.
+  panel.append(choiceRow('Breath shapes', [['shapes', 'Shapes'], ['counted', 'Shapes + count'], ['original', 'Original']], settings.shapes, shapes => saveSettings({ shapes })));
   panel.append(choiceRow('Particles', particleOptions, settings.particles, particles => saveSettings({ particles })));
   // Fluid shapes (#94), moved by tilt (on a computer, the mouse; #138).
   panel.append(fluid);

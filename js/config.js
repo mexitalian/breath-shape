@@ -93,6 +93,9 @@ export function normalize(cfg) {
     hint: cfg.hint ?? '',
     hue: cfg.hue ?? 220,
     shape,
+    // Breath shapes (#159): this technique's own shape (js/forms.js), used unless
+    // Settings → Breath shapes is Original.
+    form: cfg.form ?? null,
     path: preset.path ?? null,
     coreClip: preset.clipCore ? `polygon(${preset.path.map(([x, y]) => `${x}% ${y}%`).join(', ')})` : null,
     components,

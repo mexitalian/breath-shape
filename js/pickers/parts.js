@@ -2,6 +2,7 @@ import { el } from '../dom.js';
 import { loadConfig } from '../techniques.js';
 import { normalize } from '../config.js';
 import { OUTCOMES } from './catalogue.js';
+import { FORMS, formMask } from '../forms.js';
 
 // Small building blocks shared by the pickers (#151).
 
@@ -13,11 +14,13 @@ export function hued(node, hue) {
 }
 
 // The technique's shape in its fill colour, on a soft disc. size: CSS length.
-export function shapeArt(shape, size, label = '') {
+export function shapeArt(shape, size, label = '', form = null) {
   const wrap = el('div', 'pick-art');
   wrap.style.setProperty('--art-size', size);
   const s = el('span', 'pick-shape');
   s.dataset.shape = shape;
+  // Breath shapes (#159): the technique's own shape, unless Settings says Original.
+  if (form && FORMS[form]) { s.dataset.form = form; s.style.setProperty('--form-mask', formMask(FORMS[form].fill())); }
   wrap.append(s);
   if (label) wrap.append(el('span', 'pick-art__label', { textContent: label }));
   wrap.setAttribute('aria-hidden', 'true');

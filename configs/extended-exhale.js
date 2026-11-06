@@ -6,6 +6,7 @@ export default {
 
   hue: 255,
   shape: 'circle',
+  form: 'egg',   // its own shape (#159, js/forms.js)
   opacity: { min: 0.35, max: 0.9 },
 
   // 4s in + 8s out = 5 breaths/min. Pace keeps the 1:2 ratio (3:6 up to 5:10).

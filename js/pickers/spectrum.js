@@ -36,7 +36,7 @@ export function createSpectrumPicker(root, techniques, { onBrowse }) {
     if (shownFor !== best.href) {
       shownFor = best.href;
       hued(preview, best.hue);
-      preview.replaceChildren(shapeArt(best.shape, 'min(44vw, 11rem)', best.name), startLink(best, `Start ${best.name}`));
+      preview.replaceChildren(shapeArt(best.shape, 'min(44vw, 11rem)', best.name, best.form), startLink(best, `Start ${best.name}`));
     }
     list.replaceChildren(...close.map((t, i) => {
       const a = hued(el('a', `pick-row${i === 0 ? ' pick-row--closest' : ''}`, { href: t.href }), t.hue);
