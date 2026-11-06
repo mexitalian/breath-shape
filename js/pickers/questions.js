@@ -90,7 +90,7 @@ export function createQuestionsPicker(root, techniques, { onBrowse }) {
     const card = hued(el('article', 'pick-best'), best.hue);
     const minutes = answers.time ? MINUTES[answers.time] : null;
     card.append(
-      shapeArt(best.shape, 'min(34vw, 8rem)'),
+      shapeArt(best.shape, 'min(34vw, 8rem)', '', best.form),
       el('h3', 'pick-best__name', { textContent: best.name }),
       el('p', 'pick-best__pattern', { textContent: best.pattern }),
       el('p', 'pick-best__why', { textContent: `Why: ${whyFor(best, answers)}` }),

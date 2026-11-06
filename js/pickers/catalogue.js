@@ -1,3 +1,5 @@
+import { FORM_OF_PAGE } from '../forms.js';
+
 // Ways to pick a breath on Home (#151): Swipe cards, Guided questions and the Colour
 // spectrum, next to today's list. Settings → Choose a breath picks one; it's there for
 // trying them out. The words and colours come from Home's own list (index.html), so
@@ -65,6 +67,7 @@ export function readTechniques(doc = document) {
         group,
         outcome: outcomeOf(group)?.key ?? null,
         safety: !!a.querySelector('.chip'),
+        form: FORM_OF_PAGE[href] ?? null,
         ...CATALOGUE[href],
       };
     })

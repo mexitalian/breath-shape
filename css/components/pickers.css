@@ -34,6 +34,13 @@
 }
 .pick-shape[data-shape="circle"] { border-radius: var(--radius-round); }
 .pick-shape[data-shape="triangle"] { clip-path: polygon(0 6.7%, 100% 6.7%, 50% 93.3%); }
+/* Breath shapes (#159): the technique's own shape, unless Settings says Original. */
+:root:not([data-shapes="original"]) .pick-shape[data-form] {
+  border-radius: 0;
+  clip-path: none;
+  -webkit-mask: var(--form-mask) center / 100% 100% no-repeat;
+  mask: var(--form-mask) center / 100% 100% no-repeat;
+}
 .pick-art__label {
   grid-area: 1 / 1;
   max-width: calc(var(--art-size) * 0.9);

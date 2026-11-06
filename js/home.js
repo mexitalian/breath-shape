@@ -2,6 +2,7 @@ import { el } from './dom.js';
 import { icon } from './ui/icons.js';
 import { readResume, clearResume, resumeSummary } from './resume.js';
 import { initPickers } from './pickers/index.js';
+import { FORMS, FORM_OF_PAGE, formMask } from './forms.js';
 
 // Technique list: group filter chips, and the filter + scroll position remembered
 // for this visit so coming back from a practice page lands where you left off.
@@ -54,6 +55,15 @@ export function showResumeCard(before, rec = readResume()) {
 export function initHome() {
   const nav = document.querySelector('.group-nav');
   showResumeCard(nav);
+  // Breath shapes (#159): each row's orb in its technique's own shape (CSS shows it
+  // unless Settings → Breath shapes is Original).
+  for (const a of document.querySelectorAll('a.technique')) {
+    const key = FORM_OF_PAGE[a.getAttribute('href')];
+    const orb = a.querySelector('.orb');
+    if (!key || !orb) continue;
+    orb.dataset.form = key;
+    orb.style.setProperty('--form-mask', formMask(FORMS[key].fill()));
+  }
   // Settings → Choose a breath (#151): a different way in, above the list.
   initPickers({ before: nav });
   const chips = [...nav.querySelectorAll('[data-filter]')];

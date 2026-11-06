@@ -38,7 +38,7 @@ export function createSwipePicker(root, techniques, { onBrowse }) {
     head.append(el('span', 'chip swipe-card__tag', { textContent: o?.label ?? '' }), el('span', 'swipe-card__time', { textContent: timeLabel(t.minutes) }));
     c.append(
       head,
-      shapeArt(t.shape, 'min(26vw, 6.5rem)'),
+      shapeArt(t.shape, 'min(26vw, 6.5rem)', '', t.form),
       el('h2', 'swipe-card__name', { textContent: t.name }),
       el('p', 'swipe-card__pattern', { textContent: t.pattern }),
       el('p', 'swipe-card__use', { textContent: t.use }),
@@ -126,7 +126,7 @@ export function createSwipePicker(root, techniques, { onBrowse }) {
     keep.addEventListener('click', () => { index++; renderDeck(); });
     view.append(
       el('div', 'eyebrow', { textContent: `${o?.label ?? ''} · ${timeLabel(t.minutes)}` }),
-      shapeArt(t.shape, 'min(36vw, 9rem)'),
+      shapeArt(t.shape, 'min(36vw, 9rem)', '', t.form),
       el('h2', 'pick-ready__name', { textContent: t.name }),
       el('p', 'pick-ready__use', { textContent: t.use }),
       startLink(t),
