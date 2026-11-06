@@ -1,6 +1,7 @@
 import { el } from './dom.js';
 import { icon } from './ui/icons.js';
 import { readResume, clearResume, resumeSummary } from './resume.js';
+import { initPickers } from './pickers/index.js';
 
 // Technique list: group filter chips, and the filter + scroll position remembered
 // for this visit so coming back from a practice page lands where you left off.
@@ -53,6 +54,8 @@ export function showResumeCard(before, rec = readResume()) {
 export function initHome() {
   const nav = document.querySelector('.group-nav');
   showResumeCard(nav);
+  // Settings → Choose a breath (#151): a different way in, above the list.
+  initPickers({ before: nav });
   const chips = [...nav.querySelectorAll('[data-filter]')];
   const groups = [...document.querySelectorAll('[data-group]')];
   let filter = 'all';

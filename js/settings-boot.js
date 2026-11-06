@@ -9,5 +9,6 @@
     root.setAttribute('data-particles', s.particles === 'off' || s.particles === 'on' ? s.particles : 'webgl');
     root.setAttribute('data-fluid', s.fluid === 'vessel' || s.fluid === 'membrane' ? s.fluid : 'off');
     root.setAttribute('data-session-layout', s.sessionLayout === 'fill' ? 'fill' : 'shrink');
+    root.setAttribute('data-picker', s.picker === 'swipe' || s.picker === 'questions' || s.picker === 'spectrum' ? s.picker : 'list');
   } catch (e) { /* defaults */ }
 })();
