@@ -51,7 +51,7 @@ flowchart LR
   diagnostics_html -.->|"Android back"| index_html
   entrainment_html -->|"← Diagnostics"| diagnostics_html
   entrainment_html -.->|"Android back"| index_html
-  heart_rate_html -.->|"← All techniques"| index_html
+  heart_rate_html -.->|""| index_html
   heart_rate_html -.->|"All techniques"| index_html
   heart_rate_html -.->|"Android back"| index_html
   history_html -.->|"← All techniques"| index_html
@@ -193,7 +193,7 @@ Solid arrows go forward, dotted ones go back or close.
 | Extended Exhale · Settings | Done / tap outside / Esc | Extended Exhale · Session | close |
 | Extended Exhale · Session | Back (top bar) / Android back: kept for Jump back in | Home | back |
 | Extended Exhale · Summary | Back (top bar) / Android back | Home | back |
-| Heart Rate & HRV | ← All techniques | Home | back |
+| Heart Rate & HRV |  | Home | back |
 | Heart Rate & HRV | All techniques | Home | back |
 | Heart Rate & HRV | Back to the technique (opened from a summary) | Its technique page | forward |
 | Heart Rate & HRV | Android back | Home | back |

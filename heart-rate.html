@@ -9,28 +9,76 @@
   <link rel="stylesheet" href="css/system.css">
 </head>
 <body data-hue style="--hue: 330">
-  <div class="page">
+  <!-- The same top bar as a session: back to the list · title · settings (#156). -->
+  <header class="topbar">
+    <a class="icon-button topbar__back" href="./" aria-label="All techniques" title="All techniques" id="back"></a>
+    <div class="topbar__heading"><h1 class="topbar__title">Heart rate &amp; HRV</h1></div>
+    <div class="topbar__actions" id="actions"></div>
+  </header>
+  <div class="page page--topbar">
     <main class="page__main">
-      <header class="page__header">
-        <div class="eyebrow"><a href="./" style="color: inherit">← All techniques</a></div>
-        <h1 class="page__title">Heart rate &amp; HRV</h1>
-        <p class="page__lede">Cover the back camera and the flash with one fingertip. Rest your hand and press lightly, without squashing. Heart rate takes about 30 seconds; HRV needs a steady minute.</p>
-      </header>
+      <!-- How to measure: open until your first reading, folded after. -->
+      <details class="hr-how" id="how">
+        <summary>How to measure</summary>
+        <div class="hr-how__body">
+          <svg class="hr-how__art" viewBox="0 0 120 120" aria-hidden="true">
+            <rect class="hr-how__phone" x="30" y="8" width="60" height="104" rx="12"/>
+            <circle class="hr-how__lens" cx="48" cy="28" r="7"/>
+            <circle class="hr-how__flash" cx="64" cy="28" r="3.5"/>
+            <path class="hr-how__finger" d="M40 74 C38 52 40 26 52 20 C64 15 74 22 74 36 L74 74 Z"/>
+          </svg>
+          <ol class="hr-how__steps">
+            <li>Cover the back camera and the flash with one fingertip.</li>
+            <li>Rest your hand on something and press lightly, without squashing.</li>
+            <li>Keep still. Heart rate takes about 30 seconds; HRV needs a steady minute.</li>
+          </ol>
+        </div>
+      </details>
 
       <section class="hr" aria-live="polite">
-        <button class="hr__dial" type="button" id="dial" aria-describedby="status">
-          <!-- The camera view is masked by the membrane, so its edge wobbles round it.
-               A see-through poster: without one Android draws a play icon on the preview. -->
-          <div class="hr__membrane" aria-hidden="true">
-            <video class="hr__preview" playsinline muted aria-hidden="true" hidden
-              poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>
-          </div>
-          <div class="hr__value"><strong id="bpm">--</strong><span>bpm</span><span class="hr__hint" id="hint">Tap to start</span></div>
-        </button>
-        <div class="hr__hrv"><span>HRV</span> <strong id="hrv">--</strong> <span>ms</span></div>
+        <div class="hr__ring-wrap">
+          <!-- Two-stage progress round the dial: heart rate to halfway, then HRV. -->
+          <svg class="hr__ring" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="hr__ring-track" cx="50" cy="50" r="48"/>
+            <circle class="hr__ring-fill" id="ring" cx="50" cy="50" r="48" pathLength="100"/>
+            <circle class="hr__ring-mark" cx="2" cy="50" r="1.6"/>
+          </svg>
+          <button class="hr__dial" type="button" id="dial" aria-describedby="status">
+            <!-- The camera view is masked by the membrane, so its edge wobbles round it.
+                 A see-through poster: without one Android draws a play icon on the preview. -->
+            <div class="hr__membrane" aria-hidden="true">
+              <video class="hr__preview" playsinline muted aria-hidden="true" hidden
+                poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>
+            </div>
+            <div class="hr__value"><strong id="bpm">--</strong><span>bpm</span><span class="hr__hint" id="hint">Tap to start</span></div>
+          </button>
+        </div>
+        <div class="hr__signal" id="signal" hidden><span class="hr__signal-dot"></span><span id="signal-text"></span></div>
+        <p class="hr__stage" id="stage" hidden></p>
         <canvas class="hr__trace" id="trace" aria-hidden="true"></canvas>
-        <div class="hr__progress" aria-hidden="true"><span id="progress"></span></div>
         <p class="hr__status" id="status">Tap the circle, then allow the camera when asked.</p>
+
+        <!-- The result: the reading against your usual, and before/after a session. -->
+        <div class="hr-result" id="result" hidden>
+          <div class="hr-result__stat">
+            <span class="hr-result__label">Heart rate</span>
+            <span class="hr-result__value"><strong id="result-bpm">--</strong> bpm</span>
+            <span class="hr-result__usual" id="usual-bpm"></span>
+          </div>
+          <div class="hr-result__stat">
+            <span class="hr-result__label">HRV</span>
+            <span class="hr-result__value"><strong id="result-hrv">--</strong> ms</span>
+            <span class="hr-result__usual" id="usual-hrv"></span>
+          </div>
+        </div>
+        <div class="hr-compare" id="compare" hidden>
+          <h2 class="hr-compare__title" id="compare-title">Before and after</h2>
+          <table class="hr-compare__table">
+            <thead><tr><th></th><th>Before</th><th>After</th><th></th></tr></thead>
+            <tbody id="compare-rows"></tbody>
+          </table>
+        </div>
+
         <div class="hr__actions">
           <a class="button button--ghost" href="./" id="done" hidden>All techniques</a>
         </div>
@@ -43,7 +91,11 @@
   <script type="module">
     import { initAppShell } from './js/app.js';
     import { initHeartRate } from './js/heart-rate-page.js';
+    import { createSettingsButton } from './js/ui/settings-panel.js';
+    import { icon } from './js/ui/icons.js';
     initAppShell({ home: false });
+    document.getElementById('back').append(icon('back'));
+    document.getElementById('actions').append(createSettingsButton());
     initHeartRate();
   </script>
 </body>

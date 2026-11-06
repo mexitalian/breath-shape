@@ -1,4 +1,7 @@
-/* Pattern: heart rate check (heart-rate.html). */
+/* Pattern: heart rate check (heart-rate.html). The session top bar sits over the
+   page (#156), so the page starts below it. */
+.page--topbar { padding-top: calc(var(--topbar-height) + var(--safe-top)); }
+.page--topbar .topbar { background: var(--color-bg); }
 .hr {
   display: flex;
   flex-direction: column;
@@ -83,23 +86,6 @@
   color: var(--color-dim);
 }
 
-.hr__hrv {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-xs);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-dim);
-}
-
-.hr__hrv strong {
-  font-size: var(--text-xl);
-  font-weight: var(--weight-light);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-accent);
-  font-variant-numeric: tabular-nums;
-}
 
 /* The pulse wave: dimmed while searching, the accent once the pulse is steady. */
 .hr__trace {
@@ -111,21 +97,6 @@
 }
 .hr__trace--clear { color: var(--color-accent); opacity: 1; }
 
-.hr__progress {
-  width: 100%;
-  height: var(--hr-progress-height);
-  border-radius: var(--radius-pill);
-  background: var(--color-line);
-  overflow: hidden;
-}
-
-.hr__progress span {
-  display: block;
-  width: 0;
-  height: 100%;
-  background: var(--color-accent);
-  transition: width var(--duration-fast) linear;
-}
 
 .hr__status {
   min-height: calc(2 * var(--leading-normal) * 1em);
@@ -136,6 +107,95 @@
 }
 
 .hr__actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; justify-content: center; }
+
+/* How to measure (#156): a fold with a small drawing, open until the first reading. */
+.hr-how {
+  width: 100%;
+  border: var(--border-hair) solid var(--color-line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm) var(--space-md);
+}
+.hr-how summary {
+  cursor: pointer;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.hr-how__body { display: flex; align-items: center; gap: var(--space-md); margin-top: var(--space-sm); }
+.hr-how__art { flex: none; width: 4.5rem; height: 4.5rem; }
+.hr-how__phone { fill: var(--color-bg-raised); stroke: var(--color-line); stroke-width: 1.5; }
+.hr-how__lens { fill: var(--color-bg); stroke: var(--color-dim); stroke-width: 1.5; }
+.hr-how__flash { fill: var(--color-accent); }
+.hr-how__finger { fill: var(--color-accent-fill); opacity: 0.85; }
+.hr-how__steps { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: var(--space-2xs); font-size: var(--text-md); color: var(--color-dim); line-height: var(--leading-normal); text-align: left; }
+
+/* The ring round the dial: two stages, heart rate to the mark at the bottom, then
+   HRV back to the top. */
+.hr__ring-wrap { position: relative; padding: var(--space-sm); }
+.hr__ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
+.hr__ring circle { fill: none; }
+.hr__ring-track { stroke: var(--color-line); stroke-width: 1.5; }
+.hr__ring-fill {
+  stroke: var(--color-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset var(--duration-fast) linear;
+}
+.hr__ring-mark { fill: var(--color-dim); stroke: none; }
+.hr__ring-wrap .hr__dial { border-color: transparent; }
+
+/* The live signal check: a dot and a word. */
+.hr__signal {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-3xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  border: var(--border-hair) solid var(--color-line);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+.hr__signal[hidden] { display: none; }
+.hr__signal-dot { width: 0.55rem; height: 0.55rem; border-radius: var(--radius-round); background: var(--color-dim); }
+.hr__signal[data-state="press"] .hr__signal-dot { background: hsl(40 90% 60%); }
+.hr__signal[data-state="good"] { border-color: var(--color-accent-edge); }
+.hr__signal[data-state="good"] .hr__signal-dot { background: var(--color-accent); box-shadow: var(--shadow-glow-sm); }
+.hr__stage { margin: calc(-1 * var(--space-sm)) 0 0; font-size: var(--text-sm); color: var(--color-dim); font-variant-numeric: tabular-nums; }
+
+/* The result (#156): each number against your own usual. */
+.hr-result { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+.hr-result[hidden], .hr-compare[hidden] { display: none; }
+.hr-result__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-raised);
+  text-align: left;
+}
+.hr-result__label { font-size: var(--text-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-dim); }
+.hr-result__value { color: var(--color-dim); font-size: var(--text-sm); }
+.hr-result__value strong { font-size: var(--text-2xl); font-weight: var(--weight-light); color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.hr-result__usual { font-size: var(--text-sm); color: var(--color-dim); line-height: var(--leading-normal); }
+[data-dir="calmer"] { color: var(--color-accent); }
+
+/* Before and after a session. */
+.hr-compare { width: 100%; padding: var(--space-md); border: var(--border-hair) solid var(--color-accent-edge); border-radius: var(--radius-xl); text-align: left; }
+.hr-compare__title { margin: 0 0 var(--space-sm); font-size: var(--text-xs); font-weight: var(--weight-medium); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-dim); }
+.hr-compare__table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.hr-compare__table th, .hr-compare__table td { padding: var(--space-2xs) 0; text-align: left; font-weight: var(--weight-regular); }
+.hr-compare__table thead th { font-size: var(--text-xs); color: var(--color-dim); letter-spacing: var(--tracking-label); text-transform: uppercase; }
+.hr-compare__table tbody th { color: var(--color-dim); }
+.hr-compare__change { text-align: right !important; color: var(--color-dim); }
+.hr-compare__change[data-dir="calmer"] { color: var(--color-accent); font-weight: var(--weight-medium); }
 
 /* History thumbnail for a heart rate check. */
 .thumb--heart {
