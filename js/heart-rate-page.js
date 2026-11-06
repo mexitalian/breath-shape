@@ -1,6 +1,7 @@
 import { fingerPresent, pulseWave, findBeats, estimateBpm, estimateHrv } from './heart-rate.js';
 import { saveSession, readHistory, HEART_RATE } from './history.js';
-import { returnTarget, readingBefore, changeText } from './heart-rate-return.js';
+import { returnTarget, readingBefore } from './heart-rate-return.js';
+import { signalState, SIGNAL_TEXT, stageText, usualOf, compareToUsual, beforeAfterRows } from './heart-rate-result.js';
 import { el } from './dom.js';
 import { createMembrane } from './fluid/membrane.js';
 
@@ -26,10 +27,17 @@ export function initHeartRate() {
   const hint = document.getElementById('hint');
   const membraneEl = document.querySelector('.hr__membrane');
   const bpmEl = document.getElementById('bpm');
-  const hrvEl = document.getElementById('hrv');
   const statusEl = document.getElementById('status');
-  const progressEl = document.getElementById('progress');
+  const ring = document.getElementById('ring');
+  const signalEl = document.getElementById('signal');
+  const signalText = document.getElementById('signal-text');
+  const stageEl = document.getElementById('stage');
+  const resultEl = document.getElementById('result');
+  const compareEl = document.getElementById('compare');
   const doneLink = document.getElementById('done');
+  // How to measure (#156): open until your first reading.
+  const how = document.getElementById('how');
+  if (how) how.open = !readHistory().some(e => e.kind === HEART_RATE);
   // Opened from a session summary (#118): a way back to that technique, and the
   // reading from just before the session to compare with.
   const from = returnTarget(location.search);
@@ -55,6 +63,18 @@ export function initHeartRate() {
   let clear = false;       // a steady pulse is being found
 
   const status = (text) => { statusEl.textContent = text; };
+  // The ring round the dial: heart rate to halfway, HRV the rest (#156).
+  const setProgress = (k) => { ring.style.strokeDashoffset = String(100 - Math.min(1, Math.max(0, k)) * 100); };
+  let shownSignal = null;
+  const setSignal = (state) => {
+    signalEl.hidden = !state;
+    if (!state || state === shownSignal) return;
+    shownSignal = state;
+    signalEl.dataset.state = state;
+    signalText.textContent = SIGNAL_TEXT[state];
+  };
+  const setStage = (text) => { stageEl.hidden = !text; if (text && stageEl.textContent !== text) stageEl.textContent = text; };
+  setProgress(0);
   const setHint = (text) => {
     hint.textContent = text;
     dial.setAttribute('aria-label', text);
@@ -89,10 +109,12 @@ export function initHeartRate() {
 
   async function start() {
     doneLink.hidden = true;
+    resultEl.hidden = true;
+    compareEl.hidden = true;
     dial.dataset.state = 'running';
     setHint('Tap to stop');
     bpmEl.textContent = '--';
-    hrvEl.textContent = '--';
+    setProgress(0);
     status('Starting the camera…');
     try {
       stream = await navigator.mediaDevices.getUserMedia({
@@ -142,7 +164,9 @@ export function initHeartRate() {
       if (samples.length) status('Lost contact. Cover the camera and flash again, and keep still.');
       samples = []; all = []; readings = []; contactS = 0;
       bpmEl.textContent = '--';
-      progressEl.style.width = '0%';
+      setProgress(0);
+      setSignal('none');
+      setStage('');
       showClear(false);
       drawTrace([]);
       nextFrame();
@@ -173,13 +197,17 @@ export function initHeartRate() {
       // No steady pulse yet: an uneven ripple, as unsettled as the signal.
       if (!bpm && Math.random() < 0.2) membrane?.ripple(0.5);
       bpmEl.textContent = bpm ?? '--';
-      if (!bpm) status('Finding your pulse. Keep still and press lightly.');
+      setSignal(signalState({ finger: true, settled: true, steady: !!bpm }));
+      setStage(stageText(contactS, { hrS: HR_S, hrvS: HRV_S, hasBpm: readings.length > 0 }));
+      if (!bpm) status('Finding your pulse. Rest your hand and press lightly.');
       else if (contactS < HR_S) status('Keep still…');
       else status('Heart rate ready. Keep still a little longer for your HRV…');
     } else {
+      setSignal('settling');
+      setStage(stageText(contactS, { hrS: HR_S, hrvS: HRV_S }));
       status('Hold still…');
     }
-    progressEl.style.width = `${Math.min(100, (contactS / HRV_S) * 100)}%`;
+    setProgress(contactS / HRV_S);
 
     if (contactS >= HRV_S && readings.length >= 30) {
       finish({ lifted: false });
@@ -217,16 +245,13 @@ export function initHeartRate() {
     const bpm = recent[recent.length >> 1];
     const hrv = lifted ? null : estimateHrv(findBeats(pulseWave(all)));
     bpmEl.textContent = bpm;
-    hrvEl.textContent = hrv ?? '--';
-    progressEl.style.width = '100%';
-    if (hrv != null) {
-      status(`Heart rate ${bpm} bpm, HRV ${hrv} ms. Saved to Your history.`);
-    } else if (lifted) {
-      status(`Heart rate ${bpm} bpm, saved. HRV needs a full minute: keep your finger on until the bar fills.`);
-    } else {
-      status(`Heart rate ${bpm} bpm, saved. The signal wasn't steady enough for HRV: rest your hand on a table, press lightly and breathe normally.`);
-    }
-    if (before) status(`${statusEl.textContent} ${changeText(before, { heartRate: bpm, hrv })}.`);
+    setProgress(lifted ? HR_S / HRV_S : 1);
+    setSignal(null);
+    setStage('');
+    if (hrv != null) status('Saved to Your history.');
+    else if (lifted) status('Saved. HRV needs a full minute: keep your finger on until the ring closes.');
+    else status("Saved. The signal wasn't steady enough for HRV: rest your hand on a table, press lightly and breathe normally.");
+    showResult({ heartRate: bpm, hrv });
     saveSession({
       id: `hr-${startedAt}`,
       kind: HEART_RATE,
@@ -241,8 +266,39 @@ export function initHeartRate() {
     doneLink.hidden = false;
   }
 
+  // The result card (#156): each number against your own usual, and before/after
+  // the session you came from.
+  function showResult(after) {
+    const history = readHistory();
+    const fill = (id, value, usualId, field, unit) => {
+      document.getElementById(id).textContent = value ?? '--';
+      const cmp = compareToUsual(value, usualOf(history, field, { before: startedAt }), field, unit);
+      const u = document.getElementById(usualId);
+      u.textContent = cmp?.text ?? 'Needs a steady minute';
+      u.dataset.dir = cmp?.dir ?? 'same';
+    };
+    fill('result-bpm', after.heartRate, 'usual-bpm', 'heartRate', 'bpm');
+    fill('result-hrv', after.hrv, 'usual-hrv', 'hrv', 'ms');
+    resultEl.hidden = false;
+    if (before) {
+      document.getElementById('compare-title').textContent = `Before and after ${from.title}`;
+      const rows = document.getElementById('compare-rows');
+      rows.replaceChildren(...beforeAfterRows(before, after).map((r) => {
+        const tr = el('tr');
+        tr.append(el('th', '', { textContent: r.label }), el('td', '', { textContent: `${r.before} ${r.unit}` }), el('td', '', { textContent: `${r.after} ${r.unit}` }));
+        const change = el('td', 'hr-compare__change', { textContent: r.change });
+        change.dataset.dir = r.dir;
+        tr.append(change);
+        return tr;
+      }));
+      compareEl.hidden = !rows.children.length;
+    }
+  }
+
   function fail(message) {
     stopCamera();
+    setSignal(null);
+    setStage('');
     status(message);
     setHint('Tap to try again');
     doneLink.hidden = false;
@@ -275,7 +331,9 @@ export function initHeartRate() {
     if (dial.dataset.state !== 'running') { start(); return; }
     stopCamera();
     bpmEl.textContent = '--';
-    progressEl.style.width = '0%';
+    setProgress(0);
+    setSignal(null);
+    setStage('');
     drawTrace([]);
     status('Stopped. Tap the circle to start again.');
     setHint('Tap to start');
