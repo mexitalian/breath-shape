@@ -1,4 +1,5 @@
 import { normalize } from './config.js';
+import { withForm } from './forms.js';
 import { createTimeline } from './timeline.js';
 import { COMPONENTS } from './components/index.js';
 import { buildStage } from './ui/stage.js';
@@ -29,7 +30,8 @@ const MOTION_ONLY = new Set(['particles', 'ripple', 'hum']);
 
 // Runs one technique. Returns { stop, advance, restart }.
 export function start(rawConfig, { mount = document.body } = {}) {
-  const cfg = normalize(rawConfig);
+  // Breath shapes (#159): the technique's own shape unless Settings says Original.
+  const cfg = withForm(normalize(rawConfig), readSettings().shapes);
   initAppShell({ home: false });
   document.title = cfg.title;
   document.documentElement.style.setProperty('--hue', cfg.hue);

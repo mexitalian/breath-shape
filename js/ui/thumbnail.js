@@ -1,5 +1,7 @@
 import { el } from '../dom.js';
 import { normalize } from '../config.js';
+import { withForm } from '../forms.js';
+import { readSettings } from '../settings.js';
 import { createTimeline } from '../timeline.js';
 import { COMPONENTS } from '../components/index.js';
 
@@ -11,7 +13,7 @@ const HOLD_MS = 2500;
 // A small, live version of a technique's own field (or split halves),
 // breathing at the technique's real pace in its own colour.
 export function createThumbnail(rawConfig) {
-  const cfg = normalize(rawConfig);
+  const cfg = withForm(normalize(rawConfig), readSettings().shapes);
   const root = el('div', 'thumb');
   root.dataset.hue = '';
   root.style.setProperty('--hue', cfg.hue);

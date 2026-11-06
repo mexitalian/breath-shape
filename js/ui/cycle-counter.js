@@ -1,4 +1,5 @@
 import { el } from '../dom.js';
+import { FORMS, VIEW } from '../forms.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 
@@ -23,6 +24,7 @@ export function cycleState(index, snap) {
 
 // A mini copy of the technique's shape: an outline plus a fill that breathes.
 function miniShape(cfg) {
+  if (cfg.formKey) return miniForm(FORMS[cfg.formKey]);
   const svg = document.createElementNS(SVG, 'svg');
   svg.setAttribute('viewBox', '0 0 100 100');
   svg.setAttribute('aria-hidden', 'true');
@@ -53,6 +55,23 @@ export function scaleRange(cfg) {
 export function cycleFill(peak, { lo, hi }) {
   if (!(hi > lo)) return 1;
   return Math.min(1, Math.max(0, (peak - lo) / (hi - lo)));
+}
+
+// The same, in a technique's own shape (#159): the fill drawn whole, the outline from
+// its track (or the fill's own edges, for the Energise pictures).
+function miniForm(shape) {
+  const svg = document.createElementNS(SVG, 'svg');
+  svg.setAttribute('viewBox', VIEW);
+  svg.setAttribute('aria-hidden', 'true');
+  svg.classList.add('cycle', 'cycle--form');
+  const fill = document.createElementNS(SVG, 'g');
+  fill.classList.add('cycle__fill');
+  fill.innerHTML = shape.fill();
+  const outline = document.createElementNS(SVG, 'g');
+  outline.classList.add('cycle__outline');
+  outline.innerHTML = shape.track ? `<path d="${shape.track}"/>` : shape.fill();
+  svg.append(fill, outline);
+  return svg;
 }
 
 // Pattern: cycle counter between the shape and the text. A status line (cycles and
