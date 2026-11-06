@@ -16,6 +16,7 @@ export default {
 
   hue: 180,
   shape: 'circle',
+  form: 'dotted',   // its own shape (#159, js/forms.js)
   opacity: { min: 0.3, max: 0.75 },
 
   startScreen: true,

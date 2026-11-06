@@ -5,6 +5,7 @@ export default {
 
   hue: 52,
   shape: 'circle',
+  form: 'spikes',   // its own shape (#159, js/forms.js)
   opacity: { min: 0.35, max: 1 },
 
   safety: true,

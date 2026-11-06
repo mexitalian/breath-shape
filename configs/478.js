@@ -7,6 +7,7 @@ export default {
 
   hue: 270,
   shape: 'circle',
+  form: '478',   // its own shape (#159, js/forms.js)
   opacity: { min: 0.35, max: 0.9 },
 
   particles: { count: 26, radii: { inner: 0.20, outer: 0.92 } },

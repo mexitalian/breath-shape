@@ -7,6 +7,7 @@ export default {
 
   hue: 210,
   shape: 'circle',
+  form: 'sigh',   // its own shape (#159, js/forms.js)
   opacity: { min: 0.35, max: 1 },
 
   // Three radii: particles pull inward in two steps, then release on the exhale.
