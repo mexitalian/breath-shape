@@ -198,6 +198,8 @@ export function openSettings({ particleOptions = [['webgl', 'WebGL'], ['on', 'St
     saveSettings({ sessionLayout });
     showFluid(sessionLayout);
   }));
+  // Ways to pick a breath on Home (#151), for trying out. Not shown in a session.
+  if (!cfg) panel.append(choiceRow('Choose a breath (testing)', [['list', 'List'], ['swipe', 'Swipe'], ['questions', 'Questions'], ['spectrum', 'Spectrum']], settings.picker, picker => saveSettings({ picker })));
   panel.append(choiceRow('Particles', particleOptions, settings.particles, particles => saveSettings({ particles })));
   // Fluid shapes (#94), moved by tilt (on a computer, the mouse; #138).
   panel.append(fluid);

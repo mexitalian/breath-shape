@@ -3,7 +3,7 @@
 // and before first paint on the next one (js/settings-boot.js reads the same key).
 export const SETTINGS_KEY = 'breathing:settings';
 export const DEFAULTS = { theme: 'system', particles: 'webgl', sound: true, volume: 0.6, keepAwake: true, vibration: true, vibrationStyle: 'taps', fluid: 'off',
-  vesselLow: 0, vesselHigh: 1, membraneWobble: 3, membraneSmall: 0.1, membraneLarge: 1, sessionLayout: 'shrink', version: 2 };
+  vesselLow: 0, vesselHigh: 1, membraneWobble: 3, membraneSmall: 0.1, membraneLarge: 1, sessionLayout: 'shrink', picker: 'list', version: 2 };
 // Version 2 (#138): new Membrane defaults (wobble 300%, smallest 10%, largest 100%),
 // applied once to settings saved before it; after that, changes stick.
 const MIGRATIONS = { 2: (saved) => ({ ...saved, membraneWobble: 3, membraneSmall: 0.1, membraneLarge: 1 }) };
@@ -20,6 +20,9 @@ export const FLUIDS = ['off', 'vessel', 'membrane'];
 // Session layouts (#128): how the text under the shape behaves when it doesn't fit
 // (js/ui/session-layout.js). The shape itself is never squashed.
 export const SESSION_LAYOUTS = ['shrink', 'fill'];  // 'sticky' retired in #137; it reads as shrink
+// How Home lets you pick a breath (#151): today's list, or one of three ways in being
+// tried out (js/pickers/). For testing; the list stays the default.
+export const PICKERS = ['list', 'swipe', 'questions', 'spectrum'];
 // Fluid tuning (#102), for trying looks out: the Vessel's emptiest and fullest
 // levels (fractions of the height), how strongly motion moves the Membrane (1 =
 // normal), and the Membrane's smallest and largest sizes (fractions of full size;
@@ -62,6 +65,7 @@ export function readSettings(storage = defaultStorage()) {
     membraneSmall: tuning('membraneSmall'),
     membraneLarge: tuning('membraneLarge'),
     sessionLayout: SESSION_LAYOUTS.includes(saved.sessionLayout) ? saved.sessionLayout : DEFAULTS.sessionLayout,
+    picker: PICKERS.includes(saved.picker) ? saved.picker : DEFAULTS.picker,
     version: DEFAULTS.version,
   };
 }
@@ -73,6 +77,7 @@ export function applySettings(settings, root = document.documentElement) {
   root.dataset.particles = settings.particles;
   root.dataset.fluid = settings.fluid;
   root.dataset.sessionLayout = settings.sessionLayout;
+  root.dataset.picker = settings.picker;
 }
 
 export function saveSettings(changes, storage = defaultStorage()) {
